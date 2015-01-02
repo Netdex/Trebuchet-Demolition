@@ -61,13 +61,12 @@ public class GamePanel extends JPanel {
      * 2. Overlay Pause Menu<br>
      * 3. Options<br>
      */
-    private int displayScreen = 0;
+    private ScreenType displayScreen = ScreenType.MAIN_MENU;
 
     private int width;
     private int height;
 
     private Timer gameTimer;
-    private Timer panoramaTimer;
     
     private CenteredMenu mainMenu;
     private AlignedMenu optionsMenu;
@@ -84,10 +83,9 @@ public class GamePanel extends JPanel {
 	engine = new PhysicsEngine(width, height);
 
 	// Load all the images
-	resources = loadResources();
+	resources = getResources();
 
 	gameTimer = new Timer(TICK, new GameClockTask(this));
-	panoramaTimer = new Timer(50, new PanoramaTask(this));
 	
 	mainMenu = new CenteredMenu();
 	mainMenu.addMenuItem(new MenuItem("PLAY", mainMenuItemFont, Color.GRAY));
@@ -108,7 +106,7 @@ public class GamePanel extends JPanel {
 	this.addKeyListener(new KeyAdapter() {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
-		if (displayScreen == 1) {
+		if (displayScreen == ScreenType.IN_GAME) {
 		    if (keycode == KeyEvent.VK_RIGHT) {
 			if (power <= 95)
 			    power += 5;
@@ -134,45 +132,57 @@ public class GamePanel extends JPanel {
 		}
 		// Respond to menu events, such as allowing arrow keys to select
 		// menu items
-		else if (displayScreen == 0) {
+		else if (displayScreen == ScreenType.MAIN_MENU) {
 		    if (keycode == KeyEvent.VK_UP) {
 			mainMenu.shiftUp();
+			repaint();
 		    } else if (keycode == KeyEvent.VK_DOWN) {
 			mainMenu.shiftDown();
+			repaint();
 		    } else if (keycode == KeyEvent.VK_ENTER || keycode == KeyEvent.VK_SPACE) {
 			int selected = mainMenu.getSelectedItem();
 			if (selected == 0) {
-			    JOptionPane.showMessageDialog(null, "Placeholder");
+			    start();
 			} else if (selected == 1) {
-			    displayScreen = 3;
+			    displayScreen = ScreenType.OPTIONS_MENU;
 			} else if (selected == 2) {
 			    int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			    if (accept == JOptionPane.YES_OPTION)
 				System.exit(0);
 			}
+			repaint();
 		    }
-		    repaint();
 		}
 		// Respond to events in options menu
-		else if (displayScreen == 3) {
+		else if (displayScreen == ScreenType.OPTIONS_MENU) {
 		    // Return to main menu
 		    if (keycode == KeyEvent.VK_ESCAPE) {
-			displayScreen = 0;
+			displayScreen = ScreenType.MAIN_MENU;
+			repaint();
 		    }
 		    else if(keycode == KeyEvent.VK_UP){
 			optionsMenu.shiftUp();
+			repaint();
 		    }
 		    else if(keycode == KeyEvent.VK_DOWN){
 			optionsMenu.shiftDown();
+			repaint();
 		    }
-		    repaint();
+		    else if(keycode == KeyEvent.VK_ENTER){
+			int selectedIndex = optionsMenu.getSelectedItem();
+			// Music
+			if(selectedIndex == 0){
+			    
+			}
+			// Return to main menu
+			else if(selectedIndex == 1){
+			    displayScreen = ScreenType.MAIN_MENU;
+			}
+		    }
 		}
 	    }
 	});
-	panoramaTimer.start();
     }
-
-    private int panoramaShift = 0;
     
     /**
      * Draws the game
@@ -186,7 +196,7 @@ public class GamePanel extends JPanel {
 	g.setRenderingHints(rh);
 
 	// Playing game
-	if (displayScreen == 1) {
+	if (displayScreen == ScreenType.IN_GAME) {
 	    // Draw debug info
 	    g.drawString("Entities: " + engine.getEntities().size(), 10, 15);
 	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
@@ -220,14 +230,9 @@ public class GamePanel extends JPanel {
 	    }
 	}
 	// Main Menu
-	else if (displayScreen == 0) {
+	else if (displayScreen == ScreenType.MAIN_MENU) {
 	    // Get the images for easier access
 	    Image title = resources.get(0);
-	    Image background = resources.get(1);
-
-	    // Draw the background image
-	    g.drawImage(background,  0, 0, width, height, panoramaShift, 0, panoramaShift + width, background.getHeight(null), null);
-	    panoramaShift = (panoramaShift + 1) % background.getWidth(null);
 	    
 	    // Draw the title, and a slightly transparent box behind it
 	    int titleWidth = title.getWidth(null);
@@ -242,12 +247,9 @@ public class GamePanel extends JPanel {
 	    mainMenu.drawMenu(g, width, height, 250, 75);
 	}
 	// Options Menu
-	else if (displayScreen == 3) {
-	    Image background = resources.get(1);
+	else if (displayScreen == ScreenType.OPTIONS_MENU) {
 
 	    // Draw the background image
-	    g.drawImage(background,  0, 0, width, height, panoramaShift, 0, panoramaShift + width, background.getHeight(null), null);
-	    panoramaShift = (panoramaShift + 1) % background.getWidth(null);
 
 	    g.setColor(new Color(255, 218, 117, 128));
 
@@ -268,15 +270,13 @@ public class GamePanel extends JPanel {
      * Loads game resources and images<br>
      * Indices are as follows:<br>
      * 0. Title Logo<br>
-     * 1. Main Menu Background<br>
      * 
      * @return An ArrayList of all the resources
      */
-    public static ArrayList<Image> loadResources() {
+    public static ArrayList<Image> getResources() {
 	ArrayList<Image> images = new ArrayList<Image>();
 	try {
 	    images.add(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/title.png")));
-	    images.add(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/background.jpg")));
 	} catch (Exception e) {
 
 	}
@@ -288,8 +288,7 @@ public class GamePanel extends JPanel {
      */
     public void start() {
 	gameTimer.start();
-	panoramaTimer.stop();
-	displayScreen = 1;
+	displayScreen = ScreenType.IN_GAME;
     }
 
     /**
@@ -297,8 +296,7 @@ public class GamePanel extends JPanel {
      */
     public void pause() {
 	gameTimer.stop();
-	panoramaTimer.stop();
-	displayScreen = 2;
+	displayScreen = ScreenType.PAUSE_MENU;
     }
 
     /**
@@ -306,8 +304,7 @@ public class GamePanel extends JPanel {
      */
     public void stop() {
 	gameTimer.stop();
-	panoramaTimer.start();
-	displayScreen = 0;
+	displayScreen = ScreenType.MAIN_MENU;
     }
 
     /**
