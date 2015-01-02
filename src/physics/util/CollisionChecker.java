@@ -67,8 +67,6 @@ public class CollisionChecker {
      */
     public static void resolveCircleCollision(Circle a, Circle b,
 	    final double RESTITUTION) {
-	double magA = a.vel.length();
-	double magB = b.vel.length();
 	double diffX = b.loc.x - a.loc.x;
 	double diffY = b.loc.y - a.loc.y;
 
@@ -90,11 +88,9 @@ public class CollisionChecker {
      *            The second AABB
      * @param RESTITUTION
      *            The minimum restitution between the AABBs
-     * @deprecated Broken code
      */
     public static void resolveAABBCollision(AABB a, AABB b,
 	    final double RESTITUTION) {
-	Vector relative = b.vel.subtract(a.vel);
 
 	double widtha = a.getWidth();
 	double widthb = b.getWidth();

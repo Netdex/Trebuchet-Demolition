@@ -32,7 +32,6 @@ import physics.entity.Entity;
 import physics.entity.Rectangle;
 import physics.util.Vector;
 import tasks.GameClockTask;
-import tasks.PanoramaTask;
 
 /**
  * A panel which draws all the shapes and contains a physics engine

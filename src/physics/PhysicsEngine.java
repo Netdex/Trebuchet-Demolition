@@ -1,7 +1,6 @@
 package physics;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import physics.entity.AABB;
 import physics.entity.Circle;
@@ -27,7 +26,6 @@ public class PhysicsEngine {
     private int height;
 
     public int collisionsInTick = 0;
-    private static Random r;
 
     private ArrayList<Entity> entities;
 
@@ -35,7 +33,6 @@ public class PhysicsEngine {
 	this.width = width;
 	this.height = height;
 	this.entities = new ArrayList<Entity>();
-	this.r = new Random();
     }
 
     /**
