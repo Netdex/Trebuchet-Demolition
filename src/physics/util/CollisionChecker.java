@@ -5,55 +5,13 @@ import physics.entity.Circle;
 import physics.entity.Rectangle;
 
 /**
- * Contains most of the math to check for collisions between objects
+ * Contains most of the math to resolve collisions
  * 
  * @author Gordon Guan
  * @version Dec 2014
  * 
  */
 public class CollisionChecker {
-
-    /**
-     * Checks for a collision between two circles
-     * 
-     * @param a
-     *            The first circle
-     * @param b
-     *            The second circle
-     * @return The type of collision the circles are having
-     */
-    public static CollisionType circleToCircle(Circle a, Circle b) {
-	int ar = a.getRadius();
-	int br = b.getRadius();
-	double ax = a.loc.x;
-	double ay = a.loc.y;
-	double bx = b.loc.x;
-	double by = b.loc.y;
-	int r = ar + br;
-	r *= r;
-	double dist = (ax - bx) * (ax - bx) + (ay - by) * (ay - by);
-	if (r > dist) {
-	    return CollisionType.CIRCLE_TO_CIRCLE;
-	}
-	return CollisionType.NO_COLLISION;
-    }
-
-    /**
-     * Checks whether two Axis Aligned Bounding Boxes are colliding
-     * 
-     * @param a
-     *            The first AABB
-     * @param b
-     *            The second AABB
-     * @return The type of collision the two AABBs are having
-     */
-    public static CollisionType AABBtoAABB(AABB a, AABB b) {
-	if (a.p2.x < b.p1.x || a.p1.x > b.p2.x)
-	    return CollisionType.NO_COLLISION;
-	if (a.p2.y < b.p1.y || a.p1.y > b.p2.y)
-	    return CollisionType.NO_COLLISION;
-	return CollisionType.AABB_TO_AABB;
-    }
 
     /**
      * Resolves a circle to circle collision

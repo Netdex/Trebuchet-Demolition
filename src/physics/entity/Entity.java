@@ -2,6 +2,7 @@ package physics.entity;
 
 import java.awt.Color;
 
+import physics.util.CollisionType;
 import physics.util.Vector;
 
 /**
@@ -86,4 +87,11 @@ public abstract class Entity
 	{
 		return type;
 	}
+	
+	/**
+	 * Checks whether this entity has collided with another one
+	 * @param entity The entity to check if this entity has collided with
+	 * @return Whether this entity has collided with the given one
+	 */
+	public abstract CollisionType getCollisionState(Entity entity);
 }

@@ -77,45 +77,43 @@ public class PhysicsEngine {
     public synchronized boolean handleCollisions(Entity entity) {
 	// Check for circle based collisions
 	if (entity instanceof Circle) {
-	    Circle c = (Circle) entity;
-	    int radius = c.getRadius();
-	    double x = c.loc.x;
-	    double y = c.loc.y;
+	    Circle circle = (Circle) entity;
+	    int radius = circle.getRadius();
+	    double x = circle.loc.x;
+	    double y = circle.loc.y;
 
 	    // Check every circle onto this one to see if they are colliding
 	    for (Entity e : entities) {
 		if (e instanceof Circle) {
-		    if (e != entity) {
-			if (CollisionChecker.circleToCircle((Circle) e,
-				(Circle) entity) == CollisionType.CIRCLE_TO_CIRCLE) {
-			    CollisionChecker.resolveCircleCollision((Circle) e,
-				    (Circle) entity, RESTITUTION);
-			    return true;
+		    if (e != circle) {
+			if(circle.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE){
+			    CollisionChecker.resolveCircleCollision(circle, (Circle) e, RESTITUTION);
 			}
 		    }
 		}
 	    }
 
+	    // Make sure the circle collides with walls
 	    boolean retType = false;
 	    if (x - radius < 0) {
-		c.loc.x = radius;
-		c.vel.x = -c.vel.x / RESTITUTION;
+		circle.loc.x = radius;
+		circle.vel.x = -circle.vel.x / RESTITUTION;
 		retType = true;
 	    }
 	    if (y - radius < 0) {
-		c.loc.y = radius;
-		c.vel.y = -c.vel.y / RESTITUTION;
+		circle.loc.y = radius;
+		circle.vel.y = -circle.vel.y / RESTITUTION;
 		retType = true;
 	    }
 	    if (x + radius > width) {
-		c.loc.x = width - radius;
-		c.vel.x = -c.vel.x / RESTITUTION;
+		circle.loc.x = width - radius;
+		circle.vel.x = -circle.vel.x / RESTITUTION;
 		retType = true;
 	    }
 	    if (y + radius > height) {
-		c.loc.y = height - radius;
-		c.vel.y = -c.vel.y / RESTITUTION;
-		c.vel.x = c.vel.x / FRICTION;
+		circle.loc.y = height - radius;
+		circle.vel.y = -circle.vel.y / RESTITUTION;
+		circle.vel.x = circle.vel.x / FRICTION;
 		retType = true;
 	    }
 	    if (retType)
@@ -128,7 +126,7 @@ public class PhysicsEngine {
 	    for (Entity e : entities) {
 		if (e instanceof AABB) {
 		    if (e != entity) {
-			if (CollisionChecker.AABBtoAABB(aabb, (AABB) e) == CollisionType.AABB_TO_AABB) {
+			if(aabb.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE){
 			    CollisionChecker.resolveAABBCollision(aabb, (AABB) e,
 				    RESTITUTION);
 			    return true;
