@@ -167,6 +167,7 @@ public class PhysicsEngine {
 	    }
 	    if (retType)
 		return true;
+	    
 	} else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
 	    

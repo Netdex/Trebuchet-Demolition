@@ -1,4 +1,4 @@
-package game;
+package game.graphics;
 
 /**
  * Contains all the possible views for the game panel
@@ -11,5 +11,6 @@ public enum ScreenType {
     PAUSE_MENU,
     OPTIONS_MENU,
     
+    LEVEL_SELECT,
     IN_GAME;
 }

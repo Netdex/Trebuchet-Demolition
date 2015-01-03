@@ -1,6 +1,7 @@
 package game;
 
 import game.graphics.GraphicsTools;
+import game.graphics.ScreenType;
 import game.graphics.menu.AlignedMenu;
 import game.graphics.menu.CenteredMenu;
 import game.graphics.menu.MenuItem;
@@ -42,35 +43,29 @@ import tasks.GameClockTask;
  */
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    public static Image titleImage;
+    public static Image backgroundImage;
+
+    /***********************************************************************/
     public PhysicsEngine engine;
+    private Timer physicsTimer;
 
     // Approximately 60 frames per second
-    private static final int TICK = 16;
+    private static final int TICK_RATE = 16;
     private int power = 75;
     private int angle = 50;
-
-    private static final Font mainMenuItemFont = new Font("Optima", Font.BOLD, 40);
-    
-    /**
-     * SCREEN NUMBER ALLOCATIONS
-     * Note: This is a Java Doc comment since they allow line breaking<br>
-     * Stores the screen which should be painted<br>
-     * 0. Main Menu<br>
-     * 1. In-game<br>
-     * 2. Overlay Pause Menu<br>
-     * 3. Options<br>
-     */
+    /***********************************************************************/
     private ScreenType displayScreen = ScreenType.MAIN_MENU;
 
     private int width;
     private int height;
-
-    private Timer gameTimer;
-    
+    /***********************************************************************/
     private CenteredMenu mainMenu;
     private AlignedMenu optionsMenu;
-    
-    private ArrayList<Image> resources;
+
+    private static final Font mainMenuItemFont = new Font("Optima", Font.BOLD, 40);
+
+    /***********************************************************************/
 
     public GamePanel(final int width, final int height) {
 	super();
@@ -82,20 +77,20 @@ public class GamePanel extends JPanel {
 	engine = new PhysicsEngine(width, height);
 
 	// Load all the images
-	resources = getResources();
+	loadResources();
 
-	gameTimer = new Timer(TICK, new GameClockTask(this));
-	
+	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
+
 	mainMenu = new CenteredMenu();
 	mainMenu.addMenuItem(new MenuItem("PLAY", mainMenuItemFont, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("OPTIONS", mainMenuItemFont, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("EXIT", mainMenuItemFont, Color.GRAY));
-	
+
 	Font optionsFont = new Font("Optima", Font.BOLD, 27);
 	optionsMenu = new AlignedMenu();
 	optionsMenu.addMenuItem(new MenuItem("Music", optionsFont, Color.GRAY));
 	optionsMenu.addMenuItem(new MenuItem("Exit", optionsFont, Color.GRAY));
-	
+
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 
@@ -158,23 +153,20 @@ public class GamePanel extends JPanel {
 		    if (keycode == KeyEvent.VK_ESCAPE) {
 			displayScreen = ScreenType.MAIN_MENU;
 			repaint();
-		    }
-		    else if(keycode == KeyEvent.VK_UP){
+		    } else if (keycode == KeyEvent.VK_UP) {
 			optionsMenu.shiftUp();
 			repaint();
-		    }
-		    else if(keycode == KeyEvent.VK_DOWN){
+		    } else if (keycode == KeyEvent.VK_DOWN) {
 			optionsMenu.shiftDown();
 			repaint();
-		    }
-		    else if(keycode == KeyEvent.VK_ENTER){
+		    } else if (keycode == KeyEvent.VK_ENTER) {
 			int selectedIndex = optionsMenu.getSelectedItem();
 			// Music
-			if(selectedIndex == 0){
-			    
+			if (selectedIndex == 0) {
+
 			}
 			// Return to main menu
-			else if(selectedIndex == 1){
+			else if (selectedIndex == 1) {
 			    displayScreen = ScreenType.MAIN_MENU;
 			}
 		    }
@@ -182,7 +174,7 @@ public class GamePanel extends JPanel {
 	    }
 	});
     }
-    
+
     /**
      * Draws the game
      */
@@ -230,25 +222,25 @@ public class GamePanel extends JPanel {
 	}
 	// Main Menu
 	else if (displayScreen == ScreenType.MAIN_MENU) {
-	    // Get the images for easier access
-	    Image title = resources.get(0);
-	    
+	    // Draw the background image
+	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
+
 	    // Draw the title, and a slightly transparent box behind it
-	    int titleWidth = title.getWidth(null);
-	    int titleHeight = title.getHeight(null);
+	    int titleWidth = titleImage.getWidth(null);
+	    int titleHeight = titleImage.getHeight(null);
 	    g.setColor(new Color(255, 218, 117, 128));
 	    g.fillRect(0, 0, width, titleHeight + 20);
 	    g.setColor(Color.BLACK);
 	    g.drawLine(0, titleHeight + 20, width, titleHeight + 20);
-	    g.drawImage(title, width / 2 - titleWidth / 2, 10, null);
+	    g.drawImage(titleImage, width / 2 - titleWidth / 2, 10, null);
 
 	    // Draw the menu
 	    mainMenu.drawMenu(g, width, height, 250, 75);
 	}
 	// Options Menu
 	else if (displayScreen == ScreenType.OPTIONS_MENU) {
-
 	    // Draw the background image
+	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
 
 	    g.setColor(new Color(255, 218, 117, 128));
 
@@ -259,34 +251,32 @@ public class GamePanel extends JPanel {
 	    g.setFont(mainMenuItemFont);
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Options", 10, 37);
-	    
+
 	    optionsMenu.drawMenu(g, 10, 0, 120, 50);
+	}
+	else if(displayScreen == ScreenType.LEVEL_SELECT){
+	    
 	}
 
     }
 
     /**
-     * Loads game resources and images<br>
-     * Indices are as follows:<br>
-     * 0. Title Logo<br>
-     * 
-     * @return An ArrayList of all the resources
+     * Loads game resources and images
      */
-    public static ArrayList<Image> getResources() {
-	ArrayList<Image> images = new ArrayList<Image>();
+    public static void loadResources() {
 	try {
-	    images.add(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/title.png")));
+	    titleImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/title.png"));
+	    backgroundImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/background.jpg"));
 	} catch (Exception e) {
-
+	    e.printStackTrace();
 	}
-	return images;
     }
 
     /**
      * (Re)starts the game clock
      */
     public void start() {
-	gameTimer.start();
+	physicsTimer.start();
 	displayScreen = ScreenType.IN_GAME;
     }
 
@@ -294,7 +284,7 @@ public class GamePanel extends JPanel {
      * Pauses the game clock
      */
     public void pause() {
-	gameTimer.stop();
+	physicsTimer.stop();
 	displayScreen = ScreenType.PAUSE_MENU;
     }
 
@@ -302,7 +292,7 @@ public class GamePanel extends JPanel {
      * Returns to the main menu
      */
     public void stop() {
-	gameTimer.stop();
+	physicsTimer.stop();
 	displayScreen = ScreenType.MAIN_MENU;
     }
 

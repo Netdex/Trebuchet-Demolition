@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 /**
- * Contains many helper methods to help draw certain things
+ * Contains many helper methods to help draw fancy things
  * 
  * @author Gordon Guan
  * @version Dec 2014
@@ -13,7 +13,7 @@ import java.awt.Graphics;
 public class GraphicsTools {
     
     /**
-     * Drawsw shadowed text at the position
+     * Draws shadowed text at the position
      * @param g The graphics to draw the text with
      * @param text The text to draw
      * @param x The x coordinate
