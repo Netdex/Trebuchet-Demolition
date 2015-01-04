@@ -6,6 +6,8 @@ import game.graphics.menu.AlignedMenu;
 import game.graphics.menu.CenteredMenu;
 import game.graphics.menu.MenuItem;
 import game.graphics.menu.ToggleMenuItem;
+import game.level.Level;
+import game.level.LevelManager;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -64,9 +66,8 @@ public class GamePanel extends JPanel {
     private AlignedMenu optionsMenu;
     private AlignedMenu levelSelectMenu;
     
-    private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", optionsFont, Color.GREEN, Color.RED);
-    private static final Font mainFont = new Font("Optima", Font.BOLD, 40);
-    private static final Font optionsFont = new Font("Optima", Font.BOLD, 27);
+    private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
+    
 
     /***********************************************************************/
 
@@ -84,18 +85,18 @@ public class GamePanel extends JPanel {
 
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
 
-	mainMenu = new CenteredMenu(Color.WHITE);
-	mainMenu.addMenuItem(new MenuItem("PLAY", mainFont, Color.darkGray));
-	mainMenu.addMenuItem(new MenuItem("OPTIONS", mainFont, Color.GRAY));
-	mainMenu.addMenuItem(new MenuItem("EXIT", mainFont, Color.GRAY));
+	mainMenu = new CenteredMenu();
+	mainMenu.addMenuItem(new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.GRAY));
+	mainMenu.addMenuItem(new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.GRAY));
+	mainMenu.addMenuItem(new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.GRAY));
 
 	
-	optionsMenu = new AlignedMenu(Color.WHITE);
+	optionsMenu = new AlignedMenu();
 	optionsMenu.addMenuItem(musicToggleMenuItem);
 	musicToggleMenuItem.setEnabled(true);
-	optionsMenu.addMenuItem(new MenuItem("Return to Main Menu", optionsFont, Color.GRAY));
+	optionsMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
-	levelSelectMenu = new AlignedMenu(Color.WHITE);
+	levelSelectMenu = new AlignedMenu();
 	
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
@@ -142,6 +143,12 @@ public class GamePanel extends JPanel {
 		    } else if (keycode == KeyEvent.VK_ENTER || keycode == KeyEvent.VK_SPACE) {
 			int selected = mainMenu.getSelectedItem();
 			if (selected == 0) {
+			    LevelManager.loadLevels();
+			    levelSelectMenu.clearMenu();
+			    for(Level level : LevelManager.getLevels()){
+				MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
+				levelSelectMenu.addMenuItem(menuItem);
+			    }
 			    displayScreen = ScreenType.LEVEL_SELECT;
 			} else if (selected == 1) {
 			    displayScreen = ScreenType.OPTIONS_MENU;
@@ -169,7 +176,7 @@ public class GamePanel extends JPanel {
 			int selectedIndex = optionsMenu.getSelectedItem();
 			// Music
 			if (selectedIndex == 0) {
-
+			    musicToggleMenuItem.toggle();
 			}
 			// Return to main menu
 			else if (selectedIndex == 1) {
@@ -182,6 +189,17 @@ public class GamePanel extends JPanel {
 		    if (keycode == KeyEvent.VK_ESCAPE) {
 			displayScreen = ScreenType.MAIN_MENU;
 			repaint();
+		    }
+		    else if(keycode == KeyEvent.VK_UP){
+			levelSelectMenu.shiftUp();
+			repaint();
+		    }
+		    else if(keycode == KeyEvent.VK_DOWN){
+			levelSelectMenu.shiftDown();
+			repaint();
+		    }
+		    else if(keycode == KeyEvent.VK_ENTER){
+			
 		    }
 		}
 	    }
@@ -241,7 +259,7 @@ public class GamePanel extends JPanel {
 	    // Draw the title, and a slightly transparent box behind it
 	    int titleWidth = titleImage.getWidth(null);
 	    int titleHeight = titleImage.getHeight(null);
-	    g.setColor(new Color(255, 218, 117, 128));
+	    g.setColor(GraphicsTools.PANEL_COLOR);
 	    g.fillRect(0, 0, width, titleHeight + 20);
 	    g.setColor(Color.BLACK);
 	    g.drawLine(0, titleHeight + 20, width, titleHeight + 20);
@@ -255,13 +273,13 @@ public class GamePanel extends JPanel {
 	    // Draw the background image
 	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
 
-	    g.setColor(new Color(255, 218, 117, 128));
+	    g.setColor(GraphicsTools.PANEL_COLOR);
 
 	    final int topBarHeight = 50;
 	    g.fillRect(0, 0, width, topBarHeight);
 	    g.setColor(Color.BLACK);
 	    g.drawLine(0, topBarHeight, width, topBarHeight);
-	    g.setFont(mainFont);
+	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Options", 10, 37);
 
@@ -270,19 +288,18 @@ public class GamePanel extends JPanel {
 	    // Draw the background image
 	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
 
-	    g.setColor(new Color(255, 218, 117, 128));
+	    g.setColor(GraphicsTools.PANEL_COLOR);
 
 	    final int topBarHeight = 50;
 	    g.fillRect(0, 0, width, topBarHeight);
 	    g.setColor(Color.BLACK);
 	    g.drawLine(0, topBarHeight, width, topBarHeight);
-	    g.setFont(mainFont);
+	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Level Select", 10, 37);
-
 	    
+	    levelSelectMenu.drawMenu(g, 10, 0, 80, 25);
 	}
-
     }
 
     /**

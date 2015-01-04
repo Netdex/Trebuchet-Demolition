@@ -1,6 +1,7 @@
 package game.graphics;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 /**
@@ -12,6 +13,10 @@ import java.awt.Graphics;
  */
 public class GraphicsTools {
     
+    public final static Color PANEL_COLOR = new Color(247, 247, 247, 128);
+    public static final Font MAIN_FONT = new Font("Optima", Font.BOLD, 40);
+    public static final Font OPTIONS_FONT = new Font("Optima", Font.BOLD, 27);
+    public static final Font LEVEL_SELECT_FONT = new Font("Consolas", Font.PLAIN, 20);
     /**
      * Draws shadowed text at the position
      * @param g The graphics to draw the text with
@@ -22,7 +27,7 @@ public class GraphicsTools {
     public static void drawShadowedText(Graphics g, String text, int x, int y) {
 	Color originalColor = g.getColor();
 	g.setColor(Color.BLACK);
-	g.drawString(text, x + 5, y + 2);
+	g.drawString(text, x + 3, y + 1);
 	g.setColor(originalColor);
 	g.drawString(text, x, y);
     }

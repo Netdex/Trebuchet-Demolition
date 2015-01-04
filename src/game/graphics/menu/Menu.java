@@ -12,12 +12,10 @@ import java.util.ArrayList;
 public abstract class Menu {
     private int selectedIndex;
     private ArrayList<MenuItem> menuItems;
-    private Color selectedColor;
     
-    public Menu(Color selectedColor) {
+    public Menu() {
 	this.selectedIndex = 0;
 	menuItems = new ArrayList<MenuItem>();
-	this.selectedColor = selectedColor;
     }
     
     /**
@@ -111,16 +109,20 @@ public abstract class Menu {
     }
     
     /**
-     * Sets the color when selected
+     * Makes a color brighter (for selected MenuItems)
+     * @param color The color to brighten
+     * @param fraction The percentage to brighten the color by
+     * @return the brightened color
      */
-    public void setSelectedColor(Color color){
-	this.selectedColor = color;
-    }
-    
-    /**
-     * Gets the color when selected
-     */
-    public Color getSelectedColor(){
-	return selectedColor;
+    public static Color brighten(Color color, double fraction) {
+
+        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+        int alpha = color.getAlpha();
+
+        return new Color(red, green, blue, alpha);
+
     }
 }

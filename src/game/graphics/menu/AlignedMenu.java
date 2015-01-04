@@ -8,8 +8,8 @@ import java.awt.Graphics;
 
 public class AlignedMenu extends Menu {
     
-    public AlignedMenu(Color color){
-	super(color);
+    public AlignedMenu(){
+	super();
     }
     
     @Override
@@ -21,7 +21,7 @@ public class AlignedMenu extends Menu {
 
 	for (MenuItem menuItem : this.getMenuItems()) {
 	    if (isSelected(menuItem)) {
-		g.setColor(this.getSelectedColor());
+		g.setColor(Menu.brighten(menuItem.getColor(), 0.75));
 	    } else {
 		g.setColor(menuItem.getColor());
 	    }
