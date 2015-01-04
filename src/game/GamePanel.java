@@ -10,7 +10,6 @@ import game.level.Level;
 import game.level.LevelManager;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
