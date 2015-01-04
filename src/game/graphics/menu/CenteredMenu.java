@@ -18,8 +18,8 @@ public class CenteredMenu extends Menu{
     /**
      * Constructs a main menu
      */
-    public CenteredMenu() {
-	super();	
+    public CenteredMenu(Color color) {
+	super(color);	
     }
 
     /**
@@ -34,7 +34,7 @@ public class CenteredMenu extends Menu{
 
 	for (MenuItem menuItem : this.getMenuItems()) {
 	    if(isSelected(menuItem)){
-		g.setColor(Color.WHITE);
+		g.setColor(this.getSelectedColor());
 	    }
 	    else{
 		g.setColor(menuItem.getColor());

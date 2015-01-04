@@ -8,6 +8,7 @@ import java.awt.Font;
  * @author Gordon Guan
  * @version Dec 2014
  */
+
 public class MenuItem {
     private String text;
     private Font font;

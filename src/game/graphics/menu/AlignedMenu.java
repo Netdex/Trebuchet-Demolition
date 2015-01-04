@@ -7,6 +7,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 public class AlignedMenu extends Menu {
+    
+    public AlignedMenu(Color color){
+	super(color);
+    }
+    
     @Override
     public void drawMenu(Graphics g, int x, int height, int startHeight, int separation) {
 	int verticalOffset = startHeight;
@@ -16,7 +21,7 @@ public class AlignedMenu extends Menu {
 
 	for (MenuItem menuItem : this.getMenuItems()) {
 	    if (isSelected(menuItem)) {
-		g.setColor(Color.WHITE);
+		g.setColor(this.getSelectedColor());
 	    } else {
 		g.setColor(menuItem.getColor());
 	    }

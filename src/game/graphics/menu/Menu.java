@@ -1,15 +1,23 @@
 package game.graphics.menu;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+/**
+ * Represents a menu
+ * @author Gordon Guan
+ * @version Jan 2015
+ */
 public abstract class Menu {
     private int selectedIndex;
     private ArrayList<MenuItem> menuItems;
-
-    public Menu() {
+    private Color selectedColor;
+    
+    public Menu(Color selectedColor) {
 	this.selectedIndex = 0;
 	menuItems = new ArrayList<MenuItem>();
+	this.selectedColor = selectedColor;
     }
     
     /**
@@ -52,6 +60,13 @@ public abstract class Menu {
     }
 
     /**
+     * Clears the menu
+     */
+    public void clearMenu(){
+	menuItems.clear();
+    }
+    
+    /**
      * Gets the selected item's index
      * 
      * @return the selected item's index
@@ -93,5 +108,19 @@ public abstract class Menu {
     public void shiftDown() {
 	if (selectedIndex < menuItems.size() - 1)
 	    selectedIndex++;
+    }
+    
+    /**
+     * Sets the color when selected
+     */
+    public void setSelectedColor(Color color){
+	this.selectedColor = color;
+    }
+    
+    /**
+     * Gets the color when selected
+     */
+    public Color getSelectedColor(){
+	return selectedColor;
     }
 }
