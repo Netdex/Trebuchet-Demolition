@@ -1,13 +1,18 @@
 package game.level;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
+import physics.entity.Circle;
 import physics.entity.Entity;
+import physics.util.Vector;
 
 /**
  * Manages loaded levels, and loads them
@@ -20,7 +25,7 @@ public class LevelManager {
 
     public static void loadLevels() {
 	levels.clear();
-	
+
 	File levelFolder = new File("levels");
 	if (!levelFolder.exists()) {
 	    levelFolder.mkdir();
@@ -31,29 +36,47 @@ public class LevelManager {
 	    }
 	})) {
 	    try {
-		BufferedReader br = new BufferedReader(new FileReader(levelFile));
-		HashMap<String, Object> metadata = new HashMap<String, Object>();
-		
-		String line;
-		while(!(line = br.readLine()).equals("entities") && line != null){
-		    String[] input = line.split(":");
-		    metadata.put(input[0], input[1]);
-		}
-		
-		Level level = new Level(String.valueOf(metadata.get("name")), levelFile, metadata, new ArrayList<Entity>());
-		levels.add(level);
-		System.out.println("loaded " + level.getName() + " - " + levelFile.getName());
-	    } catch (Exception e) {
+		Properties metadata = new Properties();
 
+		metadata.load(new FileInputStream(levelFile));
+		ArrayList<Entity> levelEntities = new ArrayList<Entity>();
+		StringTokenizer st = new StringTokenizer(metadata.getProperty("entities"), ":");
+		
+		while (st.hasMoreTokens()) {
+		    String line = st.nextToken().replaceAll(" ", "");
+		    String[] entityData = line.split(",");
+		    String type = entityData[0];
+		    try {
+			if (type.equals("circ")) {
+			    // Loads a circle with format
+			    // circ,13,14,112,255,255,255
+			    int x = Integer.parseInt(entityData[1]);
+			    int y = Integer.parseInt(entityData[2]);
+			    int radius = Integer.parseInt(entityData[3]);
+			    Color color = new Color(Integer.parseInt(entityData[4]), Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]));
+			    Vector loc = new Vector(x, y);
+			    Circle circle = new Circle(loc, Vector.ZERO, Vector.ZERO, radius, color);
+			    levelEntities.add(circle);
+			} else if (type.equals("rect")) {
+			    // Loads a rectangle with format rect:
+			}
+		    } catch (Exception e) {
+
+		    }
+		}
+		Level level = new Level(metadata.getProperty("name"), levelFile, metadata, levelEntities);
+		levels.add(level);
+	    } catch (Exception e) {
+		e.printStackTrace();
 	    }
 	}
     }
 
     public static ArrayList<Level> getLevels() {
-        return levels;
+	return levels;
     }
 
     public static void setLevels(ArrayList<Level> levels) {
-        LevelManager.levels = levels;
+	LevelManager.levels = levels;
     }
 }

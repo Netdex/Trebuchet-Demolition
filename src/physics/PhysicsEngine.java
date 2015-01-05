@@ -1,6 +1,9 @@
 package physics;
 
+import game.level.Level;
+
 import java.util.ArrayList;
+import java.util.Properties;
 
 import physics.entity.AABB;
 import physics.entity.Circle;
@@ -22,6 +25,8 @@ public class PhysicsEngine {
     private static final double FRICTION = 1.05;
     private static final double RESTITUTION = 1.5;
 
+    private boolean gravity = true;
+
     private int width;
     private int height;
 
@@ -36,12 +41,38 @@ public class PhysicsEngine {
     }
 
     /**
+     * Loads a level into the simulator
+     * 
+     * @param level The level to load
+     */
+    public void loadLevel(Level level) {
+	Properties metadata = level.getMetadata();
+	ArrayList<Entity> levelEntities = level.getEntities();
+
+	// TODO EVERYTHING
+	try {
+	    if (metadata.getProperty("gravity") != null) {
+		try {
+		    this.gravity = Boolean.valueOf(metadata.getProperty("gravity"));
+		} catch (Exception e) {
+
+		}
+	    } else {
+		this.gravity = true;
+	    }
+	} catch (Exception e) {
+	    System.err.println(e.getClass().getName() + "");
+	}
+    }
+
+    /**
      * Makes the physics engine do a physics 'tick'
      */
     public void tick() {
 	collisionsInTick = 0;
 	for (Entity e : entities) {
-	    e.acc = GRAVITY;
+	    if (gravity)
+		e.acc = GRAVITY;
 
 	    boolean collided = handleCollisions(e);
 	    if (collided)
@@ -70,8 +101,7 @@ public class PhysicsEngine {
     /**
      * Checks for collisions with walls or other entities of an entity
      * 
-     * @param entity
-     *            The entity to check for collisions for
+     * @param entity The entity to check for collisions for
      * @return Whether or not the entity is colliding
      */
     public synchronized boolean handleCollisions(Entity entity) {
@@ -86,7 +116,7 @@ public class PhysicsEngine {
 	    for (Entity e : entities) {
 		if (e instanceof Circle) {
 		    if (e != circle) {
-			if(circle.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE){
+			if (circle.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE) {
 			    CollisionChecker.resolveCircleCollision(circle, (Circle) e, RESTITUTION);
 			}
 		    }
@@ -126,9 +156,8 @@ public class PhysicsEngine {
 	    for (Entity e : entities) {
 		if (e instanceof AABB) {
 		    if (e != entity) {
-			if(aabb.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE){
-			    CollisionChecker.resolveAABBCollision(aabb, (AABB) e,
-				    RESTITUTION);
+			if (aabb.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE) {
+			    CollisionChecker.resolveAABBCollision(aabb, (AABB) e, RESTITUTION);
 			    return true;
 			}
 		    }
@@ -167,10 +196,10 @@ public class PhysicsEngine {
 	    }
 	    if (retType)
 		return true;
-	    
+
 	} else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
-	    
+
 	    boolean retType = false;
 	    if (rect.p1.x < 0) {
 		double correction = Math.abs(rect.p1.x);
@@ -211,8 +240,7 @@ public class PhysicsEngine {
     /**
      * Adds the entity to the physics engine
      * 
-     * @param entity
-     *            The entity to add
+     * @param entity The entity to add
      */
     public void addEntity(Entity entity) {
 	entities.add(entity);
@@ -221,8 +249,7 @@ public class PhysicsEngine {
     /**
      * Removes the entity to the physics engine
      * 
-     * @param entity
-     *            The entity to remove
+     * @param entity The entity to remove
      */
     public void removeEntity(Entity entity) {
 	entities.remove(entity);

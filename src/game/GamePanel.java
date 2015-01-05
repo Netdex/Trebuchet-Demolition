@@ -64,9 +64,8 @@ public class GamePanel extends JPanel {
     private CenteredMenu mainMenu;
     private AlignedMenu optionsMenu;
     private AlignedMenu levelSelectMenu;
-    
+
     private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
-    
 
     /***********************************************************************/
 
@@ -89,14 +88,13 @@ public class GamePanel extends JPanel {
 	mainMenu.addMenuItem(new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.GRAY));
 
-	
 	optionsMenu = new AlignedMenu();
 	optionsMenu.addMenuItem(musicToggleMenuItem);
 	musicToggleMenuItem.setEnabled(true);
 	optionsMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
 	levelSelectMenu = new AlignedMenu();
-	
+
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 
@@ -144,7 +142,7 @@ public class GamePanel extends JPanel {
 			if (selected == 0) {
 			    LevelManager.loadLevels();
 			    levelSelectMenu.clearMenu();
-			    for(Level level : LevelManager.getLevels()){
+			    for (Level level : LevelManager.getLevels()) {
 				MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
 				levelSelectMenu.addMenuItem(menuItem);
 			    }
@@ -183,22 +181,23 @@ public class GamePanel extends JPanel {
 			}
 			repaint();
 		    }
-		}
-		else if(displayScreen == ScreenType.LEVEL_SELECT){
+		} else if (displayScreen == ScreenType.LEVEL_SELECT) {
 		    if (keycode == KeyEvent.VK_ESCAPE) {
 			displayScreen = ScreenType.MAIN_MENU;
 			repaint();
-		    }
-		    else if(keycode == KeyEvent.VK_UP){
+		    } else if (keycode == KeyEvent.VK_UP) {
 			levelSelectMenu.shiftUp();
 			repaint();
-		    }
-		    else if(keycode == KeyEvent.VK_DOWN){
+		    } else if (keycode == KeyEvent.VK_DOWN) {
 			levelSelectMenu.shiftDown();
 			repaint();
-		    }
-		    else if(keycode == KeyEvent.VK_ENTER){
-			
+		    } else if (keycode == KeyEvent.VK_ENTER) {
+			int selectedIndex = levelSelectMenu.getSelectedItem();
+			Level level = LevelManager.getLevels().get(selectedIndex);
+
+			// ### DEBUG ###
+			String debugMessage = String.format("%s\ngravity=%s\nentities=\n%s", level.getName(), level.getMetadata().getProperty("gravity"), level.getEntities().toString().replaceAll(",", "\n"));
+			JOptionPane.showMessageDialog(null, debugMessage, "Debug Entities List for Level", JOptionPane.INFORMATION_MESSAGE);
 		    }
 		}
 	    }
@@ -296,7 +295,7 @@ public class GamePanel extends JPanel {
 	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Level Select", 10, 37);
-	    
+
 	    levelSelectMenu.drawMenu(g, 10, 0, 80, 25);
 	}
     }

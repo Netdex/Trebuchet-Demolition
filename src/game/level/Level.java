@@ -3,6 +3,7 @@ package game.level;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 import physics.entity.Entity;
 
@@ -10,10 +11,10 @@ public class Level {
 
     private String name;
     private File file;
-    private HashMap<String, Object> metadata;
+    private Properties metadata;
     private ArrayList<Entity> levelEntities;
     
-    public Level(String name, File file, HashMap<String, Object> metadata, ArrayList<Entity> levelEntities){
+    public Level(String name, File file, Properties metadata, ArrayList<Entity> levelEntities){
 	this.name = name;
 	this.file = file;
 	this.metadata = metadata;
@@ -40,7 +41,7 @@ public class Level {
      * Gets the metadata for the level
      * @return the metadata for the level
      */
-    public HashMap<String, Object> getMetadata() {
+    public Properties getMetadata() {
         return metadata;
     }
 
@@ -48,7 +49,7 @@ public class Level {
      * Sets the metadata for the level
      * @param metadata The new metadata for the level
      */
-    public void setMetadata(HashMap<String, Object> metadata) {
+    public void setMetadata(Properties metadata) {
         this.metadata = metadata;
     }
 
@@ -56,7 +57,7 @@ public class Level {
      * Gets the entities in this level
      * @return the entities in this level
      */
-    public ArrayList<Entity> getLevelEntities() {
+    public ArrayList<Entity> getEntities() {
         return levelEntities;
     }
 
