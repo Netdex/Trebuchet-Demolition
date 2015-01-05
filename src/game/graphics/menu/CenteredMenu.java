@@ -18,8 +18,8 @@ public class CenteredMenu extends Menu{
     /**
      * Constructs a main menu
      */
-    public CenteredMenu() {
-	super();	
+    public CenteredMenu(int shadowDist) {
+	super(shadowDist);	
     }
 
     /**
@@ -45,7 +45,7 @@ public class CenteredMenu extends Menu{
 	    g.setFont(font);
 	    FontMetrics fm = g.getFontMetrics();
 	    int x = width / 2 - fm.stringWidth(text) / 2;
-	    GraphicsTools.drawShadowedText(g, text, x, verticalOffset);
+	    GraphicsTools.drawShadowedText(g, text, x, verticalOffset, this.getShadowDist());
 	    
 	    
 	    verticalOffset += separation;

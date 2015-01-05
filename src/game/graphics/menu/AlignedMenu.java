@@ -8,8 +8,8 @@ import java.awt.Graphics;
 
 public class AlignedMenu extends Menu {
     
-    public AlignedMenu(){
-	super();
+    public AlignedMenu(int shadowDist){
+	super(shadowDist);
     }
     
     @Override
@@ -29,7 +29,7 @@ public class AlignedMenu extends Menu {
 	    String text = menuItem.getText();
 	    Font font = menuItem.getFont();
 	    g.setFont(font);
-	    GraphicsTools.drawShadowedText(g, text, x, verticalOffset);
+	    GraphicsTools.drawShadowedText(g, text, x, verticalOffset, this.getShadowDist());
 
 	    verticalOffset += separation;
 	}

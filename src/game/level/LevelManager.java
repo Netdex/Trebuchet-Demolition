@@ -1,10 +1,8 @@
 package game.level;
 
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -72,10 +70,18 @@ public class LevelManager {
 	}
     }
 
+    /**
+     * Gets all the levels loaded
+     * @return the levels loaded
+     */
     public static ArrayList<Level> getLevels() {
 	return levels;
     }
 
+    /**
+     * Sets the loaded levels
+     * @param levels the new levels to set
+     */
     public static void setLevels(ArrayList<Level> levels) {
 	LevelManager.levels = levels;
     }

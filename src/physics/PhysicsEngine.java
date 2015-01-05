@@ -45,11 +45,13 @@ public class PhysicsEngine {
      * 
      * @param level The level to load
      */
+    @SuppressWarnings("unchecked")
     public void loadLevel(Level level) {
+	entities.clear();
 	Properties metadata = level.getMetadata();
 	ArrayList<Entity> levelEntities = level.getEntities();
 
-	// TODO EVERYTHING
+	// TODO Finish level loader into physics engine
 	try {
 	    if (metadata.getProperty("gravity") != null) {
 		try {
@@ -61,8 +63,10 @@ public class PhysicsEngine {
 		this.gravity = true;
 	    }
 	} catch (Exception e) {
-	    System.err.println(e.getClass().getName() + "");
+	    e.printStackTrace();
 	}
+	
+	entities = (ArrayList<Entity>) levelEntities.clone();
     }
 
     /**

@@ -1,0 +1,4 @@
+#level2
+name=Test Level 2
+gravity=true
+entities=circ,10,10,10,0,0,0

@@ -11,7 +11,7 @@ import physics.util.Vector;
  * @author Gordon Guan
  * @version Dec 2014
  * 
- * TODO There are major problems with this
+ * TODO Fix rectangle collision and rotation code
  */
 public class Rectangle extends Entity {
     public Vector p1;
@@ -48,7 +48,7 @@ public class Rectangle extends Entity {
      * 
      * @return The height of the Rectangle
      * 
-     * TODO there are problems with this
+     * TODO Fix math on this
      */
     public double getHeight() {
 	return Math.abs(p1.y - p2.y);
@@ -57,7 +57,7 @@ public class Rectangle extends Entity {
     /**
      * Rotates the rectangle around the center
      * @param angle the angle to rotate in degrees
-     * TODO there are major problems with this
+     * TODO Fix rotation code
      */
     public void rotate(double angle) {
 	this.angle += angle;
@@ -72,7 +72,7 @@ public class Rectangle extends Entity {
      * @param center The center to rotate around
      * @param angle The angle to rotate the vector
      * @return the new rotated vector
-     * TODO fix this too
+     * TODO Fix vector rotation around point
      */
 
     private Vector rotatePoint(Vector vector, Vector center, double angle) {

@@ -52,7 +52,7 @@ public class GamePanel extends JPanel {
     private Timer physicsTimer;
 
     // Approximately 60 frames per second
-    private static final int TICK_RATE = 16;
+    private static final int TICK_RATE = 10;
     private int power = 75;
     private int angle = 50;
     /***********************************************************************/
@@ -83,17 +83,19 @@ public class GamePanel extends JPanel {
 
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
 
-	mainMenu = new CenteredMenu();
+	mainMenu = new CenteredMenu(3);
 	mainMenu.addMenuItem(new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.GRAY));
+	mainMenu.addMenuItem(new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.GRAY));
+	mainMenu.addMenuItem(new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.GRAY));
 
-	optionsMenu = new AlignedMenu();
+	optionsMenu = new AlignedMenu(2);
 	optionsMenu.addMenuItem(musicToggleMenuItem);
 	musicToggleMenuItem.setEnabled(true);
 	optionsMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
-	levelSelectMenu = new AlignedMenu();
+	levelSelectMenu = new AlignedMenu(1);
 
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
@@ -138,18 +140,24 @@ public class GamePanel extends JPanel {
 			mainMenu.shiftDown();
 			repaint();
 		    } else if (keycode == KeyEvent.VK_ENTER || keycode == KeyEvent.VK_SPACE) {
-			int selected = mainMenu.getSelectedItem();
-			if (selected == 0) {
+			int selectedIndex = mainMenu.getSelectedItem();
+			if (selectedIndex == 0) {
 			    LevelManager.loadLevels();
 			    levelSelectMenu.clearMenu();
 			    for (Level level : LevelManager.getLevels()) {
 				MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
 				levelSelectMenu.addMenuItem(menuItem);
 			    }
+			    levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY));
 			    displayScreen = ScreenType.LEVEL_SELECT;
-			} else if (selected == 1) {
+			} else if (selectedIndex == 1) {
 			    displayScreen = ScreenType.OPTIONS_MENU;
-			} else if (selected == 2) {
+			} else if (selectedIndex == 2) {
+			    JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
+				    + "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
+			} else if (selectedIndex == 3) {
+			    JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2014", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+			} else if (selectedIndex == 4) {
 			    int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			    if (accept == JOptionPane.YES_OPTION)
 				System.exit(0);
@@ -193,11 +201,22 @@ public class GamePanel extends JPanel {
 			repaint();
 		    } else if (keycode == KeyEvent.VK_ENTER) {
 			int selectedIndex = levelSelectMenu.getSelectedItem();
-			Level level = LevelManager.getLevels().get(selectedIndex);
 
-			// ### DEBUG ###
-			String debugMessage = String.format("%s\ngravity=%s\nentities=\n%s", level.getName(), level.getMetadata().getProperty("gravity"), level.getEntities().toString().replaceAll(",", "\n"));
-			JOptionPane.showMessageDialog(null, debugMessage, "Debug Entities List for Level", JOptionPane.INFORMATION_MESSAGE);
+			// Check if the selected MenuItem is the last one, which is return to main menu
+			if (selectedIndex == LevelManager.getLevels().size()) {
+			    displayScreen = ScreenType.MAIN_MENU;
+			    repaint();
+			} else {
+			    Level level = LevelManager.getLevels().get(selectedIndex);
+			    // ### DEBUG ###
+			    String debugMessage = String.format("%s\ngravity=%s\nentities=\n%s", level.getName(), level.getMetadata().getProperty("gravity"), level.getEntities().toString()
+				    .replaceAll(",", "\n"));
+			    JOptionPane.showMessageDialog(null, debugMessage, "Debug Entities List for Level", JOptionPane.INFORMATION_MESSAGE);
+			    engine.loadLevel(level);
+			    start();
+			    repaint();
+			}
+
 		    }
 		}
 	    }
@@ -264,7 +283,7 @@ public class GamePanel extends JPanel {
 	    g.drawImage(titleImage, width / 2 - titleWidth / 2, 10, null);
 
 	    // Draw the menu
-	    mainMenu.drawMenu(g, width, height, 250, 75);
+	    mainMenu.drawMenu(g, width, height, 220, 60);
 	}
 	// Options Menu
 	else if (displayScreen == ScreenType.OPTIONS_MENU) {
@@ -279,7 +298,7 @@ public class GamePanel extends JPanel {
 	    g.drawLine(0, topBarHeight, width, topBarHeight);
 	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
-	    GraphicsTools.drawShadowedText(g, "Options", 10, 37);
+	    GraphicsTools.drawShadowedText(g, "Options", 10, 37, 3);
 
 	    optionsMenu.drawMenu(g, 10, 0, 120, 50);
 	} else if (displayScreen == ScreenType.LEVEL_SELECT) {
@@ -294,7 +313,7 @@ public class GamePanel extends JPanel {
 	    g.drawLine(0, topBarHeight, width, topBarHeight);
 	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
-	    GraphicsTools.drawShadowedText(g, "Level Select", 10, 37);
+	    GraphicsTools.drawShadowedText(g, "Level Select", 10, 37, 3);
 
 	    levelSelectMenu.drawMenu(g, 10, 0, 80, 25);
 	}

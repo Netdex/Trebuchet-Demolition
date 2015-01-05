@@ -2,11 +2,15 @@ package game.level;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 
 import physics.entity.Entity;
 
+/**
+ * Represents a game level
+ * @author Gordon Guan
+ * @version Jan 2015
+ */
 public class Level {
 
     private String name;

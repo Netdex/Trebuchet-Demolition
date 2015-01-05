@@ -24,10 +24,10 @@ public class GraphicsTools {
      * @param x The x coordinate
      * @param y The y coordinate
      */
-    public static void drawShadowedText(Graphics g, String text, int x, int y) {
+    public static void drawShadowedText(Graphics g, String text, int x, int y, int dist) {
 	Color originalColor = g.getColor();
 	g.setColor(Color.BLACK);
-	g.drawString(text, x + 3, y + 1);
+	g.drawString(text, x + dist, y + dist);
 	g.setColor(originalColor);
 	g.drawString(text, x, y);
     }

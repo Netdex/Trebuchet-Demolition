@@ -11,11 +11,31 @@ import java.util.ArrayList;
  */
 public abstract class Menu {
     private int selectedIndex;
+    private int shadowDist;
+
     private ArrayList<MenuItem> menuItems;
     
-    public Menu() {
+    public Menu(int shadowDist) {
 	this.selectedIndex = 0;
+	this.shadowDist = shadowDist;
 	menuItems = new ArrayList<MenuItem>();
+	
+    }
+    
+    /**
+     * Gets the shadow distance
+     * @return the shadow distance
+     */
+    public int getShadowDist() {
+        return shadowDist;
+    }
+
+    /**
+     * Sets the shadow distance
+     * @param shadowDist the new shadow distance
+     */
+    public void setShadowDist(int shadowDist) {
+        this.shadowDist = shadowDist;
     }
     
     /**
