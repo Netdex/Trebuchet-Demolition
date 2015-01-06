@@ -55,6 +55,8 @@ public class GamePanel extends JPanel {
     private static final int TICK_RATE = 10;
     private int power = 75;
     private int angle = 50;
+    
+    private boolean paused = false;
     /***********************************************************************/
     private ScreenType displayScreen = ScreenType.MAIN_MENU;
 
@@ -128,6 +130,8 @@ public class GamePanel extends JPanel {
 			engine.addEntity(c);
 		    } else if (keycode == KeyEvent.VK_0) {
 			engine.clearAll();
+		    } else if (keycode == KeyEvent.VK_ESCAPE) {
+			pause();
 		    }
 		}
 		// Respond to menu events, such as allowing arrow keys to select
@@ -156,13 +160,16 @@ public class GamePanel extends JPanel {
 			    JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
 				    + "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
 			} else if (selectedIndex == 3) {
-			    JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2014", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+			    JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
 			} else if (selectedIndex == 4) {
 			    int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			    if (accept == JOptionPane.YES_OPTION)
 				System.exit(0);
 			}
 			repaint();
+		    } else if(keycode == KeyEvent.VK_F10){
+			System.out.println("DEBUG MODE");
+			start();
 		    }
 		}
 		// Respond to events in options menu
@@ -246,6 +253,8 @@ public class GamePanel extends JPanel {
 	    // Draw all the entities on the screen
 	    for (Entity entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
+		if(entity.isHandling())
+		    g.setColor(Color.RED);
 		Shape shape = null;
 
 		if (entity instanceof Circle) {
@@ -253,7 +262,7 @@ public class GamePanel extends JPanel {
 		    Vector loc = c.loc;
 		    int radius = c.getRadius();
 		    shape = new Ellipse2D.Double(loc.x - radius, loc.y - radius, radius * 2, radius * 2);
-		    g.draw(shape);
+		    g.fill(shape);
 		} else if (entity instanceof AABB) {
 		    AABB a = (AABB) entity;
 		    shape = new Rectangle2D.Double(a.p1.x, a.p1.y, a.getWidth(), a.getHeight());
@@ -344,7 +353,7 @@ public class GamePanel extends JPanel {
      */
     public void pause() {
 	physicsTimer.stop();
-	displayScreen = ScreenType.PAUSE_MENU;
+	paused = true;
     }
 
     /**

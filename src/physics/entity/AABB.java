@@ -22,6 +22,10 @@ public class AABB extends Entity {
 	this.p2 = p2;
     }
 
+    public double getMass(){
+	// TODO Make getMass() work for AABBs
+	return 0;
+    }
     /**
      * Gets the width of the AABB
      * 

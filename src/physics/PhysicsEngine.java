@@ -9,7 +9,7 @@ import physics.entity.AABB;
 import physics.entity.Circle;
 import physics.entity.Entity;
 import physics.entity.Rectangle;
-import physics.util.CollisionChecker;
+import physics.util.CollisionResolver;
 import physics.util.CollisionType;
 import physics.util.Vector;
 
@@ -21,11 +21,11 @@ import physics.util.Vector;
  */
 public class PhysicsEngine {
     // These constants are not related to real world constants
-    private static final Vector GRAVITY = new Vector(0, 0.1);
+    public static final Vector GRAVITY = new Vector(0, 0.1);
     private static final double FRICTION = 1.05;
     private static final double RESTITUTION = 1.5;
 
-    private boolean gravity = true;
+    public boolean gravity = true;
 
     private int width;
     private int height;
@@ -65,7 +65,7 @@ public class PhysicsEngine {
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
-	
+
 	entities = (ArrayList<Entity>) levelEntities.clone();
     }
 
@@ -75,12 +75,16 @@ public class PhysicsEngine {
     public void tick() {
 	collisionsInTick = 0;
 	for (Entity e : entities) {
-	    if (gravity)
-		e.acc = GRAVITY;
-
-	    boolean collided = handleCollisions(e);
+	    e.setHandling(false);
+	}
+	for (Entity e : entities) {
+	    boolean collided;
+	    collided = handleCollisions(e);
 	    if (collided)
 		collisionsInTick++;
+	    
+	    else
+		e.acc = GRAVITY;
 
 	    e.vel = e.vel.subtract(e.acc);
 
@@ -97,7 +101,6 @@ public class PhysicsEngine {
 		r.p1 = r.p1.subtract(r.vel);
 		r.p2 = r.p2.subtract(r.vel);
 	    }
-
 	}
 
     }
@@ -121,7 +124,9 @@ public class PhysicsEngine {
 		if (e instanceof Circle) {
 		    if (e != circle) {
 			if (circle.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE) {
-			    CollisionChecker.resolveCircleCollision(circle, (Circle) e, RESTITUTION);
+			    CollisionResolver.resolveCircleCollision(circle, (Circle) e, RESTITUTION);
+			    circle.setHandling(true);
+			    e.setHandling(true);
 			}
 		    }
 		}
@@ -161,8 +166,9 @@ public class PhysicsEngine {
 		if (e instanceof AABB) {
 		    if (e != entity) {
 			if (aabb.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE) {
-			    CollisionChecker.resolveAABBCollision(aabb, (AABB) e, RESTITUTION);
-			    return true;
+			    CollisionResolver.resolveAABBCollision(aabb, (AABB) e, RESTITUTION);
+			    aabb.setHandling(true);
+			    e.setHandling(true);
 			}
 		    }
 		}

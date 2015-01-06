@@ -43,6 +43,11 @@ public abstract class Entity {
     }
 
     /**
+     * Gets the "mass" of the entity
+     */
+    public abstract double getMass();
+    
+    /**
      * Check if the entity is handling any collisions
      * 
      * @return Whether or not the entity is handing any collisions

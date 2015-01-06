@@ -16,12 +16,14 @@ import physics.util.Vector;
 public class Rectangle extends Entity {
     public Vector p1;
     public Vector p2;
-
+    public Vector p3;
+    public Vector p4;
+    
     public double angle;
     public double angularVel;
     public double angularAcc;
 
-    public Rectangle(Vector p1, Vector p2, Vector vel, Vector acc, double angle, double angularVel, double angularAcc, Color c) {
+    public Rectangle(Vector p1, Vector p2, Vector p3, Vector p4, Vector vel, Vector acc, double angle, double angularVel, double angularAcc, Color c) {
 	super(EntityType.RECTANGLE, c, vel, acc);
 	this.p1 = p1;
 	this.p2 = p2;
@@ -34,6 +36,10 @@ public class Rectangle extends Entity {
 	System.out.println(rect.p1.x + " " + rect.p1.y + " " + rect.p2.x + " " + rect.p2.y);
     }
 
+    public double getMass(){
+	// TODO Add mass code for rectangle
+	return 0;
+    }
     /**
      * Gets the width of the Rectangle
      * 

@@ -8,7 +8,6 @@ package game.graphics;
  */
 public enum ScreenType {
     MAIN_MENU,
-    PAUSE_MENU,
     OPTIONS_MENU,
     
     LEVEL_SELECT,
