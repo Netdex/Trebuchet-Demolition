@@ -27,7 +27,11 @@ public class Rectangle extends Entity {
 	super(EntityType.RECTANGLE, c, vel, acc);
 	this.p1 = p1;
 	this.p2 = p2;
-
+	this.p3 = p3;
+	this.p4 = p4;
+	this.vel = vel;
+	this.acc = acc;
+	
 	this.angle = angle;
 	this.angularVel = angularVel;
 	this.angularAcc = angularAcc;
@@ -108,6 +112,16 @@ public class Rectangle extends Entity {
      * TODO Add collision code
      */
     public CollisionType getCollisionState(Entity entity) {
+	if(entity instanceof Rectangle){
+	    Rectangle rect = (Rectangle) entity;
+	    AABB thisBounds = this.getBoundingBox();
+	    AABB otherBounds = rect.getBoundingBox();
+	    if (thisBounds.p2.x < otherBounds.p1.x || thisBounds.p1.x > otherBounds.p2.x)
+		return CollisionType.NO_COLLISION;
+	    if (thisBounds.p2.y < otherBounds.p1.y || thisBounds.p1.y > otherBounds.p2.y)
+		return CollisionType.NO_COLLISION;
+	    return CollisionType.RECT_TO_RECT;
+	}
 	return CollisionType.NO_COLLISION;
     }
     
@@ -125,7 +139,6 @@ public class Rectangle extends Entity {
 	this.p2.y += y;
 	this.p3.y += y;
 	this.p4.y += y;
-	
     }
     
     /**

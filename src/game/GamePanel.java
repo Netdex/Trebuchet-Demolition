@@ -55,7 +55,7 @@ public class GamePanel extends JPanel {
     private static final int TICK_RATE = 10;
     private int power = 75;
     private int angle = 50;
-    
+
     private boolean paused = false;
     /***********************************************************************/
     private ScreenType displayScreen = ScreenType.MAIN_MENU;
@@ -66,7 +66,8 @@ public class GamePanel extends JPanel {
     private CenteredMenu mainMenu;
     private AlignedMenu optionsMenu;
     private AlignedMenu levelSelectMenu;
-
+    private AlignedMenu pauseMenu;
+    
     private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
 
     /***********************************************************************/
@@ -99,6 +100,10 @@ public class GamePanel extends JPanel {
 
 	levelSelectMenu = new AlignedMenu(1);
 
+	pauseMenu = new AlignedMenu(1);
+	pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
+	pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
+	
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 
@@ -109,29 +114,41 @@ public class GamePanel extends JPanel {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
 		if (displayScreen == ScreenType.IN_GAME) {
-		    if (keycode == KeyEvent.VK_RIGHT) {
-			if (power <= 95)
-			    power += 5;
-		    } else if (keycode == KeyEvent.VK_LEFT) {
-			if (power >= 5)
-			    power -= 5;
-		    } else if (keycode == KeyEvent.VK_UP) {
-			if (angle <= 175)
-			    angle += 5;
-		    } else if (keycode == KeyEvent.VK_DOWN) {
-			if (angle >= 5)
-			    angle -= 5;
-		    } else if (keycode == KeyEvent.VK_SPACE) {
-			int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 10);
-			int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 10);
-			Vector vel = new Vector(vecX, vecY);
+		    if (paused) {
+			if(keycode == KeyEvent.VK_UP){
+			    pauseMenu.shiftUp();
+			}
+			else if(keycode == KeyEvent.VK_DOWN){
+			    pauseMenu.shiftDown();
+			}
+			else if(keycode == KeyEvent.VK_ESCAPE){
+			    start();
+			}
+		    } else {
+			if (keycode == KeyEvent.VK_RIGHT) {
+			    if (power <= 95)
+				power += 5;
+			} else if (keycode == KeyEvent.VK_LEFT) {
+			    if (power >= 5)
+				power -= 5;
+			} else if (keycode == KeyEvent.VK_UP) {
+			    if (angle <= 175)
+				angle += 5;
+			} else if (keycode == KeyEvent.VK_DOWN) {
+			    if (angle >= 5)
+				angle -= 5;
+			} else if (keycode == KeyEvent.VK_SPACE) {
+			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 10);
+			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 10);
+			    Vector vel = new Vector(vecX, vecY);
 
-			Circle c = new Circle(new Vector(50, height - 50), vel, new Vector(0, 0), 10, Color.BLACK);
-			engine.addEntity(c);
-		    } else if (keycode == KeyEvent.VK_0) {
-			engine.clearAll();
-		    } else if (keycode == KeyEvent.VK_ESCAPE) {
-			pause();
+			    Circle c = new Circle(new Vector(50, height - 50), vel, new Vector(0, 0), 10, Color.BLACK);
+			    engine.addEntity(c);
+			} else if (keycode == KeyEvent.VK_0) {
+			    engine.clearAll();
+			} else if (keycode == KeyEvent.VK_ESCAPE) {
+			    pause();
+			}
 		    }
 		}
 		// Respond to menu events, such as allowing arrow keys to select
@@ -167,7 +184,7 @@ public class GamePanel extends JPanel {
 				System.exit(0);
 			}
 			repaint();
-		    } else if(keycode == KeyEvent.VK_F10){
+		    } else if (keycode == KeyEvent.VK_F10) {
 			System.out.println("DEBUG MODE");
 			start();
 		    }
@@ -228,9 +245,10 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	});
-	
+
 	// DEBUG CODE
-	engine.addEntity(new Rectangle(new Vector(10,10), new Vector(100,200), Color.BLACK));
+	// engine.addEntity(new Rectangle(new Vector(10,10), new Vector(100,200), Color.BLACK));
+	engine.addEntity(new Rectangle(new Vector(10, 10), new Vector(100, 20), new Vector(10, 30), new Vector(100, 40), Vector.ZERO, Vector.ZERO, 0, 0, 0, Color.BLACK));
 	// END DEBUG CODE
     }
 
@@ -257,7 +275,7 @@ public class GamePanel extends JPanel {
 	    // Draw all the entities on the screen
 	    for (Entity entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
-		if(entity.isHandling())
+		if (entity.isHandling())
 		    g.setColor(Color.RED);
 		Shape shape = null;
 
@@ -277,10 +295,12 @@ public class GamePanel extends JPanel {
 		    g.drawLine((int) rect.p2.x, (int) rect.p2.y, (int) rect.p4.x, (int) rect.p4.y);
 		    g.drawLine((int) rect.p4.x, (int) rect.p4.y, (int) rect.p3.x, (int) rect.p3.y);
 		    g.drawLine((int) rect.p3.x, (int) rect.p3.y, (int) rect.p1.x, (int) rect.p1.y);
-		    
-//		    AABB bounds = rect.getBoundingBox();
-//		    g.setColor(Color.GREEN);
-//		    g.drawRect((int)bounds.p1.x, (int)bounds.p1.y, (int)bounds.p2.x, (int)bounds.p2.y);
+
+		    /* DEBUG TODO REMOVE DEBUG CODE */
+		    AABB bounds = rect.getBoundingBox();
+		    g.setColor(Color.GREEN);
+		    g.drawRect((int) bounds.p1.x, (int) bounds.p1.y, (int) bounds.getWidth(), (int) bounds.getHeight());
+		    /* END DEBUG */
 		}
 	    }
 	}

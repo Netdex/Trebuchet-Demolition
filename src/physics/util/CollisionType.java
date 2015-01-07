@@ -11,5 +11,6 @@ public enum CollisionType {
 	CORNER,
 	NO_COLLISION,
 	CIRCLE_TO_CIRCLE,
-	AABB_TO_AABB;
+	AABB_TO_AABB,
+	RECT_TO_RECT;
 }
