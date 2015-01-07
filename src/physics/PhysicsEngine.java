@@ -82,7 +82,7 @@ public class PhysicsEngine {
 	    collided = handleCollisions(e);
 	    if (collided)
 		collisionsInTick++;
-	    
+
 	    else
 		e.acc = GRAVITY;
 
@@ -98,8 +98,7 @@ public class PhysicsEngine {
 		a.p2 = a.p2.subtract(a.vel);
 	    } else if (e instanceof Rectangle) {
 		Rectangle r = (Rectangle) e;
-		r.p1 = r.p1.subtract(r.vel);
-		r.p2 = r.p2.subtract(r.vel);
+		r.translate(-r.vel.x, -r.vel.y);
 	    }
 	}
 
@@ -209,33 +208,30 @@ public class PhysicsEngine {
 
 	} else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
+	    AABB boundingBox = rect.getBoundingBox();
 
 	    boolean retType = false;
-	    if (rect.p1.x < 0) {
-		double correction = Math.abs(rect.p1.x);
-		rect.p1.x += correction;
-		rect.p2.x += correction;
+	    if (boundingBox.p1.x < 0) {
+		double correction = Math.abs(boundingBox.p1.x);
+		rect.translate(correction, 0);
 		rect.vel.x = -rect.vel.x / RESTITUTION;
 		retType = true;
 	    }
-	    if (rect.p1.y < 0) {
-		double correction = Math.abs(rect.p1.y);
-		rect.p1.y += correction;
-		rect.p2.y += correction;
+	    if (boundingBox.p1.y < 0) {
+		double correction = Math.abs(boundingBox.p1.y);
+		rect.translate(0, correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
 		retType = true;
 	    }
-	    if (rect.p2.x > width) {
-		double correction = rect.p2.x - width;
-		rect.p1.x -= correction;
-		rect.p2.x -= correction;
+	    if (boundingBox.p2.x > width) {
+		double correction = boundingBox.p2.x - width;
+		rect.translate(-correction, 0);
 		rect.vel.x = -rect.vel.x / RESTITUTION;
 		retType = true;
 	    }
-	    if (rect.p2.y > height) {
-		double correction = rect.p2.y - height;
-		rect.p1.y -= correction;
-		rect.p2.y -= correction;
+	    if (boundingBox.p2.y > height) {
+		double correction = boundingBox.p2.y - height;
+		rect.translate(0, -correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
 		rect.vel.x = rect.vel.x / FRICTION;
 		retType = true;

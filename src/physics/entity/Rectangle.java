@@ -31,9 +31,24 @@ public class Rectangle extends Entity {
 	this.angle = angle;
 	this.angularVel = angularVel;
 	this.angularAcc = angularAcc;
-	// rotate(angle);
-	Rectangle rect = this;
-	System.out.println(rect.p1.x + " " + rect.p1.y + " " + rect.p2.x + " " + rect.p2.y);
+    }
+    
+    /**
+     * Creates a rectangle with the least possible arguments
+     * @param p1 The top left point
+     * @param p2 The bottom right point
+     * @param c The color
+     */
+    public Rectangle(Vector p1, Vector p2, Color c){
+	super(EntityType.RECTANGLE, c, Vector.ZERO, Vector.ZERO);
+	this.p1 = p1;
+	this.p4 = p2;
+	this.p2 = new Vector(p2.x, p1.y);
+	this.p3 = new Vector(p1.x, p2.y);
+	
+	this.angle = 0;
+	this.angularVel = 0;
+	this.angularVel = 0;
     }
 
     public double getMass(){
@@ -94,5 +109,29 @@ public class Rectangle extends Entity {
      */
     public CollisionType getCollisionState(Entity entity) {
 	return CollisionType.NO_COLLISION;
+    }
+    
+    /**
+     * Translates the entire rectangle
+     * @param x How much x to translate
+     * @param y How much y to translate
+     */
+    public void translate(double x, double y){
+	this.p1.x += x;
+	this.p2.x += x;
+	this.p3.x += x;
+	this.p4.x += x;
+	this.p1.y += y;
+	this.p2.y += y;
+	this.p3.y += y;
+	this.p4.y += y;
+	
+    }
+    
+    /**
+     * Gets a bounding box around the rectangle
+     */
+    public AABB getBoundingBox(){
+	return new AABB(new Vector(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))), new Vector(Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector.ZERO, Vector.ZERO, Color.BLACK);
     }
 }

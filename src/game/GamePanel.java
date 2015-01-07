@@ -228,6 +228,10 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	});
+	
+	// DEBUG CODE
+	engine.addEntity(new Rectangle(new Vector(10,10), new Vector(100,200), Color.BLACK));
+	// END DEBUG CODE
     }
 
     /**
@@ -269,11 +273,14 @@ public class GamePanel extends JPanel {
 		    g.draw(shape);
 		} else if (entity instanceof Rectangle) {
 		    Rectangle rect = (Rectangle) entity;
-		    System.out.println(rect.p1.x + " " + rect.p1.y + " " + rect.p2.x + " " + rect.p2.y);
-		    g.drawLine((int) rect.p1.x, (int) rect.p1.y, (int) rect.p1.x, (int) rect.p2.y);
-		    g.drawLine((int) rect.p1.x, (int) rect.p1.y, (int) rect.p1.y, (int) rect.p2.x);
-		    g.drawLine((int) rect.p2.x, (int) rect.p2.y, (int) rect.p1.x, (int) rect.p2.y);
-		    g.drawLine((int) rect.p2.x, (int) rect.p2.y, (int) rect.p2.y, (int) rect.p1.x);
+		    g.drawLine((int) rect.p1.x, (int) rect.p1.y, (int) rect.p2.x, (int) rect.p2.y);
+		    g.drawLine((int) rect.p2.x, (int) rect.p2.y, (int) rect.p4.x, (int) rect.p4.y);
+		    g.drawLine((int) rect.p4.x, (int) rect.p4.y, (int) rect.p3.x, (int) rect.p3.y);
+		    g.drawLine((int) rect.p3.x, (int) rect.p3.y, (int) rect.p1.x, (int) rect.p1.y);
+		    
+//		    AABB bounds = rect.getBoundingBox();
+//		    g.setColor(Color.GREEN);
+//		    g.drawRect((int)bounds.p1.x, (int)bounds.p1.y, (int)bounds.p2.x, (int)bounds.p2.y);
 		}
 	    }
 	}
