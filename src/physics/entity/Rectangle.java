@@ -86,10 +86,14 @@ public class Rectangle extends Entity {
      */
     public void rotate(double angle) {
 	this.angle += angle;
-	Vector center = new Vector((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+	this.angle %= 360;
+	System.out.println(this.angle);
+	Vector center = this.p1.midpoint(this.p4);
 
 	p1 = rotatePoint(p1, center, angle);
 	p2 = rotatePoint(p2, center, angle);
+	p3 = rotatePoint(p3, center, angle);
+	p4 = rotatePoint(p4, center, angle);
     }
     /**
      * Rotates a single vector around another a certain angle
@@ -99,13 +103,18 @@ public class Rectangle extends Entity {
      * @return the new rotated vector
      * TODO Fix vector rotation around point
      */
-
     private Vector rotatePoint(Vector vector, Vector center, double angle) {
-	Vector translated = new Vector(vector.x - center.x, vector.y - center.y);
-	double sin = Math.sin(Math.toRadians(angle));
-	double cos = Math.cos(Math.toRadians(angle));
-
-	return new Vector(translated.x * cos - translated.y * sin, translated.x * sin - translated.y * cos);
+	double newX = vector.x - center.x;
+	double newY = vector.y - center.y;
+	
+	double radians = Math.toRadians(angle);
+	double sin = Math.sin(radians);
+	double cos = Math.cos(radians);
+	
+	double tempX = newX * cos - newY * sin;
+	double tempY = newX * sin + newY * cos;
+	
+	return new Vector(tempX + center.x, tempY + center.y);
     }
 
     /**

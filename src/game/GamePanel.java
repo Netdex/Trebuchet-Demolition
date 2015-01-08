@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.KeyAdapter;
@@ -67,7 +68,7 @@ public class GamePanel extends JPanel {
     private AlignedMenu optionsMenu;
     private AlignedMenu levelSelectMenu;
     private AlignedMenu pauseMenu;
-    
+
     private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
 
     /***********************************************************************/
@@ -103,7 +104,7 @@ public class GamePanel extends JPanel {
 	pauseMenu = new AlignedMenu(1);
 	pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 	pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
-	
+
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 
@@ -115,13 +116,11 @@ public class GamePanel extends JPanel {
 		int keycode = event.getKeyCode();
 		if (displayScreen == ScreenType.IN_GAME) {
 		    if (paused) {
-			if(keycode == KeyEvent.VK_UP){
+			if (keycode == KeyEvent.VK_UP) {
 			    pauseMenu.shiftUp();
-			}
-			else if(keycode == KeyEvent.VK_DOWN){
+			} else if (keycode == KeyEvent.VK_DOWN) {
 			    pauseMenu.shiftDown();
-			}
-			else if(keycode == KeyEvent.VK_ESCAPE){
+			} else if (keycode == KeyEvent.VK_ESCAPE) {
 			    start();
 			}
 		    } else {
@@ -177,7 +176,7 @@ public class GamePanel extends JPanel {
 			    JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
 				    + "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
 			} else if (selectedIndex == 3) {
-			    JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+			    JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n \"The essence of OOP\"", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
 			} else if (selectedIndex == 4) {
 			    int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			    if (accept == JOptionPane.YES_OPTION)
@@ -247,8 +246,8 @@ public class GamePanel extends JPanel {
 	});
 
 	// DEBUG CODE
-	// engine.addEntity(new Rectangle(new Vector(10,10), new Vector(100,200), Color.BLACK));
-	engine.addEntity(new Rectangle(new Vector(10, 10), new Vector(100, 20), new Vector(10, 30), new Vector(100, 40), Vector.ZERO, Vector.ZERO, 0, 0, 0, Color.BLACK));
+	final Rectangle rect = new Rectangle(new Vector(400, 10), new Vector(425, 500), Color.BLACK);
+	engine.addEntity(rect);
 	// END DEBUG CODE
     }
 
@@ -291,11 +290,13 @@ public class GamePanel extends JPanel {
 		    g.draw(shape);
 		} else if (entity instanceof Rectangle) {
 		    Rectangle rect = (Rectangle) entity;
-		    g.drawLine((int) rect.p1.x, (int) rect.p1.y, (int) rect.p2.x, (int) rect.p2.y);
-		    g.drawLine((int) rect.p2.x, (int) rect.p2.y, (int) rect.p4.x, (int) rect.p4.y);
-		    g.drawLine((int) rect.p4.x, (int) rect.p4.y, (int) rect.p3.x, (int) rect.p3.y);
-		    g.drawLine((int) rect.p3.x, (int) rect.p3.y, (int) rect.p1.x, (int) rect.p1.y);
 
+		    int xPoly[] = {(int) rect.p1.x,(int) rect.p2.x,(int) rect.p4.x,(int) rect.p3.x};
+		    int yPoly[] = {(int) rect.p1.y,(int) rect.p2.y,(int) rect.p4.y,(int) rect.p3.y};
+
+		    Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
+		    g.fill(poly);
+		    
 		    /* DEBUG TODO REMOVE DEBUG CODE */
 		    AABB bounds = rect.getBoundingBox();
 		    g.setColor(Color.GREEN);
