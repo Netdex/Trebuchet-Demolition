@@ -82,8 +82,7 @@ public class PhysicsEngine {
 	    collided = handleCollisions(e);
 	    if (collided)
 		collisionsInTick++;
-
-	    else
+	    else if(gravity)
 		e.acc = GRAVITY;
 
 	    e.vel = e.vel.subtract(e.acc);

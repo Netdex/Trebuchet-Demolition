@@ -22,6 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -147,6 +148,7 @@ public class GamePanel extends JPanel {
 			    engine.clearAll();
 			} else if (keycode == KeyEvent.VK_ESCAPE) {
 			    pause();
+			    repaint();
 			}
 		    }
 		}
@@ -186,6 +188,7 @@ public class GamePanel extends JPanel {
 		    } else if (keycode == KeyEvent.VK_F10) {
 			System.out.println("DEBUG MODE");
 			start();
+			repaint();
 		    }
 		}
 		// Respond to events in options menu
@@ -231,11 +234,8 @@ public class GamePanel extends JPanel {
 			    repaint();
 			} else {
 			    Level level = LevelManager.getLevels().get(selectedIndex);
-			    // ### DEBUG ###
-			    String debugMessage = String.format("%s\ngravity=%s\nentities=\n%s", level.getName(), level.getMetadata().getProperty("gravity"), level.getEntities().toString()
-				    .replaceAll(",", "\n"));
-			    JOptionPane.showMessageDialog(null, debugMessage, "Debug Entities List for Level", JOptionPane.INFORMATION_MESSAGE);
-			    engine.loadLevel(level);
+			    loadLevel(level);
+			    
 			    start();
 			    repaint();
 			}
@@ -246,11 +246,24 @@ public class GamePanel extends JPanel {
 	});
 
 	// DEBUG CODE
-	final Rectangle rect = new Rectangle(new Vector(400, 10), new Vector(425, 500), Color.BLACK);
-	engine.addEntity(rect);
+	 final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(200, 300), Color.BLACK);
+	 engine.addEntity(rect);
 	// END DEBUG CODE
     }
 
+    public void loadLevel(Level level){
+	try{
+	if(level.getMetadata().getProperty("bgcolor") != null){
+	    String[] colorRGB = level.getMetadata().getProperty("bgcolor").replaceAll(" ", "").split(",");
+	    Color color = new Color(Integer.parseInt(colorRGB[0]), Integer.parseInt(colorRGB[1]), Integer.parseInt(colorRGB[2]));
+	    this.setBackground(color);
+	}
+	}catch(Exception e){
+	    JOptionPane.showMessageDialog(null, "An error occured while loading a level: " + e.getMessage(), "Level Loading Error", JOptionPane.ERROR_MESSAGE);
+	    return;
+	}
+	engine.loadLevel(level);
+    }
     /**
      * Draws the game
      */
@@ -265,6 +278,9 @@ public class GamePanel extends JPanel {
 	// Playing game
 	if (displayScreen == ScreenType.IN_GAME) {
 	    // Draw debug info
+	    g.setColor(Color.LIGHT_GRAY);
+	    g.fillRect(0, 0, 110, 100);
+	    g.setColor(Color.BLACK);
 	    g.drawString("Entities: " + engine.getEntities().size(), 10, 15);
 	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
 	    g.drawString("[GAME VARIABLES]: ", 10, 65);
@@ -291,17 +307,22 @@ public class GamePanel extends JPanel {
 		} else if (entity instanceof Rectangle) {
 		    Rectangle rect = (Rectangle) entity;
 
-		    int xPoly[] = {(int) rect.p1.x,(int) rect.p2.x,(int) rect.p4.x,(int) rect.p3.x};
-		    int yPoly[] = {(int) rect.p1.y,(int) rect.p2.y,(int) rect.p4.y,(int) rect.p3.y};
+		    int xPoly[] = { (int) rect.p1.x, (int) rect.p2.x, (int) rect.p4.x, (int) rect.p3.x };
+		    int yPoly[] = { (int) rect.p1.y, (int) rect.p2.y, (int) rect.p4.y, (int) rect.p3.y };
 
 		    Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
 		    g.fill(poly);
-		    
+
 		    /* DEBUG TODO REMOVE DEBUG CODE */
 		    AABB bounds = rect.getBoundingBox();
 		    g.setColor(Color.GREEN);
 		    g.drawRect((int) bounds.p1.x, (int) bounds.p1.y, (int) bounds.getWidth(), (int) bounds.getHeight());
 		    /* END DEBUG */
+		}
+		if (paused) {
+		    g.setFont(GraphicsTools.MAIN_FONT);
+		    g.setColor(Color.GRAY);
+		    GraphicsTools.drawShadowedText(g, "PAUSED", 100, 100, 2);
 		}
 	    }
 	}
@@ -374,6 +395,7 @@ public class GamePanel extends JPanel {
     public void start() {
 	physicsTimer.start();
 	displayScreen = ScreenType.IN_GAME;
+	paused = false;
     }
 
     /**
