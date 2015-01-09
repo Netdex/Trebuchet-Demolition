@@ -232,7 +232,6 @@ public class PhysicsEngine {
 		double correction = boundingBox.p2.y - height;
 		rect.translate(0, -correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
-		rect.vel.x = rect.vel.x / FRICTION;
 		retType = true;
 	    }
 	    if (retType)

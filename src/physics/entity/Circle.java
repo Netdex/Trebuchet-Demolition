@@ -48,8 +48,8 @@ public class Circle extends Entity {
 	}
 	return CollisionType.NO_COLLISION;
     }
-    
-    public double getMass(){
+
+    public double getMass() {
 	return radius;
     }
 }

@@ -22,7 +22,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -44,6 +43,7 @@ import tasks.GameClockTask;
  * @version Dec 2014
  * 
  */
+
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
     public static Image titleImage;
@@ -115,14 +115,27 @@ public class GamePanel extends JPanel {
 	this.addKeyListener(new KeyAdapter() {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
+		// Respond to ingame events
 		if (displayScreen == ScreenType.IN_GAME) {
+		    // Respond to pause menu
 		    if (paused) {
 			if (keycode == KeyEvent.VK_UP) {
 			    pauseMenu.shiftUp();
+			    repaint();
 			} else if (keycode == KeyEvent.VK_DOWN) {
 			    pauseMenu.shiftDown();
+			    repaint();
 			} else if (keycode == KeyEvent.VK_ESCAPE) {
 			    start();
+			} else if (keycode == KeyEvent.VK_ENTER) {
+			    int selectedIndex = pauseMenu.getSelectedItem();
+			    if(selectedIndex == 0){
+				start();
+			    }
+			    else if(selectedIndex == 1){
+				stop();
+				repaint();
+			    }
 			}
 		    } else {
 			if (keycode == KeyEvent.VK_RIGHT) {
@@ -235,7 +248,7 @@ public class GamePanel extends JPanel {
 			} else {
 			    Level level = LevelManager.getLevels().get(selectedIndex);
 			    loadLevel(level);
-			    
+
 			    start();
 			    repaint();
 			}
@@ -245,25 +258,30 @@ public class GamePanel extends JPanel {
 	    }
 	});
 
-	// DEBUG CODE
-	 final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(200, 300), Color.BLACK);
-	 engine.addEntity(rect);
-	// END DEBUG CODE
+	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
+	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(200, 300), Color.BLACK);
+	rect.rotate(30);
+	engine.addEntity(rect);
+	/* END DEBUG CODE */
     }
 
-    public void loadLevel(Level level){
-	try{
-	if(level.getMetadata().getProperty("bgcolor") != null){
-	    String[] colorRGB = level.getMetadata().getProperty("bgcolor").replaceAll(" ", "").split(",");
-	    Color color = new Color(Integer.parseInt(colorRGB[0]), Integer.parseInt(colorRGB[1]), Integer.parseInt(colorRGB[2]));
-	    this.setBackground(color);
-	}
-	}catch(Exception e){
+    public void loadLevel(Level level) {
+	try {
+	    if (level.getMetadata().getProperty("bgcolor") != null) {
+		String[] colorRGB = level.getMetadata().getProperty("bgcolor").replaceAll(" ", "").split(",");
+		Color color = new Color(Integer.parseInt(colorRGB[0]), Integer.parseInt(colorRGB[1]), Integer.parseInt(colorRGB[2]));
+		this.setBackground(color);
+	    }
+	    else{
+		this.setBackground(Color.WHITE);
+	    }
+	} catch (Exception e) {
 	    JOptionPane.showMessageDialog(null, "An error occured while loading a level: " + e.getMessage(), "Level Loading Error", JOptionPane.ERROR_MESSAGE);
 	    return;
 	}
 	engine.loadLevel(level);
     }
+
     /**
      * Draws the game
      */
@@ -272,7 +290,7 @@ public class GamePanel extends JPanel {
 	super.paintComponent(graphics);
 
 	Graphics2D g = (Graphics2D) graphics;
-	RenderingHints rh = new RenderingHints(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g.setRenderingHints(rh);
 
 	// Playing game
@@ -313,16 +331,28 @@ public class GamePanel extends JPanel {
 		    Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
 		    g.fill(poly);
 
-		    /* DEBUG TODO REMOVE DEBUG CODE */
+		    /* DEBUG TODO REMOVE DEBUG CODE FOR VISUALING HIT BOXES */
 		    AABB bounds = rect.getBoundingBox();
 		    g.setColor(Color.GREEN);
 		    g.drawRect((int) bounds.p1.x, (int) bounds.p1.y, (int) bounds.getWidth(), (int) bounds.getHeight());
+		    
+		    g.setColor(Color.RED);
+		    int radiusOfIndicator = 5;
+		    Vector center = rect.getCenter();
+		    g.fillOval((int) center.x - radiusOfIndicator / 2, (int) center.y - radiusOfIndicator / 2, radiusOfIndicator, radiusOfIndicator);
 		    /* END DEBUG */
 		}
+		// Draw pause menu
 		if (paused) {
 		    g.setFont(GraphicsTools.MAIN_FONT);
 		    g.setColor(Color.GRAY);
-		    GraphicsTools.drawShadowedText(g, "PAUSED", 100, 100, 2);
+		    g.drawRect(100, 100, width - 200, height - 200);
+		    g.setColor(GraphicsTools.PANEL_COLOR.darker());
+		    g.fillRect(100, 100, width - 200, height - 200);
+		    g.setColor(Color.WHITE);
+		    int pauseY = 100 + g.getFontMetrics().getAscent();
+		    GraphicsTools.drawShadowedText(g, "PAUSED", 105, pauseY, 2);
+		    pauseMenu.drawMenu(g, 105, 0, pauseY + 50, 35);
 		}
 	    }
 	}
@@ -412,6 +442,7 @@ public class GamePanel extends JPanel {
     public void stop() {
 	physicsTimer.stop();
 	displayScreen = ScreenType.MAIN_MENU;
+	paused = false;
     }
 
     /**

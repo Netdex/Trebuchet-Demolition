@@ -24,9 +24,6 @@ public class CollisionResolver {
 	double diffX = b.loc.x - a.loc.x;
 	double diffY = b.loc.y - a.loc.y;
 
-	double magnitudeA = a.vel.length();
-	double magnitudeB = b.vel.length();
-
 	Vector relative = new Vector(diffX, diffY);
 	relative.normalize();
 

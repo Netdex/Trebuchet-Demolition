@@ -81,20 +81,34 @@ public class Rectangle extends Entity {
 
     /**
      * Rotates the rectangle around the center
-     * @param angle the angle to rotate in degrees
-     * TODO Fix rotation code
+     * @param angle The angle to rotate in degrees
      */
     public void rotate(double angle) {
 	this.angle += angle;
 	this.angle %= 360;
-	System.out.println(this.angle);
-	Vector center = this.p1.midpoint(this.p4);
+	Vector center = this.getCenter();
 
 	p1 = rotatePoint(p1, center, angle);
 	p2 = rotatePoint(p2, center, angle);
 	p3 = rotatePoint(p3, center, angle);
 	p4 = rotatePoint(p4, center, angle);
     }
+    
+    /**
+     * Rotates the rectangle around a given center
+     * @param angle The angle to rotate in degrees
+     * @param center The center to rotate the rectangle around
+     */
+    public void rotate(double angle, Vector center){
+	this.angle += angle;
+	this.angle %= 360;
+
+	p1 = rotatePoint(p1, center, angle);
+	p2 = rotatePoint(p2, center, angle);
+	p3 = rotatePoint(p3, center, angle);
+	p4 = rotatePoint(p4, center, angle);
+    }
+    
     /**
      * Rotates a single vector around another a certain angle
      * @param vector The vector to rotate
@@ -155,5 +169,12 @@ public class Rectangle extends Entity {
      */
     public AABB getBoundingBox(){
 	return new AABB(new Vector(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))), new Vector(Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector.ZERO, Vector.ZERO, Color.BLACK);
+    }
+    
+    /**
+     * Gets the center of the rectangle
+     */
+    public Vector getCenter(){
+	return this.p1.midpoint(this.p4);
     }
 }
