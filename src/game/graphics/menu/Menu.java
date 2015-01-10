@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 /**
  * Represents a menu
+ * 
  * @author Gordon Guan
  * @version Jan 2015
  */
@@ -14,32 +15,40 @@ public abstract class Menu {
     private int shadowDist;
 
     private ArrayList<MenuItem> menuItems;
-    
-    public Menu(int shadowDist) {
+    private MenuActionEvent event;
+
+    public Menu(MenuActionEvent event, int shadowDist) {
 	this.selectedIndex = 0;
 	this.shadowDist = shadowDist;
 	menuItems = new ArrayList<MenuItem>();
-	
+	this.event = event;
     }
-    
+
+    public void invokeAction(int keycode) {
+	event.selectionAction(keycode);
+    }
+
     /**
      * Gets the shadow distance
+     * 
      * @return the shadow distance
      */
     public int getShadowDist() {
-        return shadowDist;
+	return shadowDist;
     }
 
     /**
      * Sets the shadow distance
+     * 
      * @param shadowDist the new shadow distance
      */
     public void setShadowDist(int shadowDist) {
-        this.shadowDist = shadowDist;
+	this.shadowDist = shadowDist;
     }
-    
+
     /**
      * Draws the menu onto the specified graphics
+     * 
      * @param g The graphics to draw the menu on
      * @param width The width of the area
      * @param height The height of the area
@@ -51,8 +60,7 @@ public abstract class Menu {
     /**
      * Adds a MenuItem to the menu
      * 
-     * @param item
-     *            The MenuItem to add
+     * @param item The MenuItem to add
      */
     public void addMenuItem(MenuItem item) {
 	menuItems.add(item);
@@ -61,8 +69,7 @@ public abstract class Menu {
     /**
      * Removes a MenuItem from the menu
      * 
-     * @param item
-     *            The MenuItem to remove
+     * @param item The MenuItem to remove
      */
     public void removeMenuItem(MenuItem item) {
 	menuItems.remove(item);
@@ -80,10 +87,10 @@ public abstract class Menu {
     /**
      * Clears the menu
      */
-    public void clearMenu(){
+    public void clearMenu() {
 	menuItems.clear();
     }
-    
+
     /**
      * Gets the selected item's index
      * 
@@ -96,8 +103,7 @@ public abstract class Menu {
     /**
      * Sets the selected index
      * 
-     * @param selectedIndex
-     *            The index to set
+     * @param selectedIndex The index to set
      */
     public void setSelectedItem(int selectedIndex) {
 	this.selectedIndex = selectedIndex;
@@ -127,22 +133,23 @@ public abstract class Menu {
 	if (selectedIndex < menuItems.size() - 1)
 	    selectedIndex++;
     }
-    
+
     /**
      * Makes a color brighter (for selected MenuItems)
+     * 
      * @param color The color to brighten
      * @param fraction The percentage to brighten the color by
      * @return the brightened color
      */
     public static Color brighten(Color color, double fraction) {
 
-        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
-        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
-        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+	int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+	int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+	int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
 
-        int alpha = color.getAlpha();
+	int alpha = color.getAlpha();
 
-        return new Color(red, green, blue, alpha);
+	return new Color(red, green, blue, alpha);
 
     }
 }

@@ -4,6 +4,7 @@ import game.graphics.GraphicsTools;
 import game.graphics.ScreenType;
 import game.graphics.menu.AlignedMenu;
 import game.graphics.menu.CenteredMenu;
+import game.graphics.menu.MenuActionEvent;
 import game.graphics.menu.MenuItem;
 import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
@@ -72,6 +73,7 @@ public class GamePanel extends JPanel {
 
     private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
     private MusicManager musicManager;
+
     /***********************************************************************/
 
     public GamePanel(final int width, final int height) {
@@ -87,22 +89,143 @@ public class GamePanel extends JPanel {
 	loadResources();
 
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
+	MenuActionEvent mainMenuEvent = new MenuActionEvent() {
+	    public void selectionAction(int keycode) {
+		if (keycode == KeyEvent.VK_UP) {
+		    mainMenu.shiftUp();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_DOWN) {
+		    mainMenu.shiftDown();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_ENTER || keycode == KeyEvent.VK_SPACE) {
+		    int selectedIndex = mainMenu.getSelectedItem();
+		    if (selectedIndex == 0) {
+			LevelManager.loadLevels();
+			levelSelectMenu.clearMenu();
+			for (Level level : LevelManager.getLevels()) {
+			    MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
+			    levelSelectMenu.addMenuItem(menuItem);
+			}
+			levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY));
+			displayScreen = ScreenType.LEVEL_SELECT;
+		    } else if (selectedIndex == 1) {
+			displayScreen = ScreenType.OPTIONS_MENU;
+		    } else if (selectedIndex == 2) {
+			JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
+				+ "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
+		    } else if (selectedIndex == 3) {
+			JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n \"The essence of OOP\"", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+		    } else if (selectedIndex == 4) {
+			int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+			if (accept == JOptionPane.YES_OPTION)
+			    System.exit(0);
+		    }
+		    repaint();
+		} else if (keycode == KeyEvent.VK_F10) {
+		    System.out.println("DEBUG MODE");
+		    start();
+		    repaint();
+		}
 
-	mainMenu = new CenteredMenu(3);
+	    }
+	};
+	MenuActionEvent optionsMenuEvent = new MenuActionEvent() {
+	    public void selectionAction(int keycode) {
+		if (keycode == KeyEvent.VK_ESCAPE) {
+		    displayScreen = ScreenType.MAIN_MENU;
+		    repaint();
+		} else if (keycode == KeyEvent.VK_UP) {
+		    optionsMenu.shiftUp();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_DOWN) {
+		    optionsMenu.shiftDown();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_ENTER) {
+		    int selectedIndex = optionsMenu.getSelectedItem();
+		    // Music
+		    if (selectedIndex == 0) {
+			musicToggleMenuItem.toggle();
+			if (musicToggleMenuItem.getEnabled()) {
+			    musicManager.start();
+			} else {
+			    musicManager.stop();
+			}
+		    }
+		    // Return to main menu
+		    else if (selectedIndex == 1) {
+			displayScreen = ScreenType.MAIN_MENU;
+		    }
+		    repaint();
+		}
+	    }
+	};
+	MenuActionEvent levelSelectMenuEvent = new MenuActionEvent() {
+	    public void selectionAction(int keycode) {
+		// Return to main menu
+		if (keycode == KeyEvent.VK_ESCAPE) {
+		    displayScreen = ScreenType.MAIN_MENU;
+		    repaint();
+		} else if (keycode == KeyEvent.VK_UP) {
+		    levelSelectMenu.shiftUp();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_DOWN) {
+		    levelSelectMenu.shiftDown();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_ENTER) {
+		    int selectedIndex = levelSelectMenu.getSelectedItem();
+
+		    // Check if the selected MenuItem is the last one, which is return to main menu
+		    if (selectedIndex == LevelManager.getLevels().size()) {
+			displayScreen = ScreenType.MAIN_MENU;
+			repaint();
+		    } else {
+			Level level = LevelManager.getLevels().get(selectedIndex);
+			loadLevel(level);
+
+			start();
+			repaint();
+		    }
+
+		}
+
+	    }
+	};
+	MenuActionEvent pauseMenuEvent = new MenuActionEvent() {
+	    public void selectionAction(int keycode) {
+		if (keycode == KeyEvent.VK_UP) {
+		    pauseMenu.shiftUp();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_DOWN) {
+		    pauseMenu.shiftDown();
+		    repaint();
+		} else if (keycode == KeyEvent.VK_ESCAPE) {
+		    start();
+		} else if (keycode == KeyEvent.VK_ENTER) {
+		    int selectedIndex = pauseMenu.getSelectedItem();
+		    if (selectedIndex == 0) {
+			start();
+		    } else if (selectedIndex == 1) {
+			stop();
+			repaint();
+		    }
+		}
+	    }
+	};
+	mainMenu = new CenteredMenu(mainMenuEvent, 3);
 	mainMenu.addMenuItem(new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.GRAY));
 
-	optionsMenu = new AlignedMenu(2);
+	optionsMenu = new AlignedMenu(optionsMenuEvent, 2);
 	optionsMenu.addMenuItem(musicToggleMenuItem);
 	musicToggleMenuItem.setEnabled(true);
 	optionsMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
-	levelSelectMenu = new AlignedMenu(1);
+	levelSelectMenu = new AlignedMenu(levelSelectMenuEvent, 1);
 
-	pauseMenu = new AlignedMenu(1);
+	pauseMenu = new AlignedMenu(pauseMenuEvent, 1);
 	pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 	pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
@@ -119,25 +242,8 @@ public class GamePanel extends JPanel {
 		int keycode = event.getKeyCode();
 		// Respond to ingame events
 		if (displayScreen == ScreenType.IN_GAME) {
-		    // Respond to pause menu
 		    if (paused) {
-			if (keycode == KeyEvent.VK_UP) {
-			    pauseMenu.shiftUp();
-			    repaint();
-			} else if (keycode == KeyEvent.VK_DOWN) {
-			    pauseMenu.shiftDown();
-			    repaint();
-			} else if (keycode == KeyEvent.VK_ESCAPE) {
-			    start();
-			} else if (keycode == KeyEvent.VK_ENTER) {
-			    int selectedIndex = pauseMenu.getSelectedItem();
-			    if (selectedIndex == 0) {
-				start();
-			    } else if (selectedIndex == 1) {
-				stop();
-				repaint();
-			    }
-			}
+			pauseMenu.invokeAction(keycode);
 		    } else {
 			if (keycode == KeyEvent.VK_RIGHT) {
 			    if (power <= 95)
@@ -166,101 +272,17 @@ public class GamePanel extends JPanel {
 			}
 		    }
 		}
-		// Respond to menu events, such as allowing arrow keys to select
-		// menu items
+		// Respond to events in main menu
 		else if (displayScreen == ScreenType.MAIN_MENU) {
-		    if (keycode == KeyEvent.VK_UP) {
-			mainMenu.shiftUp();
-			repaint();
-		    } else if (keycode == KeyEvent.VK_DOWN) {
-			mainMenu.shiftDown();
-			repaint();
-		    } else if (keycode == KeyEvent.VK_ENTER || keycode == KeyEvent.VK_SPACE) {
-			int selectedIndex = mainMenu.getSelectedItem();
-			if (selectedIndex == 0) {
-			    LevelManager.loadLevels();
-			    levelSelectMenu.clearMenu();
-			    for (Level level : LevelManager.getLevels()) {
-				MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
-				levelSelectMenu.addMenuItem(menuItem);
-			    }
-			    levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY));
-			    displayScreen = ScreenType.LEVEL_SELECT;
-			} else if (selectedIndex == 1) {
-			    displayScreen = ScreenType.OPTIONS_MENU;
-			} else if (selectedIndex == 2) {
-			    JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
-				    + "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
-			} else if (selectedIndex == 3) {
-			    JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n \"The essence of OOP\"", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
-			} else if (selectedIndex == 4) {
-			    int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-			    if (accept == JOptionPane.YES_OPTION)
-				System.exit(0);
-			}
-			repaint();
-		    } else if (keycode == KeyEvent.VK_F10) {
-			System.out.println("DEBUG MODE");
-			start();
-			repaint();
-		    }
+		    mainMenu.invokeAction(keycode);
 		}
 		// Respond to events in options menu
 		else if (displayScreen == ScreenType.OPTIONS_MENU) {
-		    // Return to main menu
-		    if (keycode == KeyEvent.VK_ESCAPE) {
-			displayScreen = ScreenType.MAIN_MENU;
-			repaint();
-		    } else if (keycode == KeyEvent.VK_UP) {
-			optionsMenu.shiftUp();
-			repaint();
-		    } else if (keycode == KeyEvent.VK_DOWN) {
-			optionsMenu.shiftDown();
-			repaint();
-		    } else if (keycode == KeyEvent.VK_ENTER) {
-			int selectedIndex = optionsMenu.getSelectedItem();
-			// Music
-			if (selectedIndex == 0) {
-			    musicToggleMenuItem.toggle();
-			    if(musicToggleMenuItem.getEnabled()){
-				musicManager.start();
-			    }
-			    else{
-				musicManager.stop();
-			    }
-			}
-			// Return to main menu
-			else if (selectedIndex == 1) {
-			    displayScreen = ScreenType.MAIN_MENU;
-			}
-			repaint();
-		    }
-		} else if (displayScreen == ScreenType.LEVEL_SELECT) {
-		    if (keycode == KeyEvent.VK_ESCAPE) {
-			displayScreen = ScreenType.MAIN_MENU;
-			repaint();
-		    } else if (keycode == KeyEvent.VK_UP) {
-			levelSelectMenu.shiftUp();
-			repaint();
-		    } else if (keycode == KeyEvent.VK_DOWN) {
-			levelSelectMenu.shiftDown();
-			repaint();
-		    } else if (keycode == KeyEvent.VK_ENTER) {
-			int selectedIndex = levelSelectMenu.getSelectedItem();
-
-			// Check if the selected MenuItem is the last one, which is return to main menu
-			if (selectedIndex == LevelManager.getLevels().size()) {
-			    displayScreen = ScreenType.MAIN_MENU;
-			    repaint();
-			} else {
-			    Level level = LevelManager.getLevels().get(selectedIndex);
-			    loadLevel(level);
-
-			    start();
-			    repaint();
-			}
-
-		    }
+		    optionsMenu.invokeAction(keycode);
+		} 
+		// Respond to events in level select menu
+		else if (displayScreen == ScreenType.LEVEL_SELECT) {
+		    levelSelectMenu.invokeAction(keycode);
 		}
 	    }
 	});
@@ -269,8 +291,6 @@ public class GamePanel extends JPanel {
 	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(400, 310), Color.BLACK);
 	rect.rotate(30);
 	engine.addEntity(rect);
-	Vector collisionPoint = rect.getLowestPoint();
-	double rotAngle = Math.toDegrees(rect.getCenter().angle(collisionPoint));
 	/* END DEBUG CODE */
     }
 

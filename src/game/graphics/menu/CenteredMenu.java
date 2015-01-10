@@ -18,8 +18,8 @@ public class CenteredMenu extends Menu{
     /**
      * Constructs a main menu
      */
-    public CenteredMenu(int shadowDist) {
-	super(shadowDist);	
+    public CenteredMenu(MenuActionEvent event, int shadowDist) {
+	super(event, shadowDist);	
     }
 
     /**
@@ -55,7 +55,5 @@ public class CenteredMenu extends Menu{
 	g.setColor(originalColor);
 	g.setFont(originalFont);
 
-    }
-
-    
+    } 
 }

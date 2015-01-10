@@ -8,8 +8,8 @@ import java.awt.Graphics;
 
 public class AlignedMenu extends Menu {
     
-    public AlignedMenu(int shadowDist){
-	super(shadowDist);
+    public AlignedMenu(MenuActionEvent event, int shadowDist){
+	super(event, shadowDist);
     }
     
     @Override
