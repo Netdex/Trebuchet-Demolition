@@ -288,9 +288,9 @@ public class GamePanel extends JPanel {
 	});
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(400, 310), Color.BLACK);
-	rect.rotate(30);
-	engine.addEntity(rect);
+//	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(400, 310), Color.BLACK);
+//	rect.rotate(30);
+//	engine.addEntity(rect);
 	/* END DEBUG CODE */
     }
 

@@ -117,17 +117,6 @@ public class PhysicsEngine {
 	    double y = circle.loc.y;
 
 	    // Check every circle onto this one to see if they are colliding
-	    for (Entity e : entities) {
-		if (e instanceof Circle) {
-		    if (e != circle) {
-			if (circle.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE) {
-			    CollisionResolver.resolveCircleCollision(circle, (Circle) e, RESTITUTION);
-			    circle.setHandling(true);
-			    e.setHandling(true);
-			}
-		    }
-		}
-	    }
 
 	    // Make sure the circle collides with walls
 	    boolean retType = false;
@@ -158,18 +147,6 @@ public class PhysicsEngine {
 	// Check for Axis Aligned Bounding Box collisions
 	else if (entity instanceof AABB) {
 	    AABB aabb = (AABB) entity;
-
-	    for (Entity e : entities) {
-		if (e instanceof AABB) {
-		    if (e != entity) {
-			if (aabb.getCollisionState(e) == CollisionType.CIRCLE_TO_CIRCLE) {
-			    CollisionResolver.resolveAABBCollision(aabb, (AABB) e, RESTITUTION);
-			    aabb.setHandling(true);
-			    e.setHandling(true);
-			}
-		    }
-		}
-	    }
 
 	    boolean retType = false;
 	    if (aabb.p1.x < 0) {
@@ -207,7 +184,7 @@ public class PhysicsEngine {
 	} else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
 	    AABB boundingBox = rect.getBoundingBox();
-	    Vector center = rect.getCenter();
+
 	    boolean retType = false;
 	    if (boundingBox.p1.x < 0) {
 		double correction = Math.abs(boundingBox.p1.x);
@@ -236,11 +213,27 @@ public class PhysicsEngine {
 		rect.translate(0, -correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
 
-		
 		retType = true;
 	    }
 	    if (retType)
 		return true;
+	}
+
+	if (!entity.isHandling()) {
+	    for (Entity e : entities) {
+		if (e != entity && !e.isHandling()) {
+		    CollisionType colType = entity.getCollisionState(e);
+		    if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
+			CollisionResolver.resolveCircleCollision((Circle) entity, (Circle) e, RESTITUTION);
+			entity.setHandling(true);
+			e.setHandling(true);
+		    } else if (colType == CollisionType.RECT_TO_RECT) {
+			CollisionResolver.resolveRectangleCollision((Rectangle) entity, (Rectangle) e, RESTITUTION);
+			entity.setHandling(true);
+			e.setHandling(true);
+		    }
+		}
+	    }
 	}
 	return false;
 
