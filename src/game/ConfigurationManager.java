@@ -14,4 +14,8 @@ public class ConfigurationManager {
     public static void loadConfiguration(){
 	
     }
+    
+    public static void saveConfiguration(){
+	
+    }
 }

@@ -21,9 +21,9 @@ import physics.util.Vector;
  */
 public class PhysicsEngine {
     // These constants are not related to real world constants
-    public static final Vector GRAVITY = new Vector(0, 0.1);
+    public static final Vector GRAVITY_CONSTANT = new Vector(0, 0.1);
     private static final double FRICTION = 1.05;
-    private static final double RESTITUTION = 1.5;
+    private static final double RESTITUTION = 2;
 
     public boolean gravity = true;
 
@@ -82,10 +82,8 @@ public class PhysicsEngine {
 	    collided = handleCollisions(e);
 	    if (collided)
 		collisionsInTick++;
-	    else if(gravity)
-		e.acc = GRAVITY;
-
-	    e.vel = e.vel.subtract(e.acc);
+	    else if (gravity)
+		e.vel = e.vel.subtract(GRAVITY_CONSTANT);
 
 	    // Subtract the acceleration from velocities
 	    if (e instanceof Circle) {
@@ -98,6 +96,7 @@ public class PhysicsEngine {
 	    } else if (e instanceof Rectangle) {
 		Rectangle r = (Rectangle) e;
 		r.translate(-r.vel.x, -r.vel.y);
+		r.rotate(r.angularVel);
 	    }
 	}
 
@@ -208,30 +207,36 @@ public class PhysicsEngine {
 	} else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
 	    AABB boundingBox = rect.getBoundingBox();
-
+	    Vector center = rect.getCenter();
 	    boolean retType = false;
 	    if (boundingBox.p1.x < 0) {
 		double correction = Math.abs(boundingBox.p1.x);
 		rect.translate(correction, 0);
 		rect.vel.x = -rect.vel.x / RESTITUTION;
+		rect.rotate(1, rect.getLeftmostPoint());
 		retType = true;
 	    }
 	    if (boundingBox.p1.y < 0) {
 		double correction = Math.abs(boundingBox.p1.y);
 		rect.translate(0, correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
+		rect.rotate(1, rect.getHighestPoint());
 		retType = true;
 	    }
 	    if (boundingBox.p2.x > width) {
 		double correction = boundingBox.p2.x - width;
 		rect.translate(-correction, 0);
 		rect.vel.x = -rect.vel.x / RESTITUTION;
+
+		rect.rotate(1, rect.getRightmostPoint());
 		retType = true;
 	    }
 	    if (boundingBox.p2.y > height) {
 		double correction = boundingBox.p2.y - height;
 		rect.translate(0, -correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
+
+		
 		retType = true;
 	    }
 	    if (retType)

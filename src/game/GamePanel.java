@@ -71,7 +71,7 @@ public class GamePanel extends JPanel {
     private AlignedMenu pauseMenu;
 
     private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
-
+    private MusicManager musicManager;
     /***********************************************************************/
 
     public GamePanel(final int width, final int height) {
@@ -106,6 +106,8 @@ public class GamePanel extends JPanel {
 	pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 	pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
+	musicManager = new MusicManager();
+	musicManager.start();
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 
@@ -129,10 +131,9 @@ public class GamePanel extends JPanel {
 			    start();
 			} else if (keycode == KeyEvent.VK_ENTER) {
 			    int selectedIndex = pauseMenu.getSelectedItem();
-			    if(selectedIndex == 0){
+			    if (selectedIndex == 0) {
 				start();
-			    }
-			    else if(selectedIndex == 1){
+			    } else if (selectedIndex == 1) {
 				stop();
 				repaint();
 			    }
@@ -221,6 +222,12 @@ public class GamePanel extends JPanel {
 			// Music
 			if (selectedIndex == 0) {
 			    musicToggleMenuItem.toggle();
+			    if(musicToggleMenuItem.getEnabled()){
+				musicManager.start();
+			    }
+			    else{
+				musicManager.stop();
+			    }
 			}
 			// Return to main menu
 			else if (selectedIndex == 1) {
@@ -259,9 +266,11 @@ public class GamePanel extends JPanel {
 	});
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(200, 300), Color.BLACK);
+	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(400, 310), Color.BLACK);
 	rect.rotate(30);
 	engine.addEntity(rect);
+	Vector collisionPoint = rect.getLowestPoint();
+	double rotAngle = Math.toDegrees(rect.getCenter().angle(collisionPoint));
 	/* END DEBUG CODE */
     }
 
@@ -271,8 +280,7 @@ public class GamePanel extends JPanel {
 		String[] colorRGB = level.getMetadata().getProperty("bgcolor").replaceAll(" ", "").split(",");
 		Color color = new Color(Integer.parseInt(colorRGB[0]), Integer.parseInt(colorRGB[1]), Integer.parseInt(colorRGB[2]));
 		this.setBackground(color);
-	    }
-	    else{
+	    } else {
 		this.setBackground(Color.WHITE);
 	    }
 	} catch (Exception e) {
@@ -335,9 +343,9 @@ public class GamePanel extends JPanel {
 		    AABB bounds = rect.getBoundingBox();
 		    g.setColor(Color.GREEN);
 		    g.drawRect((int) bounds.p1.x, (int) bounds.p1.y, (int) bounds.getWidth(), (int) bounds.getHeight());
-		    
+
 		    g.setColor(Color.RED);
-		    int radiusOfIndicator = 5;
+		    int radiusOfIndicator = 10;
 		    Vector center = rect.getCenter();
 		    g.fillOval((int) center.x - radiusOfIndicator / 2, (int) center.y - radiusOfIndicator / 2, radiusOfIndicator, radiusOfIndicator);
 		    /* END DEBUG */

@@ -6,8 +6,7 @@ import physics.util.CollisionType;
 import physics.util.Vector;
 
 /**
- * Represents an Axis Aligned Bounding Box (AABB) which is an entity; a
- * rectangle without rotation
+ * Represents an Axis Aligned Bounding Box (AABB) which is an entity; a rectangle without rotation
  * 
  * @author Gordon Guan
  * @version Dec 2014
@@ -16,16 +15,17 @@ public class AABB extends Entity {
     public Vector p1;
     public Vector p2;
 
-    public AABB(Vector p1, Vector p2, Vector vel, Vector acc, Color c) {
-	super(EntityType.AABB, c, vel, acc);
+    public AABB(Vector p1, Vector p2, Vector vel, Color c) {
+	super(EntityType.AABB, c, vel);
 	this.p1 = p1;
 	this.p2 = p2;
     }
 
-    public double getMass(){
+    public double getMass() {
 	// TODO Make getMass() work for AABBs
 	return 0;
     }
+
     /**
      * Gets the width of the AABB
      * 

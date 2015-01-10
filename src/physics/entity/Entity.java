@@ -19,18 +19,16 @@ public abstract class Entity {
     private boolean handlingCollision;
 
     public Vector vel;
-    public Vector acc;
 
     private Color color;
 
-    public Entity(EntityType type, Color c, Vector vel, Vector acc) {
+    public Entity(EntityType type, Color c, Vector vel) {
 	this.type = type;
 	this.entityID = lastID;
 	lastID++;
 	this.color = c;
 	this.handlingCollision = false;
 	this.vel = vel;
-	this.acc = acc;
     }
 
     /**
@@ -101,6 +99,6 @@ public abstract class Entity {
     public abstract CollisionType getCollisionState(Entity entity);
 
     public String toString() {
-	return String.format("%s r%dg%db%d id%d v%s a%s", type.name(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString(), acc.toString());
+	return String.format("%s r%dg%db%d id%d v%s a%s", type.name(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString());
     }
 }

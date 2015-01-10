@@ -16,7 +16,7 @@ public class Circle extends Entity {
     public Vector loc;
 
     public Circle(Vector loc, Vector vel, Vector acc, int radius, Color c) {
-	super(EntityType.CIRCLE, c, vel, acc);
+	super(EntityType.CIRCLE, c, vel);
 	this.loc = loc;
 	this.radius = radius;
     }
