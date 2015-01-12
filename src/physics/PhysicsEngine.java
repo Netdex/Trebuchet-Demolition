@@ -178,7 +178,7 @@ public class PhysicsEngine {
 	    if (retType)
 		return true;
 
-	} 
+	}
 	// Rectangle wall collisions
 	else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
@@ -212,6 +212,19 @@ public class PhysicsEngine {
 		rect.translate(0, -correction);
 		rect.vel.y = -rect.vel.y / RESTITUTION;
 
+		Vector calcVector = rect.getLowestPoint();
+		Vector difference = rect.getCenterDifferenceRatio(calcVector);
+//		System.out.println(difference);
+
+		double angle = -difference.x;
+		if(Double.isNaN(angle))
+		    angle = 0;
+		System.out.println(angle);
+		if (difference.x < 0) {
+		    rect.rotate(angle, rect.getLowestPoint());
+		} else {
+		    rect.rotate(angle, rect.getLowestPoint());
+		}
 		retType = true;
 	    }
 	    if (retType)

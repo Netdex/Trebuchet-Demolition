@@ -1,6 +1,7 @@
 package physics.entity;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -101,4 +102,10 @@ public abstract class Entity {
     public String toString() {
 	return String.format("%s r%dg%db%d id%d v%s a%s", type.name(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString());
     }
+    
+    /**
+     * Draws the entity onto the given graphics
+     * @param g The graphics to draw on
+     */
+    public abstract void drawEntity(Graphics2D g);
 }

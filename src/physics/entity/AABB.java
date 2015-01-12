@@ -1,6 +1,9 @@
 package physics.entity;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -54,5 +57,11 @@ public class AABB extends Entity {
 	    return CollisionType.AABB_TO_AABB;
 	}
 	return CollisionType.NO_COLLISION;
+    }
+
+    @Override
+    public void drawEntity(Graphics2D g) {
+	Shape shape = new Rectangle2D.Double(p1.x, p1.y, getWidth(), getHeight());
+	g.draw(shape);
     }
 }

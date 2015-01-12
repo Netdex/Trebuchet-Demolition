@@ -39,7 +39,7 @@ public class LevelManager {
 		metadata.load(new FileInputStream(levelFile));
 		ArrayList<Entity> levelEntities = new ArrayList<Entity>();
 		StringTokenizer st = new StringTokenizer(metadata.getProperty("entities"), ":");
-		
+
 		while (st.hasMoreTokens()) {
 		    String line = st.nextToken().replaceAll(" ", "");
 		    String[] entityData = line.split(",");
@@ -72,6 +72,7 @@ public class LevelManager {
 
     /**
      * Gets all the levels loaded
+     * 
      * @return the levels loaded
      */
     public static ArrayList<Level> getLevels() {
@@ -80,6 +81,7 @@ public class LevelManager {
 
     /**
      * Sets the loaded levels
+     * 
      * @param levels the new levels to set
      */
     public static void setLevels(ArrayList<Level> levels) {

@@ -1,6 +1,9 @@
 package physics.entity;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -51,5 +54,11 @@ public class Circle extends Entity {
 
     public double getMass() {
 	return radius;
+    }
+
+    @Override
+    public void drawEntity(Graphics2D g) {
+	    Shape shape = new Ellipse2D.Double(loc.x - radius, loc.y - radius, radius * 2, radius * 2);
+	    g.fill(shape);
     }
 }

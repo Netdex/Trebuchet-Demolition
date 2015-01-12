@@ -239,7 +239,7 @@ public class GamePanel extends JPanel {
 	
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
-
+		
 	    }
 	});
 
@@ -294,9 +294,12 @@ public class GamePanel extends JPanel {
 	});
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-//	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(400, 310), Color.BLACK);
-//	rect.rotate(30);
-//	engine.addEntity(rect);
+	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
+	final Rectangle rect2 = new Rectangle(new Vector(400, 10), new Vector(450, 310), Color.BLACK);
+	rect.rotate(31);
+	rect2.rotate(-31);
+	engine.addEntity(rect);
+	engine.addEntity(rect2);
 	/* END DEBUG CODE */
     }
 
@@ -344,38 +347,8 @@ public class GamePanel extends JPanel {
 		g.setColor(entity.getColor());
 		if (entity.isHandling())
 		    g.setColor(Color.RED);
-		Shape shape = null;
 
-		if (entity instanceof Circle) {
-		    Circle c = (Circle) entity;
-		    Vector loc = c.loc;
-		    int radius = c.getRadius();
-		    shape = new Ellipse2D.Double(loc.x - radius, loc.y - radius, radius * 2, radius * 2);
-		    g.fill(shape);
-		} else if (entity instanceof AABB) {
-		    AABB a = (AABB) entity;
-		    shape = new Rectangle2D.Double(a.p1.x, a.p1.y, a.getWidth(), a.getHeight());
-		    g.draw(shape);
-		} else if (entity instanceof Rectangle) {
-		    Rectangle rect = (Rectangle) entity;
-
-		    int xPoly[] = { (int) rect.p1.x, (int) rect.p2.x, (int) rect.p4.x, (int) rect.p3.x };
-		    int yPoly[] = { (int) rect.p1.y, (int) rect.p2.y, (int) rect.p4.y, (int) rect.p3.y };
-
-		    Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
-		    g.fill(poly);
-
-		    /* DEBUG TODO REMOVE DEBUG CODE FOR VISUALING HIT BOXES */
-		    AABB bounds = rect.getBoundingBox();
-		    g.setColor(Color.GREEN);
-		    g.drawRect((int) bounds.p1.x, (int) bounds.p1.y, (int) bounds.getWidth(), (int) bounds.getHeight());
-
-		    g.setColor(Color.RED);
-		    int radiusOfIndicator = 10;
-		    Vector center = rect.getCenter();
-		    g.fillOval((int) center.x - radiusOfIndicator / 2, (int) center.y - radiusOfIndicator / 2, radiusOfIndicator, radiusOfIndicator);
-		    /* END DEBUG */
-		}
+		entity.drawEntity(g);
 		// Draw pause menu
 		if (paused) {
 		    g.setFont(GraphicsTools.MAIN_FONT);

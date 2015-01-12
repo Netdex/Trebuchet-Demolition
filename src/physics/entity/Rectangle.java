@@ -1,6 +1,8 @@
 package physics.entity;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
 
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -11,7 +13,7 @@ import physics.util.Vector;
  * @author Gordon Guan
  * @version Dec 2014
  * 
- * TODO Fix rectangle collision code
+ *          TODO Fix rectangle collision code
  */
 public class Rectangle extends Entity {
     public Vector p1;
@@ -34,6 +36,26 @@ public class Rectangle extends Entity {
 	this.angle = angle;
 	this.angularVel = angularVel;
 	this.angularAcc = angularAcc;
+    }
+
+    @Override
+    public void drawEntity(Graphics2D g) {
+	int xPoly[] = { (int) p1.x, (int) p2.x, (int) p4.x, (int) p3.x };
+	int yPoly[] = { (int) p1.y, (int) p2.y, (int) p4.y, (int) p3.y };
+
+	Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
+	g.fill(poly);
+
+	/* DEBUG TODO REMOVE DEBUG CODE FOR VISUALING HIT BOXES */
+	AABB bounds = getBoundingBox();
+	g.setColor(Color.GREEN);
+	g.drawRect((int) bounds.p1.x, (int) bounds.p1.y, (int) bounds.getWidth(), (int) bounds.getHeight());
+
+	g.setColor(Color.CYAN);
+	int radiusOfIndicator = 10;
+	Vector center = getCenter();
+	g.fillOval((int) center.x - radiusOfIndicator / 2, (int) center.y - radiusOfIndicator / 2, radiusOfIndicator, radiusOfIndicator);
+	/* END DEBUG */
     }
 
     /**
@@ -66,7 +88,7 @@ public class Rectangle extends Entity {
      * @return The width of the Rectangle
      */
     public double getWidth() {
-	return Math.abs(p1.x - p2.x);
+	return p1.distance(p2);
     }
 
     /**
@@ -74,10 +96,10 @@ public class Rectangle extends Entity {
      * 
      * @return The height of the Rectangle
      * 
-     * TODO Fix math on rectangle height calculations, and width calculations
+     *         TODO Fix math on rectangle height calculations, and width calculations
      */
     public double getHeight() {
-	return Math.abs(p1.y - p2.y);
+	return p1.distance(p3);
     }
 
     /**
@@ -183,10 +205,20 @@ public class Rectangle extends Entity {
 	return this.p1.midpoint(this.p4);
     }
 
+    /**
+     * Gets an array of all the points
+     * 
+     * @return an array of all the points
+     */
     public Vector[] getPointArray() {
 	return new Vector[] { p1, p2, p3, p4 };
     }
 
+    /**
+     * Gets the lowest point
+     * 
+     * @return the lowest point
+     */
     public Vector getLowestPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
@@ -199,6 +231,11 @@ public class Rectangle extends Entity {
 	return lowestPoint;
     }
 
+    /**
+     * Gets the highest point
+     * 
+     * @return the highest point
+     */
     public Vector getHighestPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
@@ -211,6 +248,11 @@ public class Rectangle extends Entity {
 	return lowestPoint;
     }
 
+    /**
+     * Gets the left-most point
+     * 
+     * @return the left-most point
+     */
     public Vector getLeftmostPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
@@ -223,6 +265,11 @@ public class Rectangle extends Entity {
 	return lowestPoint;
     }
 
+    /**
+     * Gets the right-most point
+     * 
+     * @return the right-most point
+     */
     public Vector getRightmostPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
@@ -233,5 +280,17 @@ public class Rectangle extends Entity {
 	    }
 	}
 	return lowestPoint;
+    }
+
+    /**
+     * Gets the ratio of the distance between a point on the rectangle and the center of mass
+     * 
+     * @param vector The point on the rectangle
+     * @return the ratio of the distance between a point on the rectangle and the center of mass
+     */
+    public Vector getCenterDifferenceRatio(Vector vector) {
+	Vector difference = vector.subtract(this.getCenter());
+	return difference.divide(new Vector(this.getBoundingBox().getWidth(), this.getBoundingBox().getHeight()));
+
     }
 }

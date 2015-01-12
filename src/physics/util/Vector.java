@@ -175,8 +175,7 @@ public class Vector {
     }
 
     /**
-     * Returns whether this vector is in an axis-aligned bounding box.
-     * The minimum and maximum vectors given must be truly the minimum and maximum X and Y components.
+     * Returns whether this vector is in an axis-aligned bounding box. The minimum and maximum vectors given must be truly the minimum and maximum X and Y components.
      * 
      * @param min Minimum vector
      * @param max Maximum vector
@@ -209,6 +208,6 @@ public class Vector {
     }
 
     public String toString() {
-	return x + ", " + y;
+	return String.format("vec{x=%.2f,y=%.2f}", x, y);
     }
 }
