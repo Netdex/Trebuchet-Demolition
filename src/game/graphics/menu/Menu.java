@@ -15,9 +15,9 @@ public abstract class Menu {
     private int shadowDist;
 
     private ArrayList<MenuItem> menuItems;
-    private MenuActionEvent event;
+    private MenuKeyEvent event;
 
-    public Menu(MenuActionEvent event, int shadowDist) {
+    public Menu(MenuKeyEvent event, int shadowDist) {
 	this.selectedIndex = 0;
 	this.shadowDist = shadowDist;
 	menuItems = new ArrayList<MenuItem>();

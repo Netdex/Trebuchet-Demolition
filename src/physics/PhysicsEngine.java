@@ -51,7 +51,6 @@ public class PhysicsEngine {
 	Properties metadata = level.getMetadata();
 	ArrayList<Entity> levelEntities = level.getEntities();
 
-	// TODO Finish level loader into physics engine
 	try {
 	    if (metadata.getProperty("gravity") != null) {
 		try {
@@ -116,8 +115,6 @@ public class PhysicsEngine {
 	    double x = circle.loc.x;
 	    double y = circle.loc.y;
 
-	    // Check every circle onto this one to see if they are colliding
-
 	    // Make sure the circle collides with walls
 	    boolean retType = false;
 	    if (x - radius < 0) {
@@ -181,7 +178,9 @@ public class PhysicsEngine {
 	    if (retType)
 		return true;
 
-	} else if (entity instanceof Rectangle) {
+	} 
+	// Rectangle wall collisions
+	else if (entity instanceof Rectangle) {
 	    Rectangle rect = (Rectangle) entity;
 	    AABB boundingBox = rect.getBoundingBox();
 
@@ -219,6 +218,7 @@ public class PhysicsEngine {
 		return true;
 	}
 
+	// Loop through all the entities, and see if they are colliding with this one
 	if (!entity.isHandling()) {
 	    for (Entity e : entities) {
 		if (e != entity && !e.isHandling()) {

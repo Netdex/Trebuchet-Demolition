@@ -24,13 +24,22 @@ public class CollisionResolver {
 	double diffX = b.loc.x - a.loc.x;
 	double diffY = b.loc.y - a.loc.y;
 
-	Vector relative = new Vector(diffX, diffY);
-	relative.normalize();
-
-	a.vel.x = relative.x / RESTITUTION;
-	a.vel.y = relative.y / RESTITUTION;
-	b.vel.x = -relative.x / RESTITUTION;
-	b.vel.y = -relative.y / RESTITUTION;
+	Vector relativeA = new Vector(diffX, diffY);
+	relativeA.normalize();
+	relativeA = relativeA.multiply(a.vel.length());
+	Vector relativeB = new Vector(diffX, diffY);
+	relativeB.normalize();
+	relativeB = relativeB.multiply(b.vel.length());
+	double dist = a.loc.distance(b.loc);
+	a.loc.y -= ((a.getRadius() + b.getRadius()) - dist) / 2;
+	b.loc.y += ((a.getRadius() + b.getRadius()) - dist) / 2;
+	a.loc.x -= ((a.getRadius() + b.getRadius()) - dist) / 2;
+	b.loc.x += ((a.getRadius() + b.getRadius()) - dist) / 2;
+	
+	a.vel.x = relativeA.x / RESTITUTION;
+	a.vel.y = relativeA.y / RESTITUTION;
+	b.vel.x = -relativeB.x / RESTITUTION;
+	b.vel.y = -relativeB.y / RESTITUTION;
     }
 
     /**

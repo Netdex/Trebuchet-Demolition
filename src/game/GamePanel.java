@@ -4,7 +4,7 @@ import game.graphics.GraphicsTools;
 import game.graphics.ScreenType;
 import game.graphics.menu.AlignedMenu;
 import game.graphics.menu.CenteredMenu;
-import game.graphics.menu.MenuActionEvent;
+import game.graphics.menu.MenuKeyEvent;
 import game.graphics.menu.MenuItem;
 import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
@@ -80,16 +80,18 @@ public class GamePanel extends JPanel {
 	super();
 	this.setBackground(Color.WHITE);
 	this.setFocusable(true);
-
+	
 	this.width = width;
 	this.height = height;
 	engine = new PhysicsEngine(width, height);
 
 	// Load all the images
 	loadResources();
-
+	
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
-	MenuActionEvent mainMenuEvent = new MenuActionEvent() {
+	
+	// Set up all the main menu handlers
+	MenuKeyEvent mainMenuEvent = new MenuKeyEvent() {
 	    public void selectionAction(int keycode) {
 		if (keycode == KeyEvent.VK_UP) {
 		    mainMenu.shiftUp();
@@ -129,7 +131,7 @@ public class GamePanel extends JPanel {
 
 	    }
 	};
-	MenuActionEvent optionsMenuEvent = new MenuActionEvent() {
+	MenuKeyEvent optionsMenuEvent = new MenuKeyEvent() {
 	    public void selectionAction(int keycode) {
 		if (keycode == KeyEvent.VK_ESCAPE) {
 		    displayScreen = ScreenType.MAIN_MENU;
@@ -159,7 +161,7 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	};
-	MenuActionEvent levelSelectMenuEvent = new MenuActionEvent() {
+	MenuKeyEvent levelSelectMenuEvent = new MenuKeyEvent() {
 	    public void selectionAction(int keycode) {
 		// Return to main menu
 		if (keycode == KeyEvent.VK_ESCAPE) {
@@ -190,7 +192,7 @@ public class GamePanel extends JPanel {
 
 	    }
 	};
-	MenuActionEvent pauseMenuEvent = new MenuActionEvent() {
+	MenuKeyEvent pauseMenuEvent = new MenuKeyEvent() {
 	    public void selectionAction(int keycode) {
 		if (keycode == KeyEvent.VK_UP) {
 		    pauseMenu.shiftUp();
@@ -211,6 +213,8 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	};
+	
+	// Setup all the items in the menus
 	mainMenu = new CenteredMenu(mainMenuEvent, 3);
 	mainMenu.addMenuItem(new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.GRAY));
 	mainMenu.addMenuItem(new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.GRAY));
@@ -229,8 +233,10 @@ public class GamePanel extends JPanel {
 	pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 	pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
+	// Start the music TODO Add configuration support
 	musicManager = new MusicManager();
 	musicManager.start();
+	
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 

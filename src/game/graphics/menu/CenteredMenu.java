@@ -18,7 +18,7 @@ public class CenteredMenu extends Menu{
     /**
      * Constructs a main menu
      */
-    public CenteredMenu(MenuActionEvent event, int shadowDist) {
+    public CenteredMenu(MenuKeyEvent event, int shadowDist) {
 	super(event, shadowDist);	
     }
 

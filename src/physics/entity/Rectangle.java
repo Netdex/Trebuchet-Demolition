@@ -11,7 +11,7 @@ import physics.util.Vector;
  * @author Gordon Guan
  * @version Dec 2014
  * 
- *          TODO Fix rectangle collision and rotation code
+ * TODO Fix rectangle collision code
  */
 public class Rectangle extends Entity {
     public Vector p1;
@@ -74,7 +74,7 @@ public class Rectangle extends Entity {
      * 
      * @return The height of the Rectangle
      * 
-     *         TODO Fix math on this
+     * TODO Fix math on rectangle height calculations, and width calculations
      */
     public double getHeight() {
 	return Math.abs(p1.y - p2.y);
@@ -118,7 +118,7 @@ public class Rectangle extends Entity {
      * @param vector The vector to rotate
      * @param center The center to rotate around
      * @param angle The angle to rotate the vector
-     * @return the new rotated vector TODO Fix vector rotation around point
+     * @return the new rotated vector
      */
     private Vector rotatePoint(Vector vector, Vector center, double angle) {
 	double newX = vector.x - center.x;
@@ -186,46 +186,49 @@ public class Rectangle extends Entity {
     public Vector[] getPointArray() {
 	return new Vector[] { p1, p2, p3, p4 };
     }
-    
-    public Vector getLowestPoint(){
+
+    public Vector getLowestPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
-	for(int vector = 1; vector < 4; vector++){
+	for (int vector = 1; vector < 4; vector++) {
 	    Vector vec = points[vector];
-	    if(vec.y > lowestPoint.y){
+	    if (vec.y > lowestPoint.y) {
 		lowestPoint = vec;
 	    }
 	}
 	return lowestPoint;
     }
-    public Vector getHighestPoint(){
+
+    public Vector getHighestPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
-	for(int vector = 1; vector < 4; vector++){
+	for (int vector = 1; vector < 4; vector++) {
 	    Vector vec = points[vector];
-	    if(vec.y > lowestPoint.y){
+	    if (vec.y > lowestPoint.y) {
 		lowestPoint = vec;
 	    }
 	}
 	return lowestPoint;
     }
-    public Vector getLeftmostPoint(){
+
+    public Vector getLeftmostPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
-	for(int vector = 1; vector < 4; vector++){
+	for (int vector = 1; vector < 4; vector++) {
 	    Vector vec = points[vector];
-	    if(vec.y < lowestPoint.x){
+	    if (vec.y < lowestPoint.x) {
 		lowestPoint = vec;
 	    }
 	}
 	return lowestPoint;
     }
-    public Vector getRightmostPoint(){
+
+    public Vector getRightmostPoint() {
 	Vector lowestPoint = p1;
 	Vector[] points = getPointArray();
-	for(int vector = 1; vector < 4; vector++){
+	for (int vector = 1; vector < 4; vector++) {
 	    Vector vec = points[vector];
-	    if(vec.y < lowestPoint.x){
+	    if (vec.y < lowestPoint.x) {
 		lowestPoint = vec;
 	    }
 	}

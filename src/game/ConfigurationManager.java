@@ -4,7 +4,7 @@ package game;
  * Manages the game configuration
  * @author Gordon Guan
  * @version Jan 2015
- * TODO Add functionality
+ * TODO Add functionality to the config manager
  */
 
 public class ConfigurationManager {

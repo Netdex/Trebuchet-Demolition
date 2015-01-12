@@ -1,5 +1,6 @@
 package game;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -20,7 +21,9 @@ public class TrebuchetDemolition extends JFrame {
 	this.setResizable(false);
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	this.setLayout(null);
-
+	
+	this.setIconImage(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/icon.png")));
+	
 	int panelWidth = width - 5;
 	int panelHeight = height - 28;
 
@@ -36,7 +39,7 @@ public class TrebuchetDemolition extends JFrame {
 		    TrebuchetDemolition td = new TrebuchetDemolition();
 		    td.setVisible(true);
 		} catch (Exception e) {
-
+		    e.printStackTrace();
 		}
 	    }
 	});

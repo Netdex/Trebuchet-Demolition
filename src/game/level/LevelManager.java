@@ -16,7 +16,7 @@ import physics.util.Vector;
  * Manages loaded levels, and loads them
  * 
  * @author Gordon Guan
- * @version Jan 2015 TODO Add functionality
+ * @version Jan 2015
  */
 public class LevelManager {
     public static ArrayList<Level> levels = new ArrayList<Level>();
