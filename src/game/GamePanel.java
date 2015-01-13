@@ -49,6 +49,7 @@ public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
     public static Image titleImage;
     public static Image backgroundImage;
+    public static Image trebuchetImage;
 
     /***********************************************************************/
     public PhysicsEngine engine;
@@ -80,16 +81,16 @@ public class GamePanel extends JPanel {
 	super();
 	this.setBackground(Color.WHITE);
 	this.setFocusable(true);
-	
+
 	this.width = width;
 	this.height = height;
 	engine = new PhysicsEngine(width, height);
 
 	// Load all the images
 	loadResources();
-	
+
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
-	
+
 	// Set up all the main menu handlers
 	MenuKeyEvent mainMenuEvent = new MenuKeyEvent() {
 	    public void selectionAction(int keycode) {
@@ -213,7 +214,7 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	};
-	
+
 	// Setup all the items in the menus
 	mainMenu = new CenteredMenu(mainMenuEvent, 3);
 	mainMenu.addMenuItem(new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.GRAY));
@@ -236,10 +237,10 @@ public class GamePanel extends JPanel {
 	// Start the music TODO Add configuration support
 	musicManager = new MusicManager();
 	musicManager.start();
-	
+
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
-		
+
 	    }
 	});
 
@@ -285,7 +286,7 @@ public class GamePanel extends JPanel {
 		// Respond to events in options menu
 		else if (displayScreen == ScreenType.OPTIONS_MENU) {
 		    optionsMenu.invokeAction(keycode);
-		} 
+		}
 		// Respond to events in level select menu
 		else if (displayScreen == ScreenType.LEVEL_SELECT) {
 		    levelSelectMenu.invokeAction(keycode);
@@ -342,6 +343,9 @@ public class GamePanel extends JPanel {
 	    g.drawString("Power: " + power + "%", 10, 80);
 	    g.drawString("Angle: " + angle + "°", 10, 95);
 
+	    int x = 30;
+	    int y = 50;
+	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0 ,0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
 	    // Draw all the entities on the screen
 	    for (Entity entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
@@ -349,18 +353,19 @@ public class GamePanel extends JPanel {
 		    g.setColor(Color.RED);
 
 		entity.drawEntity(g);
-		// Draw pause menu
-		if (paused) {
-		    g.setFont(GraphicsTools.MAIN_FONT);
-		    g.setColor(Color.GRAY);
-		    g.drawRect(100, 100, width - 200, height - 200);
-		    g.setColor(GraphicsTools.PANEL_COLOR.darker());
-		    g.fillRect(100, 100, width - 200, height - 200);
-		    g.setColor(Color.WHITE);
-		    int pauseY = 100 + g.getFontMetrics().getAscent();
-		    GraphicsTools.drawShadowedText(g, "PAUSED", 105, pauseY, 2);
-		    pauseMenu.drawMenu(g, 105, 0, pauseY + 50, 35);
-		}
+
+	    }
+	    // Draw pause menu
+	    if (paused) {
+		g.setFont(GraphicsTools.MAIN_FONT);
+		g.setColor(Color.GRAY);
+		g.drawRect(100, 100, width - 200, height - 200);
+		g.setColor(GraphicsTools.PANEL_COLOR.darker());
+		g.fillRect(100, 100, width - 200, height - 200);
+		g.setColor(Color.WHITE);
+		int pauseY = 100 + g.getFontMetrics().getAscent();
+		GraphicsTools.drawShadowedText(g, "PAUSED", 105, pauseY, 2);
+		pauseMenu.drawMenu(g, 105, 0, pauseY + 50, 35);
 	    }
 	}
 	// Main Menu
@@ -421,6 +426,7 @@ public class GamePanel extends JPanel {
 	try {
 	    titleImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/title.png"));
 	    backgroundImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/background.jpg"));
+	    trebuchetImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/trebuchet.png"));
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

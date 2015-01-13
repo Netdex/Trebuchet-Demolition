@@ -216,7 +216,7 @@ public class PhysicsEngine {
 		Vector difference = rect.getCenterDifferenceRatio(calcVector);
 //		System.out.println(difference);
 
-		double angle = -difference.x;
+		double angle = -difference.x * 2;
 		if(Double.isNaN(angle))
 		    angle = 0;
 		System.out.println(angle);
