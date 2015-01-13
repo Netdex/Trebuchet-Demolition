@@ -296,9 +296,10 @@ public class GamePanel extends JPanel {
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
 	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
-	final Rectangle rect2 = new Rectangle(new Vector(400, 10), new Vector(450, 310), Color.BLACK);
+	final Rectangle rect2 = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
+	rect2.translate(260, 0);
 	rect.rotate(31);
-	rect2.rotate(-31);
+	rect2.rotate(31);
 	engine.addEntity(rect);
 	engine.addEntity(rect2);
 	/* END DEBUG CODE */
@@ -462,7 +463,7 @@ public class GamePanel extends JPanel {
      * Causes the physics engine to do a tick, and repaints
      */
     public void tick() {
-	engine.tick();
+	engine.update();
 	repaint();
     }
 }

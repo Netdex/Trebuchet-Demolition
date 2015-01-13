@@ -14,8 +14,15 @@ public class TrebuchetDemolition extends JFrame {
 	// Don't use the ugly swing theme
 	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
+	
 	final int width = 900;
 	final int height = 600;
+	
+	int panelWidth = width - 5;
+	int panelHeight = height - 28;
+
+	
+	
 
 	this.setBounds(150, 150, width, height);
 	this.setResizable(false);
@@ -24,9 +31,7 @@ public class TrebuchetDemolition extends JFrame {
 	
 	this.setIconImage(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/icon.png")));
 	
-	int panelWidth = width - 5;
-	int panelHeight = height - 28;
-
+	
 	GamePanel sp = new GamePanel(panelWidth, panelHeight);
 	sp.setBounds(0, 0, panelWidth, panelHeight);
 	this.add(sp);

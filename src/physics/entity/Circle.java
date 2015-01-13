@@ -19,7 +19,7 @@ public class Circle extends Entity {
     public Vector loc;
 
     public Circle(Vector loc, Vector vel, Vector acc, int radius, Color c) {
-	super(EntityType.CIRCLE, c, vel);
+	super(c, vel);
 	this.loc = loc;
 	this.radius = radius;
     }
@@ -58,7 +58,12 @@ public class Circle extends Entity {
 
     @Override
     public void drawEntity(Graphics2D g) {
-	    Shape shape = new Ellipse2D.Double(loc.x - radius, loc.y - radius, radius * 2, radius * 2);
-	    g.fill(shape);
+	Shape shape = this.getShape();
+	g.fill(shape);
+    }
+    
+    @Override
+    public Shape getShape(){
+	return new Ellipse2D.Double(loc.x - radius, loc.y - radius, radius * 2, radius * 2);
     }
 }

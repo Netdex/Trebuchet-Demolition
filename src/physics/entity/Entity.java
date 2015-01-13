@@ -2,6 +2,7 @@ package physics.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -14,8 +15,7 @@ import physics.util.Vector;
  */
 public abstract class Entity {
     private static int lastID = 0;
-
-    private final EntityType type;
+    
     private final int entityID;
     private boolean handlingCollision;
 
@@ -23,8 +23,7 @@ public abstract class Entity {
 
     private Color color;
 
-    public Entity(EntityType type, Color c, Vector vel) {
-	this.type = type;
+    public Entity(Color c, Vector vel) {
 	this.entityID = lastID;
 	lastID++;
 	this.color = c;
@@ -83,15 +82,6 @@ public abstract class Entity {
     }
 
     /**
-     * Gets the entity type
-     * 
-     * @return The entity type
-     */
-    public EntityType getType() {
-	return type;
-    }
-
-    /**
      * Checks whether this entity has collided with another one
      * 
      * @param entity The entity to check if this entity has collided with
@@ -100,7 +90,7 @@ public abstract class Entity {
     public abstract CollisionType getCollisionState(Entity entity);
 
     public String toString() {
-	return String.format("%s r%dg%db%d id%d v%s a%s", type.name(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString());
+	return String.format("%s r%dg%db%d id%d v%s a%s", this.getClass().getName(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString());
     }
     
     /**
@@ -108,4 +98,10 @@ public abstract class Entity {
      * @param g The graphics to draw on
      */
     public abstract void drawEntity(Graphics2D g);
+    
+    /**
+     * Gets a Graphics2D shape representing the entity
+     * @return a Shape object representing the entity
+     */
+    public abstract Shape getShape();
 }

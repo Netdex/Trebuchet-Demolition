@@ -3,6 +3,7 @@ package physics.entity;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Shape;
 
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -26,7 +27,7 @@ public class Rectangle extends Entity {
     public double angularAcc;
 
     public Rectangle(Vector p1, Vector p2, Vector p3, Vector p4, Vector vel, double angle, double angularVel, double angularAcc, Color c) {
-	super(EntityType.RECTANGLE, c, vel);
+	super(c, vel);
 	this.p1 = p1;
 	this.p2 = p2;
 	this.p3 = p3;
@@ -40,10 +41,7 @@ public class Rectangle extends Entity {
 
     @Override
     public void drawEntity(Graphics2D g) {
-	int xPoly[] = { (int) p1.x, (int) p2.x, (int) p4.x, (int) p3.x };
-	int yPoly[] = { (int) p1.y, (int) p2.y, (int) p4.y, (int) p3.y };
-
-	Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
+	Shape poly = this.getShape();
 	g.fill(poly);
 
 	/* DEBUG TODO REMOVE DEBUG CODE FOR VISUALING HIT BOXES */
@@ -57,6 +55,15 @@ public class Rectangle extends Entity {
 	g.fillOval((int) center.x - radiusOfIndicator / 2, (int) center.y - radiusOfIndicator / 2, radiusOfIndicator, radiusOfIndicator);
 	/* END DEBUG */
     }
+    
+    @Override
+    public Shape getShape(){
+	int xPoly[] = { (int) p1.x, (int) p2.x, (int) p4.x, (int) p3.x };
+	int yPoly[] = { (int) p1.y, (int) p2.y, (int) p4.y, (int) p3.y };
+
+	Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
+	return poly;
+    }
 
     /**
      * Creates a rectangle with the least possible arguments
@@ -66,7 +73,7 @@ public class Rectangle extends Entity {
      * @param c The color
      */
     public Rectangle(Vector p1, Vector p2, Color c) {
-	super(EntityType.RECTANGLE, c, Vector.ZERO);
+	super(c, Vector.ZERO);
 	this.p1 = p1;
 	this.p4 = p2;
 	this.p2 = new Vector(p2.x, p1.y);
@@ -96,7 +103,6 @@ public class Rectangle extends Entity {
      * 
      * @return The height of the Rectangle
      * 
-     *         TODO Fix math on rectangle height calculations, and width calculations
      */
     public double getHeight() {
 	return p1.distance(p3);
@@ -164,15 +170,23 @@ public class Rectangle extends Entity {
 	    Rectangle rect = (Rectangle) entity;
 	    AABB thisBounds = this.getBoundingBox();
 	    AABB otherBounds = rect.getBoundingBox();
-	    if (thisBounds.p2.x < otherBounds.p1.x || thisBounds.p1.x > otherBounds.p2.x)
+	    // Do a preliminary bounding box overlap check to see if they collide, since this check is less CPU intensive
+	    if (thisBounds.p2.x < otherBounds.p1.x || thisBounds.p1.x > otherBounds.p2.x || thisBounds.p2.y < otherBounds.p1.y || thisBounds.p1.y > otherBounds.p2.y)
 		return CollisionType.NO_COLLISION;
-	    if (thisBounds.p2.y < otherBounds.p1.y || thisBounds.p1.y > otherBounds.p2.y)
-		return CollisionType.NO_COLLISION;
-	    return CollisionType.RECT_TO_RECT;
+	    
+	    // Do a more detailed check by seeing if any of the points in the other shape are in this one
+	    for(Vector vector : rect.getPointArray()){
+		if(this.getShape().contains(vector.x, vector.y)){
+		    System.out.println("YES");
+		    return CollisionType.RECT_TO_RECT;
+		}
+	    }
+	    System.out.println("NO");
+	    return CollisionType.NO_COLLISION;
 	}
 	return CollisionType.NO_COLLISION;
     }
-
+    
     /**
      * Translates the entire rectangle
      * 

@@ -19,7 +19,7 @@ public class AABB extends Entity {
     public Vector p2;
 
     public AABB(Vector p1, Vector p2, Vector vel, Color c) {
-	super(EntityType.AABB, c, vel);
+	super(c, vel);
 	this.p1 = p1;
 	this.p2 = p2;
     }
@@ -61,7 +61,12 @@ public class AABB extends Entity {
 
     @Override
     public void drawEntity(Graphics2D g) {
-	Shape shape = new Rectangle2D.Double(p1.x, p1.y, getWidth(), getHeight());
+	Shape shape = this.getShape();
 	g.draw(shape);
+    }
+    
+    @Override
+    public Shape getShape(){
+	return new Rectangle2D.Double(p1.x, p1.y, getWidth(), getHeight());
     }
 }

@@ -69,16 +69,16 @@ public class PhysicsEngine {
     }
 
     /**
-     * Makes the physics engine do a physics 'tick'
+     * Makes the physics engine do a physics update
      */
-    public void tick() {
+    public void update() {
 	collisionsInTick = 0;
 	for (Entity e : entities) {
 	    e.setHandling(false);
 	}
 	for (Entity e : entities) {
 	    boolean collided;
-	    collided = handleCollisions(e);
+	    collided = handleWallCollisions(e) || handleEntityCollisions(e);
 	    if (collided)
 		collisionsInTick++;
 	    else if (gravity)
@@ -102,12 +102,36 @@ public class PhysicsEngine {
     }
 
     /**
-     * Checks for collisions with walls or other entities of an entity
-     * 
-     * @param entity The entity to check for collisions for
-     * @return Whether or not the entity is colliding
+     * Checks if this entity is colliding with another one
+     * @param entity The entity to check
+     * @return whether this entity is colliding with another one
      */
-    public synchronized boolean handleCollisions(Entity entity) {
+    public synchronized boolean handleEntityCollisions(Entity entity){
+	if (!entity.isHandling()) {
+	    for (Entity e : entities) {
+		if (e != entity && !e.isHandling()) {
+		    CollisionType colType = entity.getCollisionState(e);
+		    if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
+			CollisionResolver.resolveCircleCollision((Circle) entity, (Circle) e, RESTITUTION);
+			entity.setHandling(true);
+			e.setHandling(true);
+		    } else if (colType == CollisionType.RECT_TO_RECT) {
+			CollisionResolver.resolveRectangleCollision((Rectangle) entity, (Rectangle) e, RESTITUTION);
+			entity.setHandling(true);
+			e.setHandling(true);
+		    }
+		}
+	    }
+	}
+	return false;
+    }
+    
+    /**
+     * Checks for collisions with walls
+     * @param entity The entity to check for wall collisions
+     * @return Whether or not the entity is colliding with a wall
+     */
+    public synchronized boolean handleWallCollisions(Entity entity) {
 	// Check for circle based collisions
 	if (entity instanceof Circle) {
 	    Circle circle = (Circle) entity;
@@ -216,10 +240,10 @@ public class PhysicsEngine {
 		Vector difference = rect.getCenterDifferenceRatio(calcVector);
 //		System.out.println(difference);
 
-		double angle = -difference.x * 2;
+		double angle = -difference.x;
 		if(Double.isNaN(angle))
 		    angle = 0;
-		System.out.println(angle);
+		
 		if (difference.x < 0) {
 		    rect.rotate(angle, rect.getLowestPoint());
 		} else {
@@ -232,22 +256,6 @@ public class PhysicsEngine {
 	}
 
 	// Loop through all the entities, and see if they are colliding with this one
-	if (!entity.isHandling()) {
-	    for (Entity e : entities) {
-		if (e != entity && !e.isHandling()) {
-		    CollisionType colType = entity.getCollisionState(e);
-		    if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
-			CollisionResolver.resolveCircleCollision((Circle) entity, (Circle) e, RESTITUTION);
-			entity.setHandling(true);
-			e.setHandling(true);
-		    } else if (colType == CollisionType.RECT_TO_RECT) {
-			CollisionResolver.resolveRectangleCollision((Rectangle) entity, (Rectangle) e, RESTITUTION);
-			entity.setHandling(true);
-			e.setHandling(true);
-		    }
-		}
-	    }
-	}
 	return false;
 
     }
