@@ -1,5 +1,7 @@
 package game;
 
+import java.awt.Dimension;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -20,20 +22,17 @@ public class TrebuchetDemolition extends JFrame {
 	
 	int panelWidth = width - 5;
 	int panelHeight = height - 28;
-
 	
-	
-
-	this.setBounds(150, 150, width, height);
 	this.setResizable(false);
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	this.setLayout(null);
 	
 	this.setIconImage(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/icon.png")));
 	
 	
 	GamePanel sp = new GamePanel(panelWidth, panelHeight);
 	sp.setBounds(0, 0, panelWidth, panelHeight);
+	sp.setPreferredSize(new Dimension(panelWidth, panelHeight));
+	sp.setMinimumSize(new Dimension(panelWidth, panelHeight));
 	this.add(sp);
     }
 
@@ -43,6 +42,7 @@ public class TrebuchetDemolition extends JFrame {
 		try {
 		    TrebuchetDemolition td = new TrebuchetDemolition();
 		    td.setVisible(true);
+		    td.pack();
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}

@@ -77,11 +77,11 @@ public class PhysicsEngine {
 	    e.setHandling(false);
 	}
 	for (Entity e : entities) {
-	    boolean collided;
-	    collided = handleWallCollisions(e) || handleEntityCollisions(e);
-	    if (collided)
+	    boolean entityCollided = handleEntityCollisions(e);
+	    boolean wallCollided = handleWallCollisions(e);
+	    if (entityCollided || wallCollided)
 		collisionsInTick++;
-	    else if (gravity)
+	    if (gravity)
 		e.vel = e.vel.subtract(GRAVITY_CONSTANT);
 
 	    // Subtract the acceleration from velocities
@@ -107,6 +107,7 @@ public class PhysicsEngine {
      * @return whether this entity is colliding with another one
      */
     public synchronized boolean handleEntityCollisions(Entity entity){
+	boolean hasCollided = false;
 	if (!entity.isHandling()) {
 	    for (Entity e : entities) {
 		if (e != entity && !e.isHandling()) {
@@ -115,15 +116,17 @@ public class PhysicsEngine {
 			CollisionResolver.resolveCircleCollision((Circle) entity, (Circle) e, RESTITUTION);
 			entity.setHandling(true);
 			e.setHandling(true);
+			hasCollided = true;
 		    } else if (colType == CollisionType.RECT_TO_RECT) {
 			CollisionResolver.resolveRectangleCollision((Rectangle) entity, (Rectangle) e, RESTITUTION);
 			entity.setHandling(true);
 			e.setHandling(true);
+			hasCollided = true;
 		    }
 		}
 	    }
 	}
-	return false;
+	return hasCollided;
     }
     
     /**
@@ -208,51 +211,51 @@ public class PhysicsEngine {
 	    Rectangle rect = (Rectangle) entity;
 	    AABB boundingBox = rect.getBoundingBox();
 
-	    boolean retType = false;
-	    if (boundingBox.p1.x < 0) {
-		double correction = Math.abs(boundingBox.p1.x);
-		rect.translate(correction, 0);
-		rect.vel.x = -rect.vel.x / RESTITUTION;
-		rect.rotate(1, rect.getLeftmostPoint());
-		retType = true;
-	    }
-	    if (boundingBox.p1.y < 0) {
-		double correction = Math.abs(boundingBox.p1.y);
-		rect.translate(0, correction);
-		rect.vel.y = -rect.vel.y / RESTITUTION;
-		rect.rotate(1, rect.getHighestPoint());
-		retType = true;
-	    }
-	    if (boundingBox.p2.x > width) {
-		double correction = boundingBox.p2.x - width;
-		rect.translate(-correction, 0);
-		rect.vel.x = -rect.vel.x / RESTITUTION;
-
-		rect.rotate(1, rect.getRightmostPoint());
-		retType = true;
-	    }
-	    if (boundingBox.p2.y > height) {
-		double correction = boundingBox.p2.y - height;
-		rect.translate(0, -correction);
-		rect.vel.y = -rect.vel.y / RESTITUTION;
-
-		Vector calcVector = rect.getLowestPoint();
-		Vector difference = rect.getCenterDifferenceRatio(calcVector);
-//		System.out.println(difference);
-
-		double angle = -difference.x;
-		if(Double.isNaN(angle))
-		    angle = 0;
-		
-		if (difference.x < 0) {
-		    rect.rotate(angle, rect.getLowestPoint());
-		} else {
-		    rect.rotate(angle, rect.getLowestPoint());
-		}
-		retType = true;
-	    }
-	    if (retType)
-		return true;
+//	    boolean retType = false;
+//	    if (boundingBox.p1.x < 0) {
+//		double correction = Math.abs(boundingBox.p1.x);
+//		rect.translate(correction, 0);
+//		rect.vel.x = -rect.vel.x / RESTITUTION;
+//		rect.rotate(1, rect.getLeftmostPoint());
+//		retType = true;
+//	    }
+//	    if (boundingBox.p1.y < 0) {
+//		double correction = Math.abs(boundingBox.p1.y);
+//		rect.translate(0, correction);
+//		rect.vel.y = -rect.vel.y / RESTITUTION;
+//		rect.rotate(1, rect.getHighestPoint());
+//		retType = true;
+//	    }
+//	    if (boundingBox.p2.x > width) {
+//		double correction = boundingBox.p2.x - width;
+//		rect.translate(-correction, 0);
+//		rect.vel.x = -rect.vel.x / RESTITUTION;
+//
+//		rect.rotate(1, rect.getRightmostPoint());
+//		retType = true;
+//	    }
+//	    if (boundingBox.p2.y > height) {
+//		double correction = boundingBox.p2.y - height;
+//		rect.translate(0, -correction);
+//		rect.vel.y = -rect.vel.y / RESTITUTION;
+//
+//		Vector calcVector = rect.getLowestPoint();
+//		Vector difference = rect.getCenterDifferenceRatio(calcVector);
+////		System.out.println(difference);
+//
+//		double angle = -difference.x;
+//		if(Double.isNaN(angle))
+//		    angle = 0;
+//		
+//		if (difference.x < 0) {
+//		    rect.rotate(angle, rect.getLowestPoint());
+//		} else {
+//		    rect.rotate(angle, rect.getLowestPoint());
+//		}
+//		retType = true;
+//	    }
+//	    if (retType)
+//		return true;
 	}
 
 	// Loop through all the entities, and see if they are colliding with this one

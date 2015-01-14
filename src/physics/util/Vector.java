@@ -210,4 +210,13 @@ public class Vector {
     public String toString() {
 	return String.format("vec{x=%.2f,y=%.2f}", x, y);
     }
+
+    /**
+     * Divides a vector by a scalar
+     * @param scalar The scalar to divide by
+     * @return a new vector divided by the scalar
+     */
+    public Vector divide(double scalar) {
+	return new Vector(x / scalar, y / scalar);
+    }
 }
