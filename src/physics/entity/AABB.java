@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import physics.util.CollisionType;
+import physics.util.MathOperations;
 import physics.util.Vector;
 
 /**
@@ -49,12 +50,7 @@ public class AABB extends Entity {
 
     public CollisionType getCollisionState(Entity entity) {
 	if (entity instanceof AABB) {
-	    AABB aabb = (AABB) entity;
-	    if (p2.x < aabb.p1.x || p1.x > aabb.p2.x)
-		return CollisionType.NO_COLLISION;
-	    if (p2.y < aabb.p1.y || p1.y > aabb.p2.y)
-		return CollisionType.NO_COLLISION;
-	    return CollisionType.AABB_TO_AABB;
+	    return MathOperations.hasAABBCollision(this, (AABB) entity);
 	}
 	return CollisionType.NO_COLLISION;
     }
@@ -68,5 +64,18 @@ public class AABB extends Entity {
     @Override
     public Shape getShape(){
 	return new Rectangle2D.Double(p1.x, p1.y, getWidth(), getHeight());
+    }
+
+    @Override
+    public Vector[] getPointArray() {
+	return new Vector[]{p1, p2};
+    }
+    
+    /**
+     * Gets the center of the AABB
+     * @return the center of the AABB
+     */
+    public Vector getCenter(){
+	return new Vector(p1.x + getWidth() / 2, p1.y + getHeight() / 2);
     }
 }

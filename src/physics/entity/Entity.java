@@ -22,6 +22,8 @@ public abstract class Entity {
     public Vector vel;
 
     private Color color;
+    
+    private boolean hasPhysics;
 
     public Entity(Color c, Vector vel) {
 	this.entityID = lastID;
@@ -29,6 +31,38 @@ public abstract class Entity {
 	this.color = c;
 	this.handlingCollision = false;
 	this.vel = vel;
+	hasPhysics = true;
+    }
+    
+    public Entity(Color c, Vector vel, boolean hasPhysics) {
+	this.entityID = lastID;
+	lastID++;
+	this.color = c;
+	this.handlingCollision = false;
+	this.vel = vel;
+	this.hasPhysics = hasPhysics;
+    }
+
+    /**
+     * Gets an array of all the points in the shape
+     * @return an array of all the points in the shape
+     */
+    public abstract Vector[] getPointArray();
+    
+    /**
+     * Returns whether the entity has physics or not
+     * @return whether the entity has physics or not
+     */
+    public boolean hasPhysics() {
+        return hasPhysics;
+    }
+
+    /**
+     * Set the entities physics
+     * @param hasPhysics The new value for the entity's physics
+     */
+    public void setPhysics(boolean hasPhysics) {
+        this.hasPhysics = hasPhysics;
     }
 
     /**

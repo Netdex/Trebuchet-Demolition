@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 import physics.util.CollisionType;
+import physics.util.MathOperations;
 import physics.util.Vector;
 
 /**
@@ -34,6 +35,7 @@ public class Circle extends Entity {
     }
 
     public CollisionType getCollisionState(Entity entity) {
+	// Check for this circle to another 
 	if (entity instanceof Circle) {
 	    Circle circle = (Circle) entity;
 	    int otherRadius = circle.getRadius();
@@ -46,6 +48,22 @@ public class Circle extends Entity {
 	    double dist = (ax - bx) * (ax - bx) + (ay - by) * (ay - by);
 	    if (totalRadius > dist) {
 		return CollisionType.CIRCLE_TO_CIRCLE;
+	    }
+	    return CollisionType.NO_COLLISION;
+	}
+	// Check for this circle to a rectangle
+	else if(entity instanceof Rectangle){
+	    
+	    
+	}
+	// CHeck for this circle to an AABB
+	else if(entity instanceof AABB){
+	    AABB aabb = (AABB) entity;
+	    AABB bounds = this.getBoundingBox();
+	    
+	    CollisionType doesCollide = MathOperations.hasAABBCollision(aabb, bounds);
+	    if(doesCollide == CollisionType.AABB_TO_AABB){
+		return CollisionType.CIRCLE_TO_AABB;
 	    }
 	    return CollisionType.NO_COLLISION;
 	}
@@ -65,5 +83,18 @@ public class Circle extends Entity {
     @Override
     public Shape getShape(){
 	return new Ellipse2D.Double(loc.x - radius, loc.y - radius, radius * 2, radius * 2);
+    }
+
+    @Override
+    public Vector[] getPointArray() {
+	return new Vector[]{loc};
+    }
+    
+    /**
+     * Gets the bounds around this circle
+     * @return the bounds around this circle
+     */
+    public AABB getBoundingBox(){
+	return new AABB(new Vector(loc.x - radius, loc.y - radius), new Vector(loc.x + radius, loc.y + radius), Vector.ZERO, Color.BLACK);
     }
 }

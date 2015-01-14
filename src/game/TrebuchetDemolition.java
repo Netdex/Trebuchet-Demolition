@@ -22,7 +22,7 @@ public class TrebuchetDemolition extends JFrame {
 	
 	int panelWidth = width - 5;
 	int panelHeight = height - 28;
-	
+	this.setLocationByPlatform(true);
 	this.setResizable(false);
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	

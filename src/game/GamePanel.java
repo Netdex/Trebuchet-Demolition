@@ -4,8 +4,8 @@ import game.graphics.GraphicsTools;
 import game.graphics.ScreenType;
 import game.graphics.menu.AlignedMenu;
 import game.graphics.menu.CenteredMenu;
-import game.graphics.menu.MenuKeyEvent;
 import game.graphics.menu.MenuItem;
+import game.graphics.menu.MenuKeyEvent;
 import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
 import game.level.LevelManager;
@@ -14,15 +14,11 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -30,7 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import physics.PhysicsEngine;
-import physics.entity.AABB;
 import physics.entity.Circle;
 import physics.entity.Entity;
 import physics.entity.Rectangle;
@@ -297,9 +292,6 @@ public class GamePanel extends JPanel {
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
 	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
 	final Rectangle rect2 = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
-	rect2.translate(260, 0);
-	rect.rotate(31);
-	rect2.rotate(31);
 	engine.addEntity(rect);
 	engine.addEntity(rect2);
 	/* END DEBUG CODE */
@@ -342,7 +334,7 @@ public class GamePanel extends JPanel {
 	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
 	    g.drawString("[GAME VARIABLES]: ", 10, 65);
 	    g.drawString("Power: " + power + "%", 10, 80);
-	    g.drawString("Angle: " + angle + "°", 10, 95);
+	    g.drawString("Angle: " + angle + "ï¿½", 10, 95);
 
 	    int x = 30;
 	    int y = 50;

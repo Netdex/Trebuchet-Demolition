@@ -8,7 +8,6 @@ import java.util.Properties;
 import physics.entity.AABB;
 import physics.entity.Circle;
 import physics.entity.Entity;
-import physics.entity.Rectangle;
 import physics.util.CollisionResolver;
 import physics.util.CollisionType;
 import physics.util.Vector;
@@ -81,21 +80,14 @@ public class PhysicsEngine {
 	    boolean wallCollided = handleWallCollisions(e);
 	    if (entityCollided || wallCollided)
 		collisionsInTick++;
-	    if (gravity)
+	    if (gravity && e.hasPhysics()){
 		e.vel = e.vel.subtract(GRAVITY_CONSTANT);
+	    }
 
 	    // Subtract the acceleration from velocities
-	    if (e instanceof Circle) {
-		Circle c = (Circle) e;
-		c.loc = c.loc.subtract(e.vel);
-	    } else if (e instanceof AABB) {
-		AABB a = (AABB) e;
-		a.p1 = a.p1.subtract(a.vel);
-		a.p2 = a.p2.subtract(a.vel);
-	    } else if (e instanceof Rectangle) {
-		Rectangle r = (Rectangle) e;
-		r.translate(-r.vel.x, -r.vel.y);
-		r.rotate(r.angularVel);
+	    for(Vector vector : e.getPointArray()){
+		vector.x -= e.vel.x;
+		vector.y -= e.vel.y;
 	    }
 	}
 
@@ -114,11 +106,6 @@ public class PhysicsEngine {
 		    CollisionType colType = entity.getCollisionState(e);
 		    if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
 			CollisionResolver.resolveCircleCollision((Circle) entity, (Circle) e, RESTITUTION);
-			entity.setHandling(true);
-			e.setHandling(true);
-			hasCollided = true;
-		    } else if (colType == CollisionType.RECT_TO_RECT) {
-			CollisionResolver.resolveRectangleCollision((Rectangle) entity, (Rectangle) e, RESTITUTION);
 			entity.setHandling(true);
 			e.setHandling(true);
 			hasCollided = true;
@@ -206,59 +193,6 @@ public class PhysicsEngine {
 		return true;
 
 	}
-	// Rectangle wall collisions
-	else if (entity instanceof Rectangle) {
-	    Rectangle rect = (Rectangle) entity;
-	    AABB boundingBox = rect.getBoundingBox();
-
-//	    boolean retType = false;
-//	    if (boundingBox.p1.x < 0) {
-//		double correction = Math.abs(boundingBox.p1.x);
-//		rect.translate(correction, 0);
-//		rect.vel.x = -rect.vel.x / RESTITUTION;
-//		rect.rotate(1, rect.getLeftmostPoint());
-//		retType = true;
-//	    }
-//	    if (boundingBox.p1.y < 0) {
-//		double correction = Math.abs(boundingBox.p1.y);
-//		rect.translate(0, correction);
-//		rect.vel.y = -rect.vel.y / RESTITUTION;
-//		rect.rotate(1, rect.getHighestPoint());
-//		retType = true;
-//	    }
-//	    if (boundingBox.p2.x > width) {
-//		double correction = boundingBox.p2.x - width;
-//		rect.translate(-correction, 0);
-//		rect.vel.x = -rect.vel.x / RESTITUTION;
-//
-//		rect.rotate(1, rect.getRightmostPoint());
-//		retType = true;
-//	    }
-//	    if (boundingBox.p2.y > height) {
-//		double correction = boundingBox.p2.y - height;
-//		rect.translate(0, -correction);
-//		rect.vel.y = -rect.vel.y / RESTITUTION;
-//
-//		Vector calcVector = rect.getLowestPoint();
-//		Vector difference = rect.getCenterDifferenceRatio(calcVector);
-////		System.out.println(difference);
-//
-//		double angle = -difference.x;
-//		if(Double.isNaN(angle))
-//		    angle = 0;
-//		
-//		if (difference.x < 0) {
-//		    rect.rotate(angle, rect.getLowestPoint());
-//		} else {
-//		    rect.rotate(angle, rect.getLowestPoint());
-//		}
-//		retType = true;
-//	    }
-//	    if (retType)
-//		return true;
-	}
-
-	// Loop through all the entities, and see if they are colliding with this one
 	return false;
 
     }
