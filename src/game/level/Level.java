@@ -3,6 +3,7 @@ package game.level;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Vector;
 
 import physics.entity.Entity;
 
@@ -17,9 +18,9 @@ public class Level {
     private String name;
     private File file;
     private Properties metadata;
-    private ArrayList<Entity> levelEntities;
+    private Vector<Entity> levelEntities;
 
-    public Level(String name, File file, Properties metadata, ArrayList<Entity> levelEntities) {
+    public Level(String name, File file, Properties metadata, Vector<Entity> levelEntities) {
 	this.name = name;
 	this.file = file;
 	this.metadata = metadata;
@@ -67,7 +68,7 @@ public class Level {
      * 
      * @return the entities in this level
      */
-    public ArrayList<Entity> getEntities() {
+    public Vector<Entity> getEntities() {
 	return levelEntities;
     }
 
@@ -76,7 +77,7 @@ public class Level {
      * 
      * @param levelEntities the new entities in this level
      */
-    public void setLevelEntities(ArrayList<Entity> levelEntities) {
+    public void setLevelEntities(Vector<Entity> levelEntities) {
 	this.levelEntities = levelEntities;
     }
 

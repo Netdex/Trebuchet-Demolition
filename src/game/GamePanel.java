@@ -26,10 +26,10 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import physics.PhysicsEngine;
+import physics.entity.AABB;
 import physics.entity.Circle;
 import physics.entity.Entity;
-import physics.entity.Rectangle;
-import physics.util.Vector;
+import physics.util.Vector2D;
 import tasks.GameClockTask;
 
 /**
@@ -49,6 +49,7 @@ public class GamePanel extends JPanel {
     /***********************************************************************/
     public PhysicsEngine engine;
     private Timer physicsTimer;
+    private Level loadedLevel;
 
     // Approximately 60 frames per second
     private static final int TICK_RATE = 10;
@@ -231,7 +232,8 @@ public class GamePanel extends JPanel {
 
 	// Start the music TODO Add configuration support
 	musicManager = new MusicManager();
-	musicManager.start();
+	if (ConfigurationManager.musicEnabled)
+	    musicManager.start();
 
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
@@ -262,12 +264,13 @@ public class GamePanel extends JPanel {
 			} else if (keycode == KeyEvent.VK_SPACE) {
 			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 10);
 			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 10);
-			    Vector vel = new Vector(vecX, vecY);
+			    Vector2D vel = new Vector2D(vecX, vecY);
 
-			    Circle c = new Circle(new Vector(50, height - 50), vel, new Vector(0, 0), 10, Color.BLACK);
+			    Circle c = new Circle(new Vector2D(50, height - 50), vel, new Vector2D(0, 0), 10, Color.BLACK);
 			    engine.addEntity(c);
+
 			} else if (keycode == KeyEvent.VK_0) {
-			    engine.clearAll();
+			    engine.removeProjectiles();
 			} else if (keycode == KeyEvent.VK_ESCAPE) {
 			    pause();
 			    repaint();
@@ -290,10 +293,8 @@ public class GamePanel extends JPanel {
 	});
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-	final Rectangle rect = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
-	final Rectangle rect2 = new Rectangle(new Vector(100, 10), new Vector(150, 310), Color.BLACK);
-	engine.addEntity(rect);
-	engine.addEntity(rect2);
+	final AABB aabb = new AABB(new Vector2D(300, 10), new Vector2D(350, 310), Vector2D.ZERO, Color.BLACK);
+	engine.addEntity(aabb);
 	/* END DEBUG CODE */
     }
 
@@ -310,7 +311,21 @@ public class GamePanel extends JPanel {
 	    JOptionPane.showMessageDialog(null, "An error occured while loading a level: " + e.getMessage(), "Level Loading Error", JOptionPane.ERROR_MESSAGE);
 	    return;
 	}
+	loadedLevel = level;
 	engine.loadLevel(level);
+    }
+
+    /**
+     * Checks for a win, then takes suitable action
+     */
+    public void checkWin() {
+	if (engine.hasWon()) {
+	    JOptionPane.showMessageDialog(null, "You have won!", "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
+	    stop();
+	    engine.clearAll();
+	    displayScreen = ScreenType.LEVEL_SELECT;
+	    repaint();
+	}
     }
 
     /**
@@ -336,9 +351,7 @@ public class GamePanel extends JPanel {
 	    g.drawString("Power: " + power + "%", 10, 80);
 	    g.drawString("Angle: " + angle + "�", 10, 95);
 
-	    int x = 30;
-	    int y = 50;
-	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0 ,0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
+	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0, 0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
 	    // Draw all the entities on the screen
 	    for (Entity entity : engine.getEntities()) {
 		g.setColor(entity.getColor());

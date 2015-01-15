@@ -3,14 +3,16 @@ package physics;
 import game.level.Level;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Properties;
+import java.util.Vector;
 
 import physics.entity.AABB;
 import physics.entity.Circle;
 import physics.entity.Entity;
 import physics.util.CollisionResolver;
 import physics.util.CollisionType;
-import physics.util.Vector;
+import physics.util.Vector2D;
 
 /**
  * Contains the main code to emulate physics
@@ -20,9 +22,9 @@ import physics.util.Vector;
  */
 public class PhysicsEngine {
     // These constants are not related to real world constants
-    public static final Vector GRAVITY_CONSTANT = new Vector(0, 0.1);
+    public static final Vector2D GRAVITY_CONSTANT = new Vector2D(0, 0.1);
     private static final double FRICTION = 1.05;
-    private static final double RESTITUTION = 2;
+    private static final double RESTITUTION = 1.5;
 
     public boolean gravity = true;
 
@@ -31,12 +33,14 @@ public class PhysicsEngine {
 
     public int collisionsInTick = 0;
 
-    private ArrayList<Entity> entities;
+    private Vector<Entity> entities;
+
+    private boolean won = false;
 
     public PhysicsEngine(int width, int height) {
 	this.width = width;
 	this.height = height;
-	this.entities = new ArrayList<Entity>();
+	this.entities = new Vector<Entity>();
     }
 
     /**
@@ -47,8 +51,9 @@ public class PhysicsEngine {
     @SuppressWarnings("unchecked")
     public void loadLevel(Level level) {
 	entities.clear();
+	won = false;
 	Properties metadata = level.getMetadata();
-	ArrayList<Entity> levelEntities = level.getEntities();
+	Vector<Entity> levelEntities = level.getEntities();
 
 	try {
 	    if (metadata.getProperty("gravity") != null) {
@@ -64,7 +69,7 @@ public class PhysicsEngine {
 	    e.printStackTrace();
 	}
 
-	entities = (ArrayList<Entity>) levelEntities.clone();
+	entities = (Vector) levelEntities.clone();
     }
 
     /**
@@ -80,12 +85,12 @@ public class PhysicsEngine {
 	    boolean wallCollided = handleWallCollisions(e);
 	    if (entityCollided || wallCollided)
 		collisionsInTick++;
-	    if (gravity && e.hasPhysics()){
+	    if (gravity && e.hasPhysics()) {
 		e.vel = e.vel.subtract(GRAVITY_CONSTANT);
 	    }
 
 	    // Subtract the acceleration from velocities
-	    for(Vector vector : e.getPointArray()){
+	    for (Vector2D vector : e.getPointArray()) {
 		vector.x -= e.vel.x;
 		vector.y -= e.vel.y;
 	    }
@@ -95,29 +100,42 @@ public class PhysicsEngine {
 
     /**
      * Checks if this entity is colliding with another one
+     * 
      * @param entity The entity to check
      * @return whether this entity is colliding with another one
      */
-    public synchronized boolean handleEntityCollisions(Entity entity){
+    public synchronized boolean handleEntityCollisions(Entity entity) {
 	boolean hasCollided = false;
 	if (!entity.isHandling()) {
 	    for (Entity e : entities) {
-		if (e != entity && !e.isHandling()) {
+		if (e != entity) {
 		    CollisionType colType = entity.getCollisionState(e);
 		    if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
 			CollisionResolver.resolveCircleCollision((Circle) entity, (Circle) e, RESTITUTION);
 			entity.setHandling(true);
 			e.setHandling(true);
 			hasCollided = true;
+		    } else if (colType == CollisionType.AABB_TO_AABB) {
+			entity.setHandling(true);
+			e.setHandling(true);
+			hasCollided = true;
+		    } else if (colType == CollisionType.CIRCLE_TO_AABB) {
+			CollisionResolver.resolveAABBCircleCollision((Circle) entity, (AABB) e, RESTITUTION);
+			entity.setHandling(true);
+			e.setHandling(true);
+			hasCollided = true;
+		    } else if (colType == CollisionType.WINNING_COLLISION) {
+			won = true;
 		    }
 		}
 	    }
 	}
 	return hasCollided;
     }
-    
+
     /**
      * Checks for collisions with walls
+     * 
      * @param entity The entity to check for wall collisions
      * @return Whether or not the entity is colliding with a wall
      */
@@ -207,7 +225,7 @@ public class PhysicsEngine {
     }
 
     /**
-     * Removes the entity to the physics engine
+     * Removes the entity from the physics engine
      * 
      * @param entity The entity to remove
      */
@@ -215,12 +233,26 @@ public class PhysicsEngine {
 	entities.remove(entity);
     }
 
+    public void removeProjectiles() {
+
+	for (Entity entity : entities) {
+	    try {
+		if (entity instanceof Circle) {
+		    removeEntity(entity);
+		}
+	    } catch (Throwable e) {
+
+	    }
+	}
+
+    }
+
     /**
      * Gets all the entities in the engine
      * 
      * @return All the entities in the engine
      */
-    public ArrayList<Entity> getEntities() {
+    public Vector<Entity> getEntities() {
 	return entities;
     }
 
@@ -229,5 +261,13 @@ public class PhysicsEngine {
      */
     public void clearAll() {
 	entities.clear();
+    }
+
+    public boolean hasWon() {
+	return won;
+    }
+
+    public void setWon(boolean b) {
+	won = b;
     }
 }

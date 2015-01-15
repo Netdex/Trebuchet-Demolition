@@ -7,7 +7,7 @@ import java.awt.geom.Ellipse2D;
 
 import physics.util.CollisionType;
 import physics.util.MathOperations;
-import physics.util.Vector;
+import physics.util.Vector2D;
 
 /**
  * Represents a Circle which is an entity
@@ -17,9 +17,9 @@ import physics.util.Vector;
  */
 public class Circle extends Entity {
     private int radius;
-    public Vector loc;
+    public Vector2D loc;
 
-    public Circle(Vector loc, Vector vel, Vector acc, int radius, Color c) {
+    public Circle(Vector2D loc, Vector2D vel, Vector2D acc, int radius, Color c) {
 	super(c, vel);
 	this.loc = loc;
 	this.radius = radius;
@@ -56,7 +56,17 @@ public class Circle extends Entity {
 	    
 	    
 	}
-	// CHeck for this circle to an AABB
+	else if(entity instanceof Target){
+	    Target target = (Target) entity;
+	    AABB bounds = this.getBoundingBox();
+	    
+	    CollisionType doesCollide = MathOperations.hasAABBCollision(target, bounds);
+	    if(doesCollide == CollisionType.AABB_TO_AABB){
+		return CollisionType.WINNING_COLLISION;
+	    }
+	    return CollisionType.NO_COLLISION;
+	}
+	// Check for this circle to an AABB
 	else if(entity instanceof AABB){
 	    AABB aabb = (AABB) entity;
 	    AABB bounds = this.getBoundingBox();
@@ -67,6 +77,7 @@ public class Circle extends Entity {
 	    }
 	    return CollisionType.NO_COLLISION;
 	}
+	
 	return CollisionType.NO_COLLISION;
     }
 
@@ -86,8 +97,8 @@ public class Circle extends Entity {
     }
 
     @Override
-    public Vector[] getPointArray() {
-	return new Vector[]{loc};
+    public Vector2D[] getPointArray() {
+	return new Vector2D[]{loc};
     }
     
     /**
@@ -95,6 +106,6 @@ public class Circle extends Entity {
      * @return the bounds around this circle
      */
     public AABB getBoundingBox(){
-	return new AABB(new Vector(loc.x - radius, loc.y - radius), new Vector(loc.x + radius, loc.y + radius), Vector.ZERO, Color.BLACK);
+	return new AABB(new Vector2D(loc.x - radius, loc.y - radius), new Vector2D(loc.x + radius, loc.y + radius), Vector2D.ZERO, Color.BLACK);
     }
 }

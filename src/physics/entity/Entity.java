@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 
 import physics.util.CollisionType;
-import physics.util.Vector;
+import physics.util.Vector2D;
 
 /**
  * Represents an entity
@@ -19,13 +19,13 @@ public abstract class Entity {
     private final int entityID;
     private boolean handlingCollision;
 
-    public Vector vel;
+    public Vector2D vel;
 
     private Color color;
     
     private boolean hasPhysics;
 
-    public Entity(Color c, Vector vel) {
+    public Entity(Color c, Vector2D vel) {
 	this.entityID = lastID;
 	lastID++;
 	this.color = c;
@@ -34,7 +34,7 @@ public abstract class Entity {
 	hasPhysics = true;
     }
     
-    public Entity(Color c, Vector vel, boolean hasPhysics) {
+    public Entity(Color c, Vector2D vel, boolean hasPhysics) {
 	this.entityID = lastID;
 	lastID++;
 	this.color = c;
@@ -47,7 +47,7 @@ public abstract class Entity {
      * Gets an array of all the points in the shape
      * @return an array of all the points in the shape
      */
-    public abstract Vector[] getPointArray();
+    public abstract Vector2D[] getPointArray();
     
     /**
      * Returns whether the entity has physics or not

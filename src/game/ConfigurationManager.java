@@ -9,7 +9,7 @@ package game;
 
 public class ConfigurationManager {
     
-    public static boolean musicEnabled = true;
+    public static boolean musicEnabled = false;
     
     public static void loadConfiguration(){
 	

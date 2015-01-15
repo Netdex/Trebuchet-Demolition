@@ -6,15 +6,15 @@ package physics.util;
  * @author Gordon Guan
  * @version Dec 2014
  */
-public class Vector {
-    public final static Vector ZERO = new Vector(0, 0);
+public class Vector2D {
+    public final static Vector2D ZERO = new Vector2D(0, 0);
     public double x;
     public double y;
 
     /**
      * Construct the vector with all components as 0.
      */
-    public Vector() {
+    public Vector2D() {
 	this.x = 0;
 	this.y = 0;
     }
@@ -25,7 +25,7 @@ public class Vector {
      * @param x X component
      * @param y Y component
      */
-    public Vector(double x, double y) {
+    public Vector2D(double x, double y) {
 	this.x = x;
 	this.y = y;
     }
@@ -36,8 +36,8 @@ public class Vector {
      * @param vec The other vector
      * @return the same vector
      */
-    public Vector add(Vector vec) {
-	return new Vector(x + vec.x, y + vec.y);
+    public Vector2D add(Vector2D vec) {
+	return new Vector2D(x + vec.x, y + vec.y);
     }
 
     /**
@@ -46,8 +46,8 @@ public class Vector {
      * @param vec The other vector
      * @return the same vector
      */
-    public Vector subtract(Vector vec) {
-	return new Vector(x - vec.x, y - vec.y);
+    public Vector2D subtract(Vector2D vec) {
+	return new Vector2D(x - vec.x, y - vec.y);
     }
 
     /**
@@ -56,8 +56,8 @@ public class Vector {
      * @param vec The other vector
      * @return the same vector
      */
-    public Vector multiply(Vector vec) {
-	return new Vector(x * vec.x, y * vec.y);
+    public Vector2D multiply(Vector2D vec) {
+	return new Vector2D(x * vec.x, y * vec.y);
     }
 
     /**
@@ -66,8 +66,8 @@ public class Vector {
      * @param vec The other vector
      * @return the same vector
      */
-    public Vector divide(Vector vec) {
-	return new Vector(x / vec.x, y / vec.y);
+    public Vector2D divide(Vector2D vec) {
+	return new Vector2D(x / vec.x, y / vec.y);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Vector {
      * @param o The other vector
      * @return the distance
      */
-    public double distance(Vector o) {
+    public double distance(Vector2D o) {
 	return Math.sqrt(MathOperations.square(x - o.x) + MathOperations.square(y - o.y));
     }
 
@@ -95,7 +95,7 @@ public class Vector {
      * @param other The other vector
      * @return angle in radians
      */
-    public double angle(Vector other) {
+    public double angle(Vector2D other) {
 	double dot = dotProduct(other) / (length() * other.length());
 	return (double) Math.acos(dot);
     }
@@ -106,8 +106,8 @@ public class Vector {
      * @param other The other vector
      * @return this same vector (now a midpoint)
      */
-    public Vector midpoint(Vector other) {
-	return new Vector((x + other.x) / 2, (y + other.y) / 2);
+    public Vector2D midpoint(Vector2D other) {
+	return new Vector2D((x + other.x) / 2, (y + other.y) / 2);
     }
 
     /**
@@ -116,10 +116,10 @@ public class Vector {
      * @param other The other vector
      * @return a new midpoint vector
      */
-    public Vector getMidpoint(Vector other) {
+    public Vector2D getMidpoint(Vector2D other) {
 	double x = (this.x + other.x) / 2;
 	double y = (this.y + other.y) / 2;
-	return new Vector(x, y);
+	return new Vector2D(x, y);
     }
 
     /**
@@ -128,8 +128,8 @@ public class Vector {
      * @param m The factor
      * @return the same vector
      */
-    public Vector multiply(double m) {
-	return new Vector(x * m, y * m);
+    public Vector2D multiply(double m) {
+	return new Vector2D(x * m, y * m);
     }
 
     /**
@@ -138,7 +138,7 @@ public class Vector {
      * @param other The other vector
      * @return dot product
      */
-    public double dotProduct(Vector other) {
+    public double dotProduct(Vector2D other) {
 	return x * other.x + y * other.y;
     }
 
@@ -148,8 +148,8 @@ public class Vector {
      * @param o The other vector
      * @return the same vector
      */
-    public Vector crossProduct(Vector o) {
-	return new Vector(y * o.x - o.y * x, y * o.x - o.y * x);
+    public Vector2D crossProduct(Vector2D o) {
+	return new Vector2D(y * o.x - o.y * x, y * o.x - o.y * x);
     }
 
     /**
@@ -181,7 +181,7 @@ public class Vector {
      * @param max Maximum vector
      * @return whether this vector is in the AABB
      */
-    public boolean isInAABB(Vector min, Vector max) {
+    public boolean isInAABB(Vector2D min, Vector2D max) {
 	return x >= min.x && x <= max.x && y >= min.y && y <= max.y;
     }
 
@@ -192,8 +192,8 @@ public class Vector {
      * @param v2 The second vector.
      * @return minimum
      */
-    public static Vector getMinimum(Vector v1, Vector v2) {
-	return new Vector(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y));
+    public static Vector2D getMinimum(Vector2D v1, Vector2D v2) {
+	return new Vector2D(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y));
     }
 
     /**
@@ -203,8 +203,8 @@ public class Vector {
      * @param v2 The second vector.
      * @return maximum
      */
-    public static Vector getMaximum(Vector v1, Vector v2) {
-	return new Vector(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y));
+    public static Vector2D getMaximum(Vector2D v1, Vector2D v2) {
+	return new Vector2D(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y));
     }
 
     public String toString() {
@@ -216,7 +216,7 @@ public class Vector {
      * @param scalar The scalar to divide by
      * @return a new vector divided by the scalar
      */
-    public Vector divide(double scalar) {
-	return new Vector(x / scalar, y / scalar);
+    public Vector2D divide(double scalar) {
+	return new Vector2D(x / scalar, y / scalar);
     }
 }

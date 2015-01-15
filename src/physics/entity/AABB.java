@@ -7,7 +7,7 @@ import java.awt.geom.Rectangle2D;
 
 import physics.util.CollisionType;
 import physics.util.MathOperations;
-import physics.util.Vector;
+import physics.util.Vector2D;
 
 /**
  * Represents an Axis Aligned Bounding Box (AABB) which is an entity; a rectangle without rotation
@@ -16,10 +16,10 @@ import physics.util.Vector;
  * @version Dec 2014
  */
 public class AABB extends Entity {
-    public Vector p1;
-    public Vector p2;
+    public Vector2D p1;
+    public Vector2D p2;
 
-    public AABB(Vector p1, Vector p2, Vector vel, Color c) {
+    public AABB(Vector2D p1, Vector2D p2, Vector2D vel, Color c) {
 	super(c, vel);
 	this.p1 = p1;
 	this.p2 = p2;
@@ -58,7 +58,7 @@ public class AABB extends Entity {
     @Override
     public void drawEntity(Graphics2D g) {
 	Shape shape = this.getShape();
-	g.draw(shape);
+	g.fill(shape);
     }
     
     @Override
@@ -67,15 +67,15 @@ public class AABB extends Entity {
     }
 
     @Override
-    public Vector[] getPointArray() {
-	return new Vector[]{p1, p2};
+    public Vector2D[] getPointArray() {
+	return new Vector2D[]{p1, p2};
     }
     
     /**
      * Gets the center of the AABB
      * @return the center of the AABB
      */
-    public Vector getCenter(){
-	return new Vector(p1.x + getWidth() / 2, p1.y + getHeight() / 2);
+    public Vector2D getCenter(){
+	return new Vector2D(p1.x + getWidth() / 2, p1.y + getHeight() / 2);
     }
 }
