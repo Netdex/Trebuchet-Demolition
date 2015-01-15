@@ -1,5 +1,6 @@
 package physics;
 
+import game.TrebuchetDemolition;
 import game.level.Level;
 
 import java.util.Properties;
@@ -22,7 +23,7 @@ public class PhysicsEngine {
     // These constants are not related to real world constants
     public static final Vector2D GRAVITY_CONSTANT = new Vector2D(0, 0.1);
     private static final double FRICTION = 1.05;
-    private static final double RESTITUTION = 1.1;
+    private static final double RESTITUTION = 1.3;
 
     public boolean gravity = true;
 
@@ -46,7 +47,6 @@ public class PhysicsEngine {
      * 
      * @param level The level to load
      */
-    @SuppressWarnings("unchecked")
     public void loadLevel(Level level) {
 	entities.clear();
 	won = false;
@@ -58,16 +58,17 @@ public class PhysicsEngine {
 		try {
 		    this.gravity = Boolean.valueOf(metadata.getProperty("gravity"));
 		} catch (Exception e) {
-
+		    this.gravity = true;
 		}
 	    } else {
 		this.gravity = true;
 	    }
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    TrebuchetDemolition.LOGGER.warning("Error while loading level properties: " + e.getMessage());
 	}
 
-	entities = (Vector) levelEntities.clone();
+	// Clone it, since it will be cleared!
+	entities = (Vector<Entity>) levelEntities.clone();
     }
 
     /**
@@ -75,12 +76,13 @@ public class PhysicsEngine {
      */
     public void update() {
 	collisionsInTick = 0;
-	for (Entity e : entities) {
-	    e.setHandling(false);
-	}
+	this.dehandleAll();
 	for (Entity e : entities) {
 	    boolean entityCollided = handleEntityCollisions(e);
-	    boolean wallCollided = handleWallCollisions(e);
+	    boolean wallCollided = false;
+	    if (e.hasPhysics())
+		wallCollided = handleWallCollisions(e);
+	    
 	    if (entityCollided || wallCollided)
 		collisionsInTick++;
 	    if (gravity && e.hasPhysics()) {
@@ -211,6 +213,15 @@ public class PhysicsEngine {
 	}
 	return false;
 
+    }
+
+    /**
+     * Sets all entities as not handling
+     */
+    public void dehandleAll() {
+	for (Entity e : entities) {
+	    e.setHandling(false);
+	}
     }
 
     /**

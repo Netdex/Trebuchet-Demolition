@@ -87,4 +87,11 @@ public class Level {
     public void setFile(File file) {
 	this.file = file;
     }
+    
+    public void getEntityClone(){
+	Vector<Entity> entities = new Vector<Entity>();
+	for(Entity entity : levelEntities){
+	    entities.add()
+	}
+    }
 }

@@ -13,16 +13,16 @@ import physics.util.Vector2D;
  * @author Gordon Guan
  * @version Dec 2014
  */
-public abstract class Entity {
+public abstract class Entity implements Cloneable {
     private static int lastID = 0;
-    
+
     private final int entityID;
     private boolean handlingCollision;
 
     public Vector2D vel;
 
     private Color color;
-    
+
     private boolean hasPhysics;
 
     public Entity(Color c, Vector2D vel) {
@@ -33,7 +33,7 @@ public abstract class Entity {
 	this.vel = vel;
 	hasPhysics = true;
     }
-    
+
     public Entity(Color c, Vector2D vel, boolean hasPhysics) {
 	this.entityID = lastID;
 	lastID++;
@@ -45,24 +45,27 @@ public abstract class Entity {
 
     /**
      * Gets an array of all the points in the shape
+     * 
      * @return an array of all the points in the shape
      */
     public abstract Vector2D[] getPointArray();
-    
+
     /**
      * Returns whether the entity has physics or not
+     * 
      * @return whether the entity has physics or not
      */
     public boolean hasPhysics() {
-        return hasPhysics;
+	return hasPhysics;
     }
 
     /**
      * Set the entities physics
+     * 
      * @param hasPhysics The new value for the entity's physics
      */
     public void setPhysics(boolean hasPhysics) {
-        this.hasPhysics = hasPhysics;
+	this.hasPhysics = hasPhysics;
     }
 
     /**
@@ -78,7 +81,7 @@ public abstract class Entity {
      * Gets the "mass" of the entity
      */
     public abstract double getMass();
-    
+
     /**
      * Check if the entity is handling any collisions
      * 
@@ -126,15 +129,17 @@ public abstract class Entity {
     public String toString() {
 	return String.format("%s r%dg%db%d id%d v%s a%s", this.getClass().getName(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString());
     }
-    
+
     /**
      * Draws the entity onto the given graphics
+     * 
      * @param g The graphics to draw on
      */
     public abstract void drawEntity(Graphics2D g);
-    
+
     /**
      * Gets a Graphics2D shape representing the entity
+     * 
      * @return a Shape object representing the entity
      */
     public abstract Shape getShape();

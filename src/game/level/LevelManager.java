@@ -1,5 +1,7 @@
 package game.level;
 
+import game.TrebuchetDemolition;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +36,7 @@ public class LevelManager {
 	}
 	for (File levelFile : levelFolder.listFiles(new FilenameFilter() {
 	    public boolean accept(File dir, String name) {
-		return name.toLowerCase().endsWith(".dat");
+		return name.toLowerCase().endsWith(".txt");
 	    }
 	})) {
 	    try {
@@ -97,15 +99,18 @@ public class LevelManager {
 			    hasTarget = true;
 			}
 		    } catch (Exception e) {
-
+			TrebuchetDemolition.LOGGER.warning("Failed to load an entity in level: " + e.getMessage());
 		    }
 		}
 		if (hasTarget) {
 		    Level level = new Level(metadata.getProperty("name"), levelFile, metadata, levelEntities);
 		    levels.add(level);
 		}
+		else{
+		    TrebuchetDemolition.LOGGER.info("Couldn't load level \"" + metadata.getProperty("name") + "\", has no target");
+		}
 	    } catch (Exception e) {
-		e.printStackTrace();
+		TrebuchetDemolition.LOGGER.warning("Error while loading level: " + e.getMessage());;
 	    }
 	}
     }

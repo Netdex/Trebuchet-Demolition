@@ -19,6 +19,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -237,7 +240,16 @@ public class GamePanel extends JPanel {
 
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
+		System.out.println(event.getX() + ", " + event.getY());
+	    }
 
+	});
+	this.addMouseWheelListener(new MouseWheelListener() {
+	    public void mouseWheelMoved(MouseWheelEvent event) {
+		int notches = event.getWheelRotation();
+		if (displayScreen == ScreenType.IN_GAME) {
+		    changePower(notches * 5);
+		}
 	    }
 	});
 
@@ -250,21 +262,18 @@ public class GamePanel extends JPanel {
 			pauseMenu.invokeAction(keycode);
 		    } else {
 			if (keycode == KeyEvent.VK_RIGHT) {
-			    if (power <= 95)
-				power += 5;
+			    changePower(1);
 			} else if (keycode == KeyEvent.VK_LEFT) {
-			    if (power >= 5)
-				power -= 5;
+			    changePower(-1);
 			} else if (keycode == KeyEvent.VK_UP) {
-			    if (angle <= 175)
-				angle += 5;
+			    changeAngle(1);
 			} else if (keycode == KeyEvent.VK_DOWN) {
-			    if (angle >= 5)
-				angle -= 5;
+			    changeAngle(-1);
 			} else if (keycode == KeyEvent.VK_SPACE) {
 			    engine.removeLastProjectile();
-			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 10);
-			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 10);
+			    engine.setEntities((Vector<Entity>) loadedLevel.getEntities().clone());
+			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 9);
+			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 9);
 			    Vector2D vel = new Vector2D(vecX, vecY);
 
 			    Circle c = new Circle(new Vector2D(50, height - 50), vel, new Vector2D(0, 0), 10, Color.BLACK);
@@ -310,6 +319,7 @@ public class GamePanel extends JPanel {
 	    }
 	} catch (Exception e) {
 	    JOptionPane.showMessageDialog(null, "An error occured while loading a level: " + e.getMessage(), "Level Loading Error", JOptionPane.ERROR_MESSAGE);
+	    TrebuchetDemolition.LOGGER.warning("Failed to load the level selected: " + e.getMessage());
 	    return;
 	}
 	loadedLevel = level;
@@ -350,14 +360,14 @@ public class GamePanel extends JPanel {
 	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
 	    g.drawString("[GAME VARIABLES]: ", 10, 65);
 	    g.drawString("Power: " + power + "%", 10, 80);
-	    g.drawString("Angle: " + angle + "ï¿½", 10, 95);
+	    g.drawString("Angle: " + angle + "°", 10, 95);
 
 	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0, 0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
 	    // Draw all the entities on the screen
 	    for (Entity entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
-		if (entity.isHandling())
-		    g.setColor(Color.RED);
+//		if (entity.isHandling())
+//		    g.setColor(Color.RED);
 
 		entity.drawEntity(g);
 
@@ -435,7 +445,7 @@ public class GamePanel extends JPanel {
 	    backgroundImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/background.jpg"));
 	    trebuchetImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/trebuchet.png"));
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    TrebuchetDemolition.LOGGER.severe("Failed to load game resources: " + e.getMessage());
 	}
     }
 
@@ -470,6 +480,30 @@ public class GamePanel extends JPanel {
      */
     public void tick() {
 	engine.update();
-	repaint();
+	repaint(TICK_RATE);
+    }
+
+    /**
+     * Changes the angle
+     * 
+     * @param difference The difference to change
+     */
+    public void changeAngle(int difference) {
+	int wantedChange = angle + difference;
+	if (wantedChange >= 0 && wantedChange <= 180) {
+	    angle = wantedChange;
+	}
+    }
+
+    /**
+     * Changes the power
+     * 
+     * @param difference The difference to change
+     */
+    public void changePower(int difference) {
+	int wantedChange = power + difference;
+	if (wantedChange >= 0 && wantedChange <= 100) {
+	    power = wantedChange;
+	}
     }
 }

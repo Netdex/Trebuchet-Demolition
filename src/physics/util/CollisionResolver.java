@@ -112,15 +112,15 @@ public class CollisionResolver {
 	double vertDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p2.x, b.p1.y), b.p2, a.loc);
 	double horizDist = MathOperations.pointToLineDistance(b.p1, new Vector2D(b.p2.x, b.p1.y), a.loc);
 	double horizDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p1.x, b.p2.y), b.p2, a.loc);
-
+	
+	// Teleport the circle outside of the AABB first
+	a.loc.subtract(a.vel);
 	double radius = a.getRadius();
 	if (vertDist <= radius || vertDist2 <= radius) {
 	    a.vel.x = -a.vel.x / RESTITUTION;
-	    b.vel.x = -b.vel.x / RESTITUTION;
 	}
 	if (horizDist <= radius || horizDist2 <= radius) {
 	    a.vel.y = -a.vel.y / RESTITUTION;
-	    b.vel.y = -b.vel.y / RESTITUTION;
 	}
     }
 
