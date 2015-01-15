@@ -1,5 +1,5 @@
 #Test Level
 name=Test Level
 gravity=true
-bgcolor=100,175,255
-entities=aabb,400,300,450,600,0,0,0:targ,800,500,850,600,255,0,0
+bgcolor=205,225,255
+entities=aabb,400,300,450,600,0,0,0,false:aabb,400,0,450,150,0,0,0,false:targ,800,500,850,600,255,0,0

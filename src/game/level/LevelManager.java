@@ -79,9 +79,10 @@ public class LevelManager {
 			    double x2 = Double.parseDouble(entityData[3]);
 			    double y2 = Double.parseDouble(entityData[4]);
 			    Color color = new Color(Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]), Integer.parseInt(entityData[7]));
+			    boolean physics = Boolean.valueOf(entityData[8]);
 			    Vector2D p1 = new Vector2D(x1, y1);
 			    Vector2D p2 = new Vector2D(x2, y2);
-			    AABB aabb = new AABB(p1, p2, Vector2D.ZERO, color);
+			    AABB aabb = new AABB(p1, p2, Vector2D.ZERO, color, physics);
 			    levelEntities.add(aabb);
 			} else if (type.equals("targ")) {
 			    double x1 = Double.parseDouble(entityData[1]);

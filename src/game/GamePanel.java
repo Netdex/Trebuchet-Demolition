@@ -262,6 +262,7 @@ public class GamePanel extends JPanel {
 			    if (angle >= 5)
 				angle -= 5;
 			} else if (keycode == KeyEvent.VK_SPACE) {
+			    engine.removeLastProjectile();
 			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 10);
 			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 10);
 			    Vector2D vel = new Vector2D(vecX, vecY);
@@ -270,7 +271,7 @@ public class GamePanel extends JPanel {
 			    engine.addEntity(c);
 
 			} else if (keycode == KeyEvent.VK_0) {
-			    engine.removeProjectiles();
+			    engine.removeLastProjectile();
 			} else if (keycode == KeyEvent.VK_ESCAPE) {
 			    pause();
 			    repaint();

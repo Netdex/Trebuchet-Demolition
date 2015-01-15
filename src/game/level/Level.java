@@ -1,7 +1,6 @@
 package game.level;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Vector;
 

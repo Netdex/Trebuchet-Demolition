@@ -2,8 +2,6 @@ package physics;
 
 import game.level.Level;
 
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -24,7 +22,7 @@ public class PhysicsEngine {
     // These constants are not related to real world constants
     public static final Vector2D GRAVITY_CONSTANT = new Vector2D(0, 0.1);
     private static final double FRICTION = 1.05;
-    private static final double RESTITUTION = 1.5;
+    private static final double RESTITUTION = 1.1;
 
     public boolean gravity = true;
 
@@ -233,16 +231,20 @@ public class PhysicsEngine {
 	entities.remove(entity);
     }
 
-    public void removeProjectiles() {
+    /**
+     * Removes the last fired projectile (uses some slight hacking to prevent exceptions)
+     */
+    public void removeLastProjectile() {
+	try {
+	    for (Entity entity : entities) {
 
-	for (Entity entity : entities) {
-	    try {
 		if (entity instanceof Circle) {
 		    removeEntity(entity);
 		}
-	    } catch (Throwable e) {
 
 	    }
+	} catch (Throwable e) {
+
 	}
 
     }

@@ -24,6 +24,12 @@ public class AABB extends Entity {
 	this.p1 = p1;
 	this.p2 = p2;
     }
+    
+    public AABB(Vector2D p1, Vector2D p2, Vector2D vel, Color c, boolean physics) {
+	super(c, vel, physics);
+	this.p1 = p1;
+	this.p2 = p2;
+    }
 
     public double getMass() {
 	// TODO Make getMass() work for AABBs

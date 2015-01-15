@@ -25,6 +25,7 @@ public class CollisionResolver {
 	 a.vel = a.vel.divide(-RESTITUTION);
 	 b.vel = b.vel.divide(-RESTITUTION);
 
+	 // I decided not to have very accurate circle collision code since I can only have one circle in the game at a time
 //	// Calculate variables in physics collision
 //	double totalMass = a.getMass() + b.getMass();
 //
@@ -61,6 +62,7 @@ public class CollisionResolver {
      * @param velX The x-coordinate of the point
      * @param velY The y-coordinate of the point
      * @return the angle relative to the positive x-axis
+     * @deprecated Circles no longer use this function
      */
     public static double computeBeta(double velX, double velY) {
 	if (velX < 0) {
@@ -117,8 +119,8 @@ public class CollisionResolver {
 	    b.vel.x = -b.vel.x / RESTITUTION;
 	}
 	if (horizDist <= radius || horizDist2 <= radius) {
-	    a.vel.y = -a.vel.y;
-	    b.vel.y = -b.vel.y;
+	    a.vel.y = -a.vel.y / RESTITUTION;
+	    b.vel.y = -b.vel.y / RESTITUTION;
 	}
     }
 
