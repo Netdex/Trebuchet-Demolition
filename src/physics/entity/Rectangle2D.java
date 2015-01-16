@@ -16,7 +16,7 @@ import physics.util.Vector2D;
  * 
  *          TODO Fix rectangle collision code
  */
-public class Rectangle extends Entity {
+public class Rectangle2D extends Entity2D {
     public Vector2D p1;
     public Vector2D p2;
     public Vector2D p3;
@@ -25,7 +25,7 @@ public class Rectangle extends Entity {
     public double angle;
     public double angularVel;
 
-    public Rectangle(Vector2D p1, Vector2D p2, Vector2D p3, Vector2D p4, Vector2D vel, double angle, double angularVel, Color c) {
+    public Rectangle2D(Vector2D p1, Vector2D p2, Vector2D p3, Vector2D p4, Vector2D vel, double angle, double angularVel, Color c) {
 	super(c, vel, false);
 	this.p1 = p1;
 	this.p2 = p2;
@@ -37,6 +37,16 @@ public class Rectangle extends Entity {
 	this.angularVel = angularVel;
     }
 
+    @Override
+    public boolean handleWallCollision(int width, int height, final double RESTITUTION){
+	return false;
+    }
+    
+    @Override
+    public Entity2D clone(){
+	return new Rectangle2D(p1.copy(),p2.copy(),p3.copy(),p4.copy(),this.vel.copy(), this.angle, angularVel, this.getColor());
+    }
+    
     /**
      * Creates a rectangle with the least possible arguments
      * 
@@ -44,7 +54,7 @@ public class Rectangle extends Entity {
      * @param p2 The bottom right point
      * @param c The color
      */
-    public Rectangle(Vector2D p1, Vector2D p2, Color c) {
+    public Rectangle2D(Vector2D p1, Vector2D p2, Color c) {
 	super(c, Vector2D.ZERO, false);
 	this.p1 = p1;
 	this.p4 = p2;
@@ -98,25 +108,7 @@ public class Rectangle extends Entity {
     /**
      * TODO Add collision code
      */
-    public CollisionType getCollisionState(Entity entity) {
-	// if (entity instanceof Rectangle) {
-	// Rectangle rect = (Rectangle) entity;
-	// AABB thisBounds = this.getBoundingBox();
-	// AABB otherBounds = rect.getBoundingBox();
-	// // Do a preliminary bounding box overlap check to see if they collide, since this check is less CPU intensive
-	// if (thisBounds.p2.x < otherBounds.p1.x || thisBounds.p1.x > otherBounds.p2.x || thisBounds.p2.y < otherBounds.p1.y || thisBounds.p1.y > otherBounds.p2.y)
-	// return CollisionType.NO_COLLISION;
-	//
-	// // Do a more detailed check by seeing if any of the points in the other shape are in this one
-	// for(Vector vector : rect.getPointArray()){
-	// if(this.getShape().contains(vector.x, vector.y)){
-	// System.out.println("YES");
-	// return CollisionType.RECT_TO_RECT;
-	// }
-	// }
-	// System.out.println("NO");
-	// return CollisionType.NO_COLLISION;
-	// }
+    public CollisionType getCollisionState(Entity2D entity) {
 	return CollisionType.NO_COLLISION;
     }
 
@@ -133,8 +125,8 @@ public class Rectangle extends Entity {
     /**
      * Gets a bounding box around the rectangle
      */
-    public AABB getBoundingBox() {
-	return new AABB(new Vector2D(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))), new Vector2D(
+    public AABB2D getBoundingBox() {
+	return new AABB2D(new Vector2D(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))), new Vector2D(
 		Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector2D.ZERO, Color.BLACK);
     }
 
@@ -215,87 +207,4 @@ public class Rectangle extends Entity {
      this.p3.y += y;
      this.p4.y += y;
      }
-
-    //
-
-    //
-    // /**
-    // * Gets the lowest point
-    // *
-    // * @return the lowest point
-    // */
-    // public Vector getLowestPoint() {
-    // Vector lowestPoint = p1;
-    // Vector[] points = getPointArray();
-    // for (int vector = 1; vector < 4; vector++) {
-    // Vector vec = points[vector];
-    // if (vec.y > lowestPoint.y) {
-    // lowestPoint = vec;
-    // }
-    // }
-    // return lowestPoint;
-    // }
-    //
-    // /**
-    // * Gets the highest point
-    // *
-    // * @return the highest point
-    // */
-    // public Vector getHighestPoint() {
-    // Vector lowestPoint = p1;
-    // Vector[] points = getPointArray();
-    // for (int vector = 1; vector < 4; vector++) {
-    // Vector vec = points[vector];
-    // if (vec.y > lowestPoint.y) {
-    // lowestPoint = vec;
-    // }
-    // }
-    // return lowestPoint;
-    // }
-    //
-    // /**
-    // * Gets the left-most point
-    // *
-    // * @return the left-most point
-    // */
-    // public Vector getLeftmostPoint() {
-    // Vector lowestPoint = p1;
-    // Vector[] points = getPointArray();
-    // for (int vector = 1; vector < 4; vector++) {
-    // Vector vec = points[vector];
-    // if (vec.y < lowestPoint.x) {
-    // lowestPoint = vec;
-    // }
-    // }
-    // return lowestPoint;
-    // }
-    //
-    // /**
-    // * Gets the right-most point
-    // *
-    // * @return the right-most point
-    // */
-    // public Vector getRightmostPoint() {
-    // Vector lowestPoint = p1;
-    // Vector[] points = getPointArray();
-    // for (int vector = 1; vector < 4; vector++) {
-    // Vector vec = points[vector];
-    // if (vec.y < lowestPoint.x) {
-    // lowestPoint = vec;
-    // }
-    // }
-    // return lowestPoint;
-    // }
-    //
-    // /**
-    // * Gets the ratio of the distance between a point on the rectangle and the center of mass
-    // *
-    // * @param vector The point on the rectangle
-    // * @return the ratio of the distance between a point on the rectangle and the center of mass
-    // */
-    // public Vector getCenterDifferenceRatio(Vector vector) {
-    // Vector difference = vector.subtract(this.getCenter());
-    // return difference.divide(new Vector(this.getBoundingBox().getWidth(), this.getBoundingBox().getHeight()));
-    //
-    // }
 }

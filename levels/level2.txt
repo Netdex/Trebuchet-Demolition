@@ -1,0 +1,5 @@
+#Test Level
+name=Moon Gravity
+gravity=false
+bgcolor=255,100,100
+entities=aabb,200,300,450,350,0,25,0,false:aabb,451,200,500,600,0,100,0,false:targ,800,500,850,600,255,0,0

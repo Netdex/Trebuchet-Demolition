@@ -11,11 +11,11 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import physics.entity.AABB;
-import physics.entity.Circle;
-import physics.entity.Entity;
-import physics.entity.Rectangle;
-import physics.entity.Target;
+import physics.entity.AABB2D;
+import physics.entity.Circle2D;
+import physics.entity.Entity2D;
+import physics.entity.Rectangle2D;
+import physics.entity.Target2D;
 import physics.util.Vector2D;
 
 /**
@@ -43,7 +43,7 @@ public class LevelManager {
 		Properties metadata = new Properties();
 
 		metadata.load(new FileInputStream(levelFile));
-		Vector<Entity> levelEntities = new Vector<Entity>();
+		Vector<Entity2D> levelEntities = new Vector<Entity2D>();
 		StringTokenizer st = new StringTokenizer(metadata.getProperty("entities"), ":");
 
 		boolean hasTarget = false;
@@ -60,7 +60,7 @@ public class LevelManager {
 			    int radius = Integer.parseInt(entityData[3]);
 			    Color color = new Color(Integer.parseInt(entityData[4]), Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]));
 			    Vector2D loc = new Vector2D(x, y);
-			    Circle circle = new Circle(loc, Vector2D.ZERO, Vector2D.ZERO, radius, color);
+			    Circle2D circle = new Circle2D(loc, Vector2D.ZERO, radius, color);
 			    levelEntities.add(circle);
 			} else if (type.equals("rect")) {
 			    // Loads a rectangle with format rect:
@@ -72,7 +72,7 @@ public class LevelManager {
 			    Color color = new Color(Integer.parseInt(entityData[6]), Integer.parseInt(entityData[7]), Integer.parseInt(entityData[8]));
 			    Vector2D p1 = new Vector2D(x1, y1);
 			    Vector2D p2 = new Vector2D(x2, y2);
-			    Rectangle rect = new Rectangle(p1, p2, color);
+			    Rectangle2D rect = new Rectangle2D(p1, p2, color);
 			    rect.rotate(rot);
 			    levelEntities.add(rect);
 			} else if (type.equals("aabb")) {
@@ -84,7 +84,7 @@ public class LevelManager {
 			    boolean physics = Boolean.valueOf(entityData[8]);
 			    Vector2D p1 = new Vector2D(x1, y1);
 			    Vector2D p2 = new Vector2D(x2, y2);
-			    AABB aabb = new AABB(p1, p2, Vector2D.ZERO, color, physics);
+			    AABB2D aabb = new AABB2D(p1, p2, Vector2D.ZERO, color, physics);
 			    levelEntities.add(aabb);
 			} else if (type.equals("targ")) {
 			    double x1 = Double.parseDouble(entityData[1]);
@@ -94,7 +94,7 @@ public class LevelManager {
 			    Color color = new Color(Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]), Integer.parseInt(entityData[7]));
 			    Vector2D p1 = new Vector2D(x1, y1);
 			    Vector2D p2 = new Vector2D(x2, y2);
-			    Target targ = new Target(p1, p2, color);
+			    Target2D targ = new Target2D(p1, p2, color);
 			    levelEntities.add(targ);
 			    hasTarget = true;
 			}

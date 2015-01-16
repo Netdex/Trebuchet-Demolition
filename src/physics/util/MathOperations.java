@@ -1,6 +1,6 @@
 package physics.util;
 
-import physics.entity.AABB;
+import physics.entity.AABB2D;
 
 /**
  * Contains math operations to simplify physics calculations
@@ -20,7 +20,7 @@ public class MathOperations {
      * @param b An AABB
      * @return the collision type between the AABBs
      */
-    public static CollisionType hasAABBCollision(AABB a, AABB b) {
+    public static CollisionType hasAABBCollision(AABB2D a, AABB2D b) {
 	if (a.p2.x < b.p1.x || a.p1.x > b.p2.x)
 	    return CollisionType.NO_COLLISION;
 	if (a.p2.y < b.p1.y || a.p1.y > b.p2.y)

@@ -1,8 +1,8 @@
 package physics.util;
 
-import physics.entity.AABB;
-import physics.entity.Circle;
-import physics.entity.Rectangle;
+import physics.entity.AABB2D;
+import physics.entity.Circle2D;
+import physics.entity.Rectangle2D;
 
 /**
  * Contains most of the math to resolve collisions
@@ -21,39 +21,39 @@ public class CollisionResolver {
      * @param b The second circle
      * @param RESTITUTION The minimum restitution between the circles
      */
-    public static void resolveCircleCollision(Circle a, Circle b, final double RESTITUTION) {
-	 a.vel = a.vel.divide(-RESTITUTION);
-	 b.vel = b.vel.divide(-RESTITUTION);
+    public static void resolveCircleCollision(Circle2D a, Circle2D b, final double RESTITUTION) {
+//	 a.vel = a.vel.divide(-RESTITUTION);
+//	 b.vel = b.vel.divide(-RESTITUTION);
 
 	 // I decided not to have very accurate circle collision code since I can only have one circle in the game at a time
 //	// Calculate variables in physics collision
-//	double totalMass = a.getMass() + b.getMass();
-//
-//	// Beta is the angle of the vector from the x-axis
-//	double betaA = computeBeta(a.vel.x, a.vel.y);
-//	double betaB = computeBeta(a.vel.x, a.vel.y);
-//
-//	// Phi is the angle of the line connecting the centers of both circles to the x-axis
-//	double phi = computeBeta(b.loc.x - a.loc.x, b.loc.y - a.loc.y);
-//
-//	// Store the length of the two vectors immediately, since length() uses the costly Math.sqrt() function
-//	double lengthA = a.vel.length();
-//	double lengthB = b.vel.length();
-//
-//	double newXA = ((lengthA * Math.cos(betaA - phi) * (a.getMass() - b.getMass()) + 2 * b.getMass() * lengthB * Math.cos(betaB - phi)) / totalMass) * Math.cos(phi) + lengthA
-//		* Math.sin(betaA - phi) * Math.cos(phi + Math.PI / 2);
-//	double newYA = ((lengthA * Math.cos(betaA - phi) * (a.getMass() - b.getMass()) + 2 * b.getMass() * lengthB * Math.cos(betaB - phi)) / totalMass) * Math.sin(phi) + lengthA
-//		* Math.sin(betaA - phi) * Math.sin(phi + Math.PI / 2);
-//	double newXB = ((lengthB * Math.cos(betaB - phi) * (b.getMass() - a.getMass()) + 2 * a.getMass() * lengthA * Math.cos(betaA - phi)) / totalMass) * Math.cos(phi) + lengthB
-//		* Math.sin(betaB - phi) * Math.cos(phi + Math.PI / 2);
-//	double newYB = ((lengthB * Math.cos(betaB - phi) * (b.getMass() - a.getMass()) + 2 * a.getMass() * lengthA * Math.cos(betaA - phi)) / totalMass) * Math.sin(phi) + lengthB
-//		* Math.sin(betaB - phi) * Math.sin(phi + Math.PI / 2);
-//
-//	double penetrationDepth = a.loc.distance(b.loc);
-//	// a.loc = a.loc.subtract(new Vector(penetrationDepth / 2, penetrationDepth / 2));
-//	// b.loc = b.loc.add(new Vector(penetrationDepth / 2, penetrationDepth / 2));
-//	a.vel = new Vector(newXA, newYA);
-//	b.vel = new Vector(newXB, newYB);
+	double totalMass = a.getMass() + b.getMass();
+
+	// Beta is the angle of the vector from the x-axis
+	double betaA = computeBeta(a.vel.x, a.vel.y);
+	double betaB = computeBeta(a.vel.x, a.vel.y);
+
+	// Phi is the angle of the line connecting the centers of both circles to the x-axis
+	double phi = computeBeta(b.loc.x - a.loc.x, b.loc.y - a.loc.y);
+
+	// Store the length of the two vectors immediately, since length() uses the costly Math.sqrt() function
+	double lengthA = a.vel.length();
+	double lengthB = b.vel.length();
+
+	double newXA = ((lengthA * Math.cos(betaA - phi) * (a.getMass() - b.getMass()) + 2 * b.getMass() * lengthB * Math.cos(betaB - phi)) / totalMass) * Math.cos(phi) + lengthA
+		* Math.sin(betaA - phi) * Math.cos(phi + Math.PI / 2);
+	double newYA = ((lengthA * Math.cos(betaA - phi) * (a.getMass() - b.getMass()) + 2 * b.getMass() * lengthB * Math.cos(betaB - phi)) / totalMass) * Math.sin(phi) + lengthA
+		* Math.sin(betaA - phi) * Math.sin(phi + Math.PI / 2);
+	double newXB = ((lengthB * Math.cos(betaB - phi) * (b.getMass() - a.getMass()) + 2 * a.getMass() * lengthA * Math.cos(betaA - phi)) / totalMass) * Math.cos(phi) + lengthB
+		* Math.sin(betaB - phi) * Math.cos(phi + Math.PI / 2);
+	double newYB = ((lengthB * Math.cos(betaB - phi) * (b.getMass() - a.getMass()) + 2 * a.getMass() * lengthA * Math.cos(betaA - phi)) / totalMass) * Math.sin(phi) + lengthB
+		* Math.sin(betaB - phi) * Math.sin(phi + Math.PI / 2);
+
+	double penetrationDepth = a.loc.distance(b.loc);
+	// a.loc = a.loc.subtract(new Vector(penetrationDepth / 2, penetrationDepth / 2));
+	// b.loc = b.loc.add(new Vector(penetrationDepth / 2, penetrationDepth / 2));
+	a.vel = new Vector2D(newXA, newYA);
+	b.vel = new Vector2D(newXB, newYB);
     }
 
     /**
@@ -80,7 +80,7 @@ public class CollisionResolver {
      * @param b The second AABB
      * @param RESTITUTION The minimum restitution between the AABBs
      */
-    public static void resolveAABBCollision(AABB a, AABB b, final double RESTITUTION) {
+    public static void resolveAABBCollision(AABB2D a, AABB2D b, final double RESTITUTION) {
 
 	double widtha = a.getWidth();
 	double widthb = b.getWidth();
@@ -107,7 +107,7 @@ public class CollisionResolver {
      * @param b The AABB
      * @param RESTITUTION The restitution to use in the calculation
      */
-    public static void resolveAABBCircleCollision(Circle a, AABB b, final double RESTITUTION) {
+    public static void resolveAABBCircleCollision(Circle2D a, AABB2D b, final double RESTITUTION) {
 	double vertDist = MathOperations.pointToLineDistance(b.p1, new Vector2D(b.p1.x, b.p2.y), a.loc);
 	double vertDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p2.x, b.p1.y), b.p2, a.loc);
 	double horizDist = MathOperations.pointToLineDistance(b.p1, new Vector2D(b.p2.x, b.p1.y), a.loc);
@@ -131,7 +131,7 @@ public class CollisionResolver {
      * @param b The second Rectangle
      * @param RESTITUTION The minimum restitution between the Rectangles
      */
-    public static void resolveRectangleCollision(Rectangle a, Rectangle b, final double RESTITUTION) {
+    public static void resolveRectangleCollision(Rectangle2D a, Rectangle2D b, final double RESTITUTION) {
 
     }
 }

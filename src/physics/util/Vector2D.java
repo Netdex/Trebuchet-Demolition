@@ -219,4 +219,8 @@ public class Vector2D {
     public Vector2D divide(double scalar) {
 	return new Vector2D(x / scalar, y / scalar);
     }
+    
+    public Vector2D copy(){
+	return new Vector2D(x, y);
+    }
 }

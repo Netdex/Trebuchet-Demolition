@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Properties;
 import java.util.Vector;
 
-import physics.entity.Entity;
+import physics.entity.Entity2D;
 
 /**
  * Represents a game level
@@ -17,9 +17,9 @@ public class Level {
     private String name;
     private File file;
     private Properties metadata;
-    private Vector<Entity> levelEntities;
+    private Vector<Entity2D> levelEntities;
 
-    public Level(String name, File file, Properties metadata, Vector<Entity> levelEntities) {
+    public Level(String name, File file, Properties metadata, Vector<Entity2D> levelEntities) {
 	this.name = name;
 	this.file = file;
 	this.metadata = metadata;
@@ -67,7 +67,7 @@ public class Level {
      * 
      * @return the entities in this level
      */
-    public Vector<Entity> getEntities() {
+    public Vector<Entity2D> getEntities() {
 	return levelEntities;
     }
 
@@ -76,7 +76,7 @@ public class Level {
      * 
      * @param levelEntities the new entities in this level
      */
-    public void setLevelEntities(Vector<Entity> levelEntities) {
+    public void setLevelEntities(Vector<Entity2D> levelEntities) {
 	this.levelEntities = levelEntities;
     }
 
@@ -88,10 +88,11 @@ public class Level {
 	this.file = file;
     }
     
-    public void getEntityClone(){
-	Vector<Entity> entities = new Vector<Entity>();
-	for(Entity entity : levelEntities){
-	    entities.add()
+    public Vector<Entity2D> getEntitiesClone(){
+	Vector<Entity2D> entities = new Vector<Entity2D>();
+	for(Entity2D entity : levelEntities){
+	    entities.add(entity.clone());
 	}
+	return entities;
     }
 }

@@ -14,14 +14,15 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -29,9 +30,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import physics.PhysicsEngine;
-import physics.entity.AABB;
-import physics.entity.Circle;
-import physics.entity.Entity;
+import physics.entity.AABB2D;
+import physics.entity.Entity2D;
+import physics.entity.Projectile2D;
 import physics.util.Vector2D;
 import tasks.GameClockTask;
 
@@ -45,9 +46,7 @@ import tasks.GameClockTask;
 
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
-    public static Image titleImage;
-    public static Image backgroundImage;
-    public static Image trebuchetImage;
+    public static Image titleImage, backgroundImage, trebuchetImage;
 
     /***********************************************************************/
     public PhysicsEngine engine;
@@ -63,13 +62,10 @@ public class GamePanel extends JPanel {
     /***********************************************************************/
     private ScreenType displayScreen = ScreenType.MAIN_MENU;
 
-    private final int width;
-    private final int height;
+    private final int width, height;
     /***********************************************************************/
     private CenteredMenu mainMenu;
-    private AlignedMenu optionsMenu;
-    private AlignedMenu levelSelectMenu;
-    private AlignedMenu pauseMenu;
+    private AlignedMenu optionsMenu, levelSelectMenu, pauseMenu;
 
     private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
     private MusicManager musicManager;
@@ -108,7 +104,7 @@ public class GamePanel extends JPanel {
 			    MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
 			    levelSelectMenu.addMenuItem(menuItem);
 			}
-			levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY));
+			levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.LIGHT_GRAY));
 			displayScreen = ScreenType.LEVEL_SELECT;
 		    } else if (selectedIndex == 1) {
 			displayScreen = ScreenType.OPTIONS_MENU;
@@ -116,7 +112,7 @@ public class GamePanel extends JPanel {
 			JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
 				+ "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
 		    } else if (selectedIndex == 3) {
-			JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n \"The essence of OOP\"", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
 		    } else if (selectedIndex == 4) {
 			int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
 			if (accept == JOptionPane.YES_OPTION)
@@ -242,7 +238,6 @@ public class GamePanel extends JPanel {
 	    public void mousePressed(MouseEvent event) {
 		System.out.println(event.getX() + ", " + event.getY());
 	    }
-
 	});
 	this.addMouseWheelListener(new MouseWheelListener() {
 	    public void mouseWheelMoved(MouseWheelEvent event) {
@@ -252,7 +247,24 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	});
+	this.addMouseMotionListener(new MouseMotionListener(){
 
+	    @Override
+	    public void mouseDragged(MouseEvent event) {
+		// TODO Auto-generated method stub
+		
+	    }
+
+	    @Override
+	    public void mouseMoved(MouseEvent event) {
+		Point point = event.getPoint();
+		if(displayScreen == ScreenType.MAIN_MENU){
+		    
+		}
+		
+	    }
+	    
+	});
 	this.addKeyListener(new KeyAdapter() {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
@@ -271,12 +283,11 @@ public class GamePanel extends JPanel {
 			    changeAngle(-1);
 			} else if (keycode == KeyEvent.VK_SPACE) {
 			    engine.removeLastProjectile();
-			    engine.setEntities((Vector<Entity>) loadedLevel.getEntities().clone());
 			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 9);
 			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 9);
 			    Vector2D vel = new Vector2D(vecX, vecY);
 
-			    Circle c = new Circle(new Vector2D(50, height - 50), vel, new Vector2D(0, 0), 10, Color.BLACK);
+			    Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10, Color.BLACK);
 			    engine.addEntity(c);
 
 			} else if (keycode == KeyEvent.VK_0) {
@@ -303,7 +314,7 @@ public class GamePanel extends JPanel {
 	});
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-	final AABB aabb = new AABB(new Vector2D(300, 10), new Vector2D(350, 310), Vector2D.ZERO, Color.BLACK);
+	final AABB2D aabb = new AABB2D(new Vector2D(300, 10), new Vector2D(350, 310), Vector2D.ZERO, Color.BLACK);
 	engine.addEntity(aabb);
 	/* END DEBUG CODE */
     }
@@ -336,6 +347,7 @@ public class GamePanel extends JPanel {
 	    engine.clearAll();
 	    displayScreen = ScreenType.LEVEL_SELECT;
 	    repaint();
+	    LevelManager.loadLevels();
 	}
     }
 
@@ -363,8 +375,17 @@ public class GamePanel extends JPanel {
 	    g.drawString("Angle: " + angle + "°", 10, 95);
 
 	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0, 0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
+	    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 9);
+	    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 9);
+	    Vector2D vel = new Vector2D(vecX * 10, vecY * 10);
+	    Vector2D shootPoint = new Vector2D(50, height - 50);
+	    
+	    g.setColor(Color.RED);
+	    g.drawLine((int)shootPoint.x, (int)shootPoint.y, (int)Math.round(shootPoint.x - vel.x), (int)Math.round(shootPoint.y - vel.y));
+	    g.setColor(Color.BLACK);
+	    
 	    // Draw all the entities on the screen
-	    for (Entity entity : engine.getEntities()) {
+	    for (Entity2D entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
 //		if (entity.isHandling())
 //		    g.setColor(Color.RED);
