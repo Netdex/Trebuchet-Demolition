@@ -1,5 +1,6 @@
 package physics.util;
 
+import physics.PhysicsEngine;
 import physics.entity.AABB2D;
 import physics.entity.Circle2D;
 import physics.entity.Rectangle2D;
@@ -22,11 +23,7 @@ public class CollisionResolver {
      * @param RESTITUTION The minimum restitution between the circles
      */
     public static void resolveCircleCollision(Circle2D a, Circle2D b, final double RESTITUTION) {
-//	 a.vel = a.vel.divide(-RESTITUTION);
-//	 b.vel = b.vel.divide(-RESTITUTION);
-
-	 // I decided not to have very accurate circle collision code since I can only have one circle in the game at a time
-//	// Calculate variables in physics collision
+	// // Calculate variables in physics collision
 	double totalMass = a.getMass() + b.getMass();
 
 	// Beta is the angle of the vector from the x-axis
@@ -49,9 +46,7 @@ public class CollisionResolver {
 	double newYB = ((lengthB * Math.cos(betaB - phi) * (b.getMass() - a.getMass()) + 2 * a.getMass() * lengthA * Math.cos(betaA - phi)) / totalMass) * Math.sin(phi) + lengthB
 		* Math.sin(betaB - phi) * Math.sin(phi + Math.PI / 2);
 
-	double penetrationDepth = a.loc.distance(b.loc);
-	// a.loc = a.loc.subtract(new Vector(penetrationDepth / 2, penetrationDepth / 2));
-	// b.loc = b.loc.add(new Vector(penetrationDepth / 2, penetrationDepth / 2));
+	a.loc = a.loc.subtract(a.vel);
 	a.vel = new Vector2D(newXA, newYA);
 	b.vel = new Vector2D(newXB, newYB);
     }
@@ -62,7 +57,6 @@ public class CollisionResolver {
      * @param velX The x-coordinate of the point
      * @param velY The y-coordinate of the point
      * @return the angle relative to the positive x-axis
-     * @deprecated Circles no longer use this function
      */
     public static double computeBeta(double velX, double velY) {
 	if (velX < 0) {
@@ -112,26 +106,52 @@ public class CollisionResolver {
 	double vertDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p2.x, b.p1.y), b.p2, a.loc);
 	double horizDist = MathOperations.pointToLineDistance(b.p1, new Vector2D(b.p2.x, b.p1.y), a.loc);
 	double horizDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p1.x, b.p2.y), b.p2, a.loc);
-	
+
 	// Teleport the circle outside of the AABB first
 	a.loc.subtract(a.vel);
 	double radius = a.getRadius();
 	if (vertDist <= radius || vertDist2 <= radius) {
 	    a.vel.x = -a.vel.x / RESTITUTION;
+	    b.vel.x = -b.vel.x / RESTITUTION;
 	}
 	if (horizDist <= radius || horizDist2 <= radius) {
 	    a.vel.y = -a.vel.y / RESTITUTION;
+	    b.vel.y = -b.vel.y / RESTITUTION;
 	}
     }
 
     /**
-     * Resolves a Rectangle to Rectangle collision
+     * Resolves a Circle to Rectangle collision
      * 
-     * @param a The first Rectangle
+     * @param a The first Circle
      * @param b The second Rectangle
-     * @param RESTITUTION The minimum restitution between the Rectangles
+     * @param RESTITUTION The minimum restitution between the Circle and the Rectangle
      */
-    public static void resolveRectangleCollision(Rectangle2D a, Rectangle2D b, final double RESTITUTION) {
+    public static void resolveRectCircleCollision(Circle2D a, Rectangle2D b, final double RESTITUTION) {
+	Vector2D center = a.getCenter();
+	// Get the distance between the center of the circle and every edge of the rectangle
+	double dist1 = MathOperations.pointToLineDistance(b.p1, b.p2, center);
+	double dist2 = MathOperations.pointToLineDistance(b.p2, b.p4, center);
+	double dist3 = MathOperations.pointToLineDistance(b.p4, b.p3, center);
+	double dist4 = MathOperations.pointToLineDistance(b.p3, b.p1, center);
+	double min = Math.min(dist1, Math.min(dist2, Math.min(dist3, dist4)));
+
+	b.translate(-b.vel.x, -b.vel.y);
+	
+	Vector2D plane;
+	if (dist1 == min) {
+	    plane = b.p1.subtract(b.p2);
+	} else if (dist2 == min) {
+	    plane = b.p2.subtract(b.p4);
+	} else if (dist3 == min) {
+	    plane = b.p4.subtract(b.p3);
+	} else {
+	    plane = b.p3.subtract(b.p1);
+	}
+
+	// Get the normal, which is the line perpendicular to the plane, by flipping y and x, however make y negative since swing uses inverse y coordinates
+	a.vel = a.vel.reflect(new Vector2D(-plane.y,plane.x));
+//	a.vel = a.vel.divide(RESTITUTION);
 
     }
 }

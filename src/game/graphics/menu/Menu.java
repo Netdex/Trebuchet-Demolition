@@ -1,7 +1,11 @@
 package game.graphics.menu;
 
+import game.graphics.GraphicsTools;
+
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -11,52 +15,47 @@ import java.util.ArrayList;
  * @author Gordon Guan
  * @version Jan 2015
  */
-public abstract class Menu {
-    private int selectedIndex;
-    private int shadowDist;
-
-    private ArrayList<MenuItem> menuItems;
-    private MenuKeyEvent event;
-
-    public Menu(MenuKeyEvent event, int shadowDist) {
-	this.selectedIndex = 0;
-	this.shadowDist = shadowDist;
-	menuItems = new ArrayList<MenuItem>();
-	this.event = event;
-    }
-
-    public void invokeAction(int keycode) {
-	event.selectionAction(keycode);
-    }
+public class Menu {
     
-    /**
-     * Gets the shadow distance
-     * 
-     * @return the shadow distance
-     */
-    public int getShadowDist() {
-	return shadowDist;
+    private ArrayList<MenuItem> menuItems;
+
+    public Menu() {
+	menuItems = new ArrayList<MenuItem>();
     }
 
     /**
-     * Sets the shadow distance
+     * Makes the menu respond to the given key code to do menu actions, based on the actions defined in MenuKeyEvent
      * 
-     * @param shadowDist the new shadow distance
+     * @param keycode The keycode to input
      */
-    public void setShadowDist(int shadowDist) {
-	this.shadowDist = shadowDist;
+    public void invokeAction(MouseEvent event) {
+	Point p = event.getPoint();
+	for(MenuItem item : this.getMenuItems()){
+	    if(item.getDimensions().contains(p)){
+		item.doAction(item);
+	    }
+	}
     }
+
+
 
     /**
      * Draws the menu onto the specified graphics
      * 
      * @param g The graphics to draw the menu on
-     * @param width The width of the area
-     * @param height The height of the area
-     * @param startHeight The start height to begin drawing
-     * @param separation The separation of the menu items
      */
-    public abstract void drawMenu(Graphics g, int width, int height, int startHeight, int separation);
+    public void drawMenu(Graphics2D g){
+	for(MenuItem menuItem : this.getMenuItems()){
+	    Rectangle rectangle = menuItem.getDimensions();
+	    g.setColor(menuItem.getBackgroundColor().darker().darker());
+	    g.fillRect(rectangle.x + 2, rectangle.y + 2, rectangle.width, rectangle.height);
+	    g.setColor(menuItem.getBackgroundColor());
+	    g.fill(rectangle);
+	    g.setColor(menuItem.getColor());
+	    g.setFont(menuItem.getFont());
+	    GraphicsTools.drawShadowedText(g, menuItem.getText(), rectangle.x + 10, rectangle.y + g.getFontMetrics().getAscent(), 2);
+	}
+    }
 
     /**
      * Adds a MenuItem to the menu
@@ -92,48 +91,7 @@ public abstract class Menu {
 	menuItems.clear();
     }
 
-    /**
-     * Gets the selected item's index
-     * 
-     * @return the selected item's index
-     */
-    public int getSelectedItem() {
-	return selectedIndex;
-    }
 
-    /**
-     * Sets the selected index
-     * 
-     * @param selectedIndex The index to set
-     */
-    public void setSelectedItem(int selectedIndex) {
-	this.selectedIndex = selectedIndex;
-    }
-
-    /**
-     * Check if the current MenuItem is selected
-     * 
-     * @return if the current MenuItem is selected or not
-     */
-    public boolean isSelected(MenuItem item) {
-	return selectedIndex == menuItems.indexOf(item);
-    }
-
-    /**
-     * Moves the selected item one up
-     */
-    public void shiftUp() {
-	if (selectedIndex > 0)
-	    selectedIndex--;
-    }
-
-    /**
-     * Moves the selected item one down
-     */
-    public void shiftDown() {
-	if (selectedIndex < menuItems.size() - 1)
-	    selectedIndex++;
-    }
 
     /**
      * Makes a color brighter (for selected MenuItems)

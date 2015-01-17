@@ -9,6 +9,11 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+/**
+ * A game which involves physics and calculations
+ * @author Gordon Guan
+ * @version Jan 2015
+ */
 public class TrebuchetDemolition extends JFrame {
     
     private static final long serialVersionUID = -7601853692438229300L;

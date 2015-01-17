@@ -2,10 +2,10 @@ package game;
 
 import game.graphics.GraphicsTools;
 import game.graphics.ScreenType;
-import game.graphics.menu.AlignedMenu;
-import game.graphics.menu.CenteredMenu;
+import game.graphics.menu.Menu;
 import game.graphics.menu.MenuItem;
-import game.graphics.menu.MenuKeyEvent;
+import game.graphics.menu.MenuItemAction;
+import game.graphics.menu.MenuMouseEvent;
 import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
 import game.level.LevelManager;
@@ -15,6 +15,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -30,9 +31,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import physics.PhysicsEngine;
-import physics.entity.AABB2D;
 import physics.entity.Entity2D;
 import physics.entity.Projectile2D;
+import physics.entity.Rectangle2D;
 import physics.util.Vector2D;
 import tasks.GameClockTask;
 
@@ -64,11 +65,11 @@ public class GamePanel extends JPanel {
 
     private final int width, height;
     /***********************************************************************/
-    private CenteredMenu mainMenu;
-    private AlignedMenu optionsMenu, levelSelectMenu, pauseMenu;
+    private Menu mainMenu;
+    private Menu optionsMenu, levelSelectMenu, pauseMenu;
 
-    private ToggleMenuItem musicToggleMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.GREEN, Color.RED);
     private MusicManager musicManager;
+    private ToggleMenuItem musicMenuItem;
 
     /***********************************************************************/
 
@@ -87,147 +88,114 @@ public class GamePanel extends JPanel {
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
 
 	// Set up all the main menu handlers
-	MenuKeyEvent mainMenuEvent = new MenuKeyEvent() {
-	    public void selectionAction(int keycode) {
-		if (keycode == KeyEvent.VK_UP) {
-		    mainMenu.shiftUp();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_DOWN) {
-		    mainMenu.shiftDown();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_ENTER || keycode == KeyEvent.VK_SPACE) {
-		    int selectedIndex = mainMenu.getSelectedItem();
-		    if (selectedIndex == 0) {
-			LevelManager.loadLevels();
-			levelSelectMenu.clearMenu();
-			for (Level level : LevelManager.getLevels()) {
-			    MenuItem menuItem = new MenuItem(level.getName() + " - " + level.getFile().getName(), GraphicsTools.LEVEL_SELECT_FONT, Color.GRAY);
-			    levelSelectMenu.addMenuItem(menuItem);
-			}
-			levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.LIGHT_GRAY));
-			displayScreen = ScreenType.LEVEL_SELECT;
-		    } else if (selectedIndex == 1) {
-			displayScreen = ScreenType.OPTIONS_MENU;
-		    } else if (selectedIndex == 2) {
-			JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
-				+ "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
-		    } else if (selectedIndex == 3) {
-			JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
-		    } else if (selectedIndex == 4) {
-			int accept = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-			if (accept == JOptionPane.YES_OPTION)
-			    System.exit(0);
-		    }
-		    repaint();
-		} else if (keycode == KeyEvent.VK_F10) {
-		    System.out.println("DEBUG MODE");
-		    start();
-		    repaint();
-		}
 
-	    }
-	};
-	MenuKeyEvent optionsMenuEvent = new MenuKeyEvent() {
-	    public void selectionAction(int keycode) {
-		if (keycode == KeyEvent.VK_ESCAPE) {
-		    displayScreen = ScreenType.MAIN_MENU;
-		    repaint();
-		} else if (keycode == KeyEvent.VK_UP) {
-		    optionsMenu.shiftUp();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_DOWN) {
-		    optionsMenu.shiftDown();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_ENTER) {
-		    int selectedIndex = optionsMenu.getSelectedItem();
-		    // Music
-		    if (selectedIndex == 0) {
-			musicToggleMenuItem.toggle();
-			if (musicToggleMenuItem.getEnabled()) {
-			    musicManager.start();
-			} else {
-			    musicManager.stop();
-			}
-		    }
-		    // Return to main menu
-		    else if (selectedIndex == 1) {
-			displayScreen = ScreenType.MAIN_MENU;
-		    }
-		    repaint();
-		}
-	    }
-	};
-	MenuKeyEvent levelSelectMenuEvent = new MenuKeyEvent() {
-	    public void selectionAction(int keycode) {
-		// Return to main menu
-		if (keycode == KeyEvent.VK_ESCAPE) {
-		    displayScreen = ScreenType.MAIN_MENU;
-		    repaint();
-		} else if (keycode == KeyEvent.VK_UP) {
-		    levelSelectMenu.shiftUp();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_DOWN) {
-		    levelSelectMenu.shiftDown();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_ENTER) {
-		    int selectedIndex = levelSelectMenu.getSelectedItem();
+	MenuItemAction playMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		LevelManager.loadLevels();
+		levelSelectMenu.clearMenu();
+		int y = 75;
+		int mheight = 23;
+		int mlength = 600;
+		int sep = 10;
+		for (int levelID = 0; levelID < LevelManager.getLevels().size(); levelID++) {
+		    Level level = LevelManager.getLevels().get(levelID);
+		    MenuItemAction levelSelectAction = new MenuItemAction() {
+			public void doAction(MenuItem item) {
+			    Level level = LevelManager.getLevels().get(levelSelectMenu.getMenuItems().indexOf(item));
+			    loadLevel(level);
 
-		    // Check if the selected MenuItem is the last one, which is return to main menu
-		    if (selectedIndex == LevelManager.getLevels().size()) {
+			    start();
+			    repaint();
+			}
+		    };
+		    String menuItemText = level.getName() + " - " + level.getFile().getName();
+		    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight),
+			    levelSelectAction);
+		    levelSelectMenu.addMenuItem(menuItem);
+		    y += mheight + sep;
+		}
+		y += mheight + sep;
+		levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(100, y, 200, y + 50), new MenuItemAction() {
+		    public void doAction(MenuItem item) {
 			displayScreen = ScreenType.MAIN_MENU;
 			repaint();
-		    } else {
-			Level level = LevelManager.getLevels().get(selectedIndex);
-			loadLevel(level);
-
-			start();
-			repaint();
 		    }
-
-		}
-
+		}));
+		displayScreen = ScreenType.LEVEL_SELECT;
+		repaint();
 	    }
 	};
-	MenuKeyEvent pauseMenuEvent = new MenuKeyEvent() {
-	    public void selectionAction(int keycode) {
-		if (keycode == KeyEvent.VK_UP) {
-		    pauseMenu.shiftUp();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_DOWN) {
-		    pauseMenu.shiftDown();
-		    repaint();
-		} else if (keycode == KeyEvent.VK_ESCAPE) {
-		    start();
-		} else if (keycode == KeyEvent.VK_ENTER) {
-		    int selectedIndex = pauseMenu.getSelectedItem();
-		    if (selectedIndex == 0) {
-			start();
-		    } else if (selectedIndex == 1) {
-			stop();
-			repaint();
-		    }
-		}
+	MenuItemAction optionsMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		displayScreen = ScreenType.OPTIONS_MENU;
+		repaint();
 	    }
 	};
-
+	MenuItemAction helpMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
+			+ "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
+	    }
+	};
+	MenuItemAction aboutMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+	    }
+	};
+	MenuItemAction exitMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		System.exit(0);
+	    }
+	};
 	// Setup all the items in the menus
-	mainMenu = new CenteredMenu(mainMenuEvent, 3);
-	mainMenu.addMenuItem(new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.GRAY));
-	mainMenu.addMenuItem(new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.GRAY));
-	mainMenu.addMenuItem(new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.GRAY));
-	mainMenu.addMenuItem(new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.GRAY));
-	mainMenu.addMenuItem(new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.GRAY));
 
-	optionsMenu = new AlignedMenu(optionsMenuEvent, 2);
-	optionsMenu.addMenuItem(musicToggleMenuItem);
-	musicToggleMenuItem.setEnabled(true);
-	optionsMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
+	mainMenu = new Menu();
+	int y = 150;
+	int mheight = 55;
+	int mlength = 200;
+	int sep = 10;
+	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y, mlength, mheight), playMenuItemAction);
+	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 	new Rectangle(100, y + mheight + sep, mlength, mheight), optionsMenuItemAction);
+	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y + mheight * 2 + sep * 2, mlength, mheight), helpMenuItemAction);
+	MenuItem aboutMenuItem = new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y + mheight * 3 + sep * 3, mlength, mheight), aboutMenuItemAction);
+	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y + mheight * 4 + sep * 4, mlength, mheight), exitMenuItemAction);
+	mainMenu.addMenuItem(playMenuItem);
+	mainMenu.addMenuItem(optionsMenuItem);
+	mainMenu.addMenuItem(helpMenuItem);
+	mainMenu.addMenuItem(aboutMenuItem);
+	mainMenu.addMenuItem(exitMenuItem);
 
-	levelSelectMenu = new AlignedMenu(levelSelectMenuEvent, 1);
+	MenuItemAction musicMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		musicMenuItem.toggle();
+		if (musicMenuItem.getEnabled()) {
+		    musicManager.start();
+		} else {
+		    musicManager.stop();
+		}
+		repaint();
+	    }
+	};
 
-	pauseMenu = new AlignedMenu(pauseMenuEvent, 1);
-	pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
-	pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
+	MenuItemAction returnMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		displayScreen = ScreenType.MAIN_MENU;
+		repaint();
+	    }
+	};
+	optionsMenu = new Menu();
+
+	musicMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.WHITE, Color.GREEN, Color.RED, new Rectangle(100, 100, 100, 100), musicMenuItemAction);
+	MenuItem returnMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(100, 200, 100, 100), returnMenuItemAction);
+
+	optionsMenu.addMenuItem(musicMenuItem);
+	optionsMenu.addMenuItem(returnMenuItem);
+
+	levelSelectMenu = new Menu();
+
+	// pauseMenu = new AlignedMenu(pauseMenuEvent, 1);
+	// pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
+	// pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
 
 	// Start the music TODO Add configuration support
 	musicManager = new MusicManager();
@@ -237,6 +205,17 @@ public class GamePanel extends JPanel {
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
 		System.out.println(event.getX() + ", " + event.getY());
+		if (displayScreen == ScreenType.MAIN_MENU) {
+		    mainMenu.invokeAction(event);
+		} else if (displayScreen == ScreenType.OPTIONS_MENU) {
+		    optionsMenu.invokeAction(event);
+		} else if (displayScreen == ScreenType.LEVEL_SELECT) {
+		    levelSelectMenu.invokeAction(event);
+		} else if (displayScreen == ScreenType.IN_GAME) {
+		    if (paused) {
+			pauseMenu.invokeAction(event);
+		    }
+		}
 	    }
 	});
 	this.addMouseWheelListener(new MouseWheelListener() {
@@ -247,75 +226,63 @@ public class GamePanel extends JPanel {
 		}
 	    }
 	});
-	this.addMouseMotionListener(new MouseMotionListener(){
+	this.addMouseMotionListener(new MouseMotionListener() {
 
 	    @Override
 	    public void mouseDragged(MouseEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	    }
 
 	    @Override
 	    public void mouseMoved(MouseEvent event) {
 		Point point = event.getPoint();
-		if(displayScreen == ScreenType.MAIN_MENU){
-		    
+		if (displayScreen == ScreenType.MAIN_MENU) {
+
 		}
-		
+
 	    }
-	    
+
 	});
 	this.addKeyListener(new KeyAdapter() {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
 		// Respond to ingame events
 		if (displayScreen == ScreenType.IN_GAME) {
-		    if (paused) {
-			pauseMenu.invokeAction(keycode);
-		    } else {
-			if (keycode == KeyEvent.VK_RIGHT) {
-			    changePower(1);
-			} else if (keycode == KeyEvent.VK_LEFT) {
-			    changePower(-1);
-			} else if (keycode == KeyEvent.VK_UP) {
-			    changeAngle(1);
-			} else if (keycode == KeyEvent.VK_DOWN) {
-			    changeAngle(-1);
-			} else if (keycode == KeyEvent.VK_SPACE) {
-			    engine.removeLastProjectile();
-			    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 9);
-			    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 9);
-			    Vector2D vel = new Vector2D(vecX, vecY);
 
-			    Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10, Color.BLACK);
-			    engine.addEntity(c);
+		    if (keycode == KeyEvent.VK_RIGHT) {
+			changePower(1);
+		    } else if (keycode == KeyEvent.VK_LEFT) {
+			changePower(-1);
+		    } else if (keycode == KeyEvent.VK_UP) {
+			changeAngle(1);
+		    } else if (keycode == KeyEvent.VK_DOWN) {
+			changeAngle(-1);
+		    } else if (keycode == KeyEvent.VK_SPACE) {
+			engine.removeLastProjectile();
+			double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
+			double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;
+			Vector2D vel = new Vector2D(vecX, vecY);
 
-			} else if (keycode == KeyEvent.VK_0) {
-			    engine.removeLastProjectile();
-			} else if (keycode == KeyEvent.VK_ESCAPE) {
-			    pause();
-			    repaint();
-			}
+			Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10, Color.BLACK);
+			engine.addEntity(c);
+
+		    } else if (keycode == KeyEvent.VK_0) {
+			engine.removeLastProjectile();
+		    } else if (keycode == KeyEvent.VK_ESCAPE) {
+			pause();
+			repaint();
 		    }
+
 		}
-		// Respond to events in main menu
-		else if (displayScreen == ScreenType.MAIN_MENU) {
-		    mainMenu.invokeAction(keycode);
-		}
-		// Respond to events in options menu
-		else if (displayScreen == ScreenType.OPTIONS_MENU) {
-		    optionsMenu.invokeAction(keycode);
-		}
-		// Respond to events in level select menu
-		else if (displayScreen == ScreenType.LEVEL_SELECT) {
-		    levelSelectMenu.invokeAction(keycode);
-		}
+
 	    }
 	});
 
 	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-	final AABB2D aabb = new AABB2D(new Vector2D(300, 10), new Vector2D(350, 310), Vector2D.ZERO, Color.BLACK);
-	engine.addEntity(aabb);
+	final Rectangle2D rect = new Rectangle2D(new Vector2D(300, 10), new Vector2D(350, 310), Color.BLACK);
+	rect.rotate(30);
+	engine.addEntity(rect);
 	/* END DEBUG CODE */
     }
 
@@ -365,32 +332,40 @@ public class GamePanel extends JPanel {
 	// Playing game
 	if (displayScreen == ScreenType.IN_GAME) {
 	    // Draw debug info
-	    g.setColor(Color.LIGHT_GRAY);
+	    g.setColor(Color.WHITE);
 	    g.fillRect(0, 0, 110, 100);
 	    g.setColor(Color.BLACK);
 	    g.drawString("Entities: " + engine.getEntities().size(), 10, 15);
 	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
 	    g.drawString("[GAME VARIABLES]: ", 10, 65);
 	    g.drawString("Power: " + power + "%", 10, 80);
-	    g.drawString("Angle: " + angle + "°", 10, 95);
+	    g.drawString("Angle: " + angle + "ï¿½", 10, 95);
 
 	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0, 0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
-	    int vecX = (int) (Math.cos(Math.toRadians(180 - angle)) * power / 9);
-	    int vecY = (int) (Math.sin(Math.toRadians(180 - angle)) * power / 9);
+	    double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
+	    double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;
 	    Vector2D vel = new Vector2D(vecX * 10, vecY * 10);
 	    Vector2D shootPoint = new Vector2D(50, height - 50);
-	    
+
 	    g.setColor(Color.RED);
-	    g.drawLine((int)shootPoint.x, (int)shootPoint.y, (int)Math.round(shootPoint.x - vel.x), (int)Math.round(shootPoint.y - vel.y));
+	    g.drawLine((int) shootPoint.x, (int) shootPoint.y, (int) (shootPoint.x - vel.x), (int) (shootPoint.y - vel.y));
 	    g.setColor(Color.BLACK);
-	    
+
 	    // Draw all the entities on the screen
 	    for (Entity2D entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
-//		if (entity.isHandling())
-//		    g.setColor(Color.RED);
+		if (entity.isHandling())
+		    g.setColor(Color.RED);
 
 		entity.drawEntity(g);
+
+		/* TODO REMOVE DEBUG CODE FOR VISUALIZING ENTITY VELOCITY */
+		Vector2D velocity = entity.vel.copy().multiply(5);
+		Vector2D center = entity.getCenter();
+		g.setColor(Color.RED);
+		g.drawLine((int) center.x, (int) center.y, (int) (center.x - velocity.x), (int) (center.y - velocity.y));
+		g.setColor(Color.BLACK);
+		/* TODO END DEBUG */
 
 	    }
 	    // Draw pause menu
@@ -403,7 +378,7 @@ public class GamePanel extends JPanel {
 		g.setColor(Color.WHITE);
 		int pauseY = 100 + g.getFontMetrics().getAscent();
 		GraphicsTools.drawShadowedText(g, "PAUSED", 105, pauseY, 2);
-		pauseMenu.drawMenu(g, 105, 0, pauseY + 50, 35);
+		pauseMenu.drawMenu(g);
 	    }
 	}
 	// Main Menu
@@ -421,7 +396,7 @@ public class GamePanel extends JPanel {
 	    g.drawImage(titleImage, width / 2 - titleWidth / 2, 10, null);
 
 	    // Draw the menu
-	    mainMenu.drawMenu(g, width, height, 220, 60);
+	    mainMenu.drawMenu(g);
 	}
 	// Options Menu
 	else if (displayScreen == ScreenType.OPTIONS_MENU) {
@@ -438,7 +413,7 @@ public class GamePanel extends JPanel {
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Options", 10, 37, 3);
 
-	    optionsMenu.drawMenu(g, 10, 0, 120, 50);
+	    optionsMenu.drawMenu(g);
 	} else if (displayScreen == ScreenType.LEVEL_SELECT) {
 	    // Draw the background image
 	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
@@ -453,7 +428,7 @@ public class GamePanel extends JPanel {
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Level Select", 10, 37, 3);
 
-	    levelSelectMenu.drawMenu(g, 10, 0, 80, 25);
+	    levelSelectMenu.drawMenu(g);
 	}
     }
 

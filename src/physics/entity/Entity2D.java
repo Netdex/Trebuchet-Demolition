@@ -44,6 +44,11 @@ public abstract class Entity2D implements Cloneable {
     }
 
     /**
+     * Gets the center point of the entity
+     * @return the center point of the entity as a Vector2D
+     */
+    public abstract Vector2D getCenter();
+    /**
      * Gets an array of all the points in the shape
      * 
      * @return an array of all the points in the shape

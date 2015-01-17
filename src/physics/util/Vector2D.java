@@ -155,7 +155,6 @@ public class Vector2D {
     /**
      * Converts this vector to a unit vector (a vector with length of 1).
      * 
-     * @return the same vector
      */
     public void normalize() {
 	double length = length();
@@ -163,11 +162,21 @@ public class Vector2D {
 	x /= length;
 	y /= length;
     }
+    
+    /**
+     * Gets the unit vector of this vector (a vector with length of 1).
+     * 
+     * @return the normalized vector
+     */
+    public Vector2D getNormalized() {
+	double length = length();
+
+	return new Vector2D(x / length, y / length);
+    }
 
     /**
      * Zero this vector's components.
      * 
-     * @return the same vector
      */
     public void zero() {
 	x = 0;
@@ -213,14 +222,26 @@ public class Vector2D {
 
     /**
      * Divides a vector by a scalar
+     * 
      * @param scalar The scalar to divide by
      * @return a new vector divided by the scalar
      */
     public Vector2D divide(double scalar) {
 	return new Vector2D(x / scalar, y / scalar);
     }
-    
-    public Vector2D copy(){
+
+    public Vector2D copy() {
 	return new Vector2D(x, y);
+    }
+
+    /**
+     * Finds the vector of the reflected ray
+     * 
+     * @param incident the incident vector
+     * @param normal the normal vector
+     * @return the incident vector reflected over the normal
+     */
+    public Vector2D reflect(Vector2D normal) {
+	return this.subtract(normal.getNormalized().multiply(2 * this.dotProduct(normal.getNormalized())));
     }
 }

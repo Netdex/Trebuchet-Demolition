@@ -12,13 +12,16 @@ import java.awt.Graphics;
  * 
  */
 public class GraphicsTools {
-    
+
     public static final Color PANEL_COLOR = new Color(247, 247, 247, 128);
     public static final Font MAIN_FONT = new Font("Optima", Font.BOLD, 40);
     public static final Font OPTIONS_FONT = new Font("Optima", Font.BOLD, 27);
     public static final Font LEVEL_SELECT_FONT = new Font("Consolas", Font.PLAIN, 20);
+    public static final Color BG_COLOR = new Color(247, 247, 247, 125);
+
     /**
      * Draws shadowed text at the position
+     * 
      * @param g The graphics to draw the text with
      * @param text The text to draw
      * @param x The x coordinate

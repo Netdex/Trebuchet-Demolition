@@ -89,21 +89,20 @@ public class Circle2D extends Entity2D {
 	}
 	// Check for this circle to a rectangle
 	else if (entity instanceof Rectangle2D) {
+	    Rectangle2D rect = (Rectangle2D) entity;
+	    Vector2D center = this.loc;
+	    double dist1 = MathOperations.pointToLineSegDistance(rect.p1, rect.p2, center);
+	    double dist2 = MathOperations.pointToLineSegDistance(rect.p2, rect.p4, center);
+	    double dist3 = MathOperations.pointToLineSegDistance(rect.p4, rect.p3, center);
+	    double dist4 = MathOperations.pointToLineSegDistance(rect.p3, rect.p1, center);
+	    double min = Math.min(dist1, Math.min(dist2, Math.min(dist3, dist4)));
 
-	} else if (entity instanceof Target2D) {
-	    Target2D target = (Target2D) entity;
-	    AABB2D bounds = this.getBoundingBox();
-
-	    CollisionType doesCollide = MathOperations.hasAABBCollision(target, bounds);
-	    if (doesCollide == CollisionType.AABB_TO_AABB) {
-		if (this instanceof Projectile2D)
-		    return CollisionType.WINNING_COLLISION;
-		else
-		    return CollisionType.CIRCLE_TO_AABB;
+	    if (min < radius && rect.getShape().contains(center.x, center.y)) {
+		return CollisionType.CIRCLE_TO_RECT;
 	    }
 	    return CollisionType.NO_COLLISION;
 	}
-	// Check for this circle to an AABB
+	// Check for this circle to an AABB, or a Target
 	else if (entity instanceof AABB2D) {
 	    AABB2D aabb = (AABB2D) entity;
 	    AABB2D bounds = this.getBoundingBox();
@@ -135,6 +134,11 @@ public class Circle2D extends Entity2D {
     @Override
     public Vector2D[] getPointArray() {
 	return new Vector2D[] { loc };
+    }
+
+    @Override
+    public Vector2D getCenter() {
+	return loc.copy();
     }
 
     /**

@@ -38,15 +38,15 @@ public class Rectangle2D extends Entity2D {
     }
 
     @Override
-    public boolean handleWallCollision(int width, int height, final double RESTITUTION){
+    public boolean handleWallCollision(int width, int height, final double RESTITUTION) {
 	return false;
     }
-    
+
     @Override
-    public Entity2D clone(){
-	return new Rectangle2D(p1.copy(),p2.copy(),p3.copy(),p4.copy(),this.vel.copy(), this.angle, angularVel, this.getColor());
+    public Entity2D clone() {
+	return new Rectangle2D(p1.copy(), p2.copy(), p3.copy(), p4.copy(), this.vel.copy(), this.angle, angularVel, this.getColor());
     }
-    
+
     /**
      * Creates a rectangle with the least possible arguments
      * 
@@ -126,13 +126,12 @@ public class Rectangle2D extends Entity2D {
      * Gets a bounding box around the rectangle
      */
     public AABB2D getBoundingBox() {
-	return new AABB2D(new Vector2D(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))), new Vector2D(
-		Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector2D.ZERO, Color.BLACK);
+	return new AABB2D(new Vector2D(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))),
+		new Vector2D(Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector2D.ZERO,
+		Color.BLACK);
     }
 
-    /**
-     * Gets the center of the rectangle
-     */
+    @Override
     public Vector2D getCenter() {
 	return this.p1.midpoint(this.p4);
     }
@@ -191,20 +190,89 @@ public class Rectangle2D extends Entity2D {
 	return new Vector2D(tempX + center.x, tempY + center.y);
     }
 
-     /**
+    /**
      * Translates the entire rectangle
-     *
+     * 
      * @param x How much x to translate
      * @param y How much y to translate
      */
-     public void translate(double x, double y) {
-     this.p1.x += x;
-     this.p2.x += x;
-     this.p3.x += x;
-     this.p4.x += x;
-     this.p1.y += y;
-     this.p2.y += y;
-     this.p3.y += y;
-     this.p4.y += y;
-     }
+    public void translate(double x, double y) {
+	this.p1.x += x;
+	this.p2.x += x;
+	this.p3.x += x;
+	this.p4.x += x;
+	this.p1.y += y;
+	this.p2.y += y;
+	this.p3.y += y;
+	this.p4.y += y;
+    }
+
+    /**
+     * Gets the lowest point
+     * 
+     * @return the lowest point
+     */
+    public Vector2D getLowestPoint() {
+	Vector2D lowestPoint = p1;
+	Vector2D[] points = getPointArray();
+	for (int vector = 1; vector < 4; vector++) {
+	    Vector2D vec = points[vector];
+	    if (vec.y > lowestPoint.y) {
+		lowestPoint = vec;
+	    }
+	}
+	return lowestPoint;
+    }
+
+    /**
+     * Gets the highest point
+     * 
+     * @return the highest point
+     */
+    public Vector2D getHighestPoint() {
+	Vector2D lowestPoint = p1;
+	Vector2D[] points = getPointArray();
+	for (int vector = 1; vector < 4; vector++) {
+	    Vector2D vec = points[vector];
+	    if (vec.y > lowestPoint.y) {
+		lowestPoint = vec;
+	    }
+	}
+	return lowestPoint;
+    }
+
+    /**
+     * Gets the left-most point
+     * 
+     * @return the left-most point
+     */
+    public Vector2D getLeftmostPoint() {
+	Vector2D lowestPoint = p1;
+	Vector2D[] points = getPointArray();
+	for (int vector = 1; vector < 4; vector++) {
+	    Vector2D vec = points[vector];
+	    if (vec.y < lowestPoint.x) {
+		lowestPoint = vec;
+	    }
+	}
+	return lowestPoint;
+    }
+
+    /**
+     * Gets the right-most point
+     * 
+     * @return the right-most point
+     */
+    public Vector2D getRightmostPoint() {
+	Vector2D lowestPoint = p1;
+	Vector2D[] points = getPointArray();
+	for (int vector = 1; vector < 4; vector++) {
+	    Vector2D vec = points[vector];
+	    if (vec.y < lowestPoint.x) {
+		lowestPoint = vec;
+	    }
+	}
+	return lowestPoint;
+    }
+
 }

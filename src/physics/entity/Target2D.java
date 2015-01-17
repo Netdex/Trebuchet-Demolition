@@ -15,5 +15,7 @@ public class Target2D extends AABB2D{
 	super(p1, p2, Vector2D.ZERO, c);
 	// TODO Auto-generated constructor stub
     }
+    
+    
 
 }

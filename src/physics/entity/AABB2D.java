@@ -110,11 +110,7 @@ public class AABB2D extends Entity2D {
 	return new Vector2D[] { p1, p2 };
     }
 
-    /**
-     * Gets the center of the AABB
-     * 
-     * @return the center of the AABB
-     */
+    @Override
     public Vector2D getCenter() {
 	return new Vector2D(p1.x + getWidth() / 2, p1.y + getHeight() / 2);
     }

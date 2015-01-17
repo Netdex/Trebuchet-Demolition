@@ -10,6 +10,7 @@ import physics.entity.AABB2D;
 import physics.entity.Circle2D;
 import physics.entity.Entity2D;
 import physics.entity.Projectile2D;
+import physics.entity.Rectangle2D;
 import physics.util.CollisionResolver;
 import physics.util.CollisionType;
 import physics.util.Vector2D;
@@ -23,8 +24,7 @@ import physics.util.Vector2D;
 public class PhysicsEngine {
     // These constants are not related to real world constants
     public static final Vector2D GRAVITY_CONSTANT = new Vector2D(0, 0.1);
-    private static final double FRICTION = 1.05;
-    private static final double RESTITUTION = 1.5;
+    private static final double RESTITUTION = 1.3;
 
     public boolean gravity = true;
 
@@ -82,7 +82,7 @@ public class PhysicsEngine {
 	    boolean wallCollided = false;
 	    if (e.hasPhysics())
 		wallCollided = handleWallCollisions(e);
-	    
+
 	    if (entityCollided || wallCollided)
 		collisionsInTick++;
 	    if (gravity && e.hasPhysics()) {
@@ -110,22 +110,23 @@ public class PhysicsEngine {
 	    for (Entity2D e : entities) {
 		if (e != entity) {
 		    CollisionType colType = entity.getCollisionState(e);
-		    if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
-			CollisionResolver.resolveCircleCollision((Circle2D) entity, (Circle2D) e, RESTITUTION);
+		    if (colType != CollisionType.NO_COLLISION) {
 			entity.setHandling(true);
 			e.setHandling(true);
 			hasCollided = true;
-		    } else if (colType == CollisionType.AABB_TO_AABB) {
-			entity.setHandling(true);
-			e.setHandling(true);
-			hasCollided = true;
-		    } else if (colType == CollisionType.CIRCLE_TO_AABB) {
-			CollisionResolver.resolveAABBCircleCollision((Circle2D) entity, (AABB2D) e, RESTITUTION);
-			entity.setHandling(true);
-			e.setHandling(true);
-			hasCollided = true;
-		    } else if (colType == CollisionType.WINNING_COLLISION) {
-			won = true;
+			if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
+			    CollisionResolver.resolveCircleCollision((Circle2D) entity, (Circle2D) e, RESTITUTION);
+			} else if (colType == CollisionType.AABB_TO_AABB){
+			    
+			} else if (colType == CollisionType.CIRCLE_TO_AABB) {
+			    CollisionResolver.resolveAABBCircleCollision((Circle2D) entity, (AABB2D) e, RESTITUTION);
+
+			} else if (colType == CollisionType.CIRCLE_TO_RECT) {
+			    CollisionResolver.resolveRectCircleCollision((Circle2D) entity, (Rectangle2D) e, RESTITUTION);
+			    
+			} else if (colType == CollisionType.WINNING_COLLISION) {
+			    won = true;
+			}
 		    }
 		}
 	    }

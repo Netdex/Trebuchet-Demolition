@@ -2,6 +2,7 @@ package game.graphics.menu;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Rectangle;
 
 /**
  * A MenuItem which can be toggled
@@ -12,8 +13,8 @@ public class ToggleMenuItem extends MenuItem {
     private Color toggleColor;
     private boolean isEnabled;
     
-    public ToggleMenuItem(String text, Font font, Color color, Color toggleColor) {
-	super(text, font, color);
+    public ToggleMenuItem(String text, Font font, Color color, Color bgcolor, Color toggleColor, Rectangle dimensions, MenuItemAction action) {
+	super(text, font, color, bgcolor, dimensions, action);
 	this.toggleColor = toggleColor;
 	isEnabled = false;
     }
@@ -22,8 +23,8 @@ public class ToggleMenuItem extends MenuItem {
      * Toggles the toggle color with this item's actual color
      */
     public void toggle(){
-	Color tempColor = this.getColor();
-	this.setColor(toggleColor);
+	Color tempColor = this.getBackgroundColor();
+	this.setBackgroundColor(toggleColor);
 	toggleColor = tempColor;
 	isEnabled = !isEnabled;
     }

@@ -2,6 +2,7 @@ package game.graphics.menu;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Rectangle;
 
 /**
  * Represents an item in a game menu
@@ -13,29 +14,33 @@ public class MenuItem {
     private String text;
     private Font font;
     private Color color;
-    /**
-     * Constructs a MenuItem with the default font of Calibri
-     * @param text The text for the MenuItem
-     * @param color The color for the MenuItem
-     */
-    public MenuItem(String text, Color color) {
+    private Color bgcolor;
+    private Rectangle dimensions;
+    
+    private MenuItemAction action;
+
+    public MenuItem(String text, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action) {
 	this.text = text;
 	this.font = Font.getFont("Calibri");
 	this.color = color;
+	this.bgcolor = bgcolor;
+	this.dimensions = dimensions;
+	this.action = action;
     }
 
-    /**
-     * Constructs a MenuItem with a given font
-     * @param text The text for the MenuItem
-     * @param font The font for the MenuItem
-     * @param color The color for the MenuItem
-     */
-    public MenuItem(String text, Font font, Color color) {
+    
+
+    public MenuItem(String text, Font font, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action) {
 	this.text = text;
 	this.font = font;
 	this.color = color;
+	this.bgcolor = bgcolor;
+	this.dimensions = dimensions;
+	this.action = action;
     }
-    
+    public void doAction(MenuItem item){
+	action.doAction(item);
+    }
     /**
      * Gets the MenuItem's color
      * @return the MenuItem's color
@@ -50,6 +55,14 @@ public class MenuItem {
      */
     public void setColor(Color color){
 	this.color = color;
+    }
+    
+    public Color getBackgroundColor(){
+	return bgcolor;
+    }
+    
+    public void setBackgroundColor(Color bgcolor){
+	this.bgcolor = bgcolor;
     }
     /**
      * Gets the text on the MenuItem
@@ -81,5 +94,13 @@ public class MenuItem {
      */
     public void setFont(Font font){
 	this.font = font;
+    }
+
+    public Rectangle getDimensions() {
+        return dimensions;
+    }
+
+    public void setDimensions(Rectangle dimensions) {
+        this.dimensions = dimensions;
     }
 }

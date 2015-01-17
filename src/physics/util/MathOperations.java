@@ -1,6 +1,9 @@
 package physics.util;
 
+import java.awt.geom.Line2D;
+
 import physics.entity.AABB2D;
+import physics.entity.Circle2D;
 
 /**
  * Contains math operations to simplify physics calculations
@@ -39,5 +42,10 @@ public class MathOperations {
     public static double pointToLineDistance(Vector2D a, Vector2D b, Vector2D p) {
 	double normalLength = Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
 	return Math.abs((p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)) / normalLength;
+    }
+    
+    public static double pointToLineSegDistance(Vector2D a, Vector2D b, Vector2D p){
+	return Line2D.ptSegDist(a.x, a.y, b.x, b.y, p.x, p.y);
+
     }
 }
