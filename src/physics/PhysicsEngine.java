@@ -3,6 +3,7 @@ package physics;
 import game.TrebuchetDemolition;
 import game.level.Level;
 
+import java.awt.Color;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -68,7 +69,8 @@ public class PhysicsEngine {
 	}
 
 	// Clone it, since it will be cleared!
-	entities = (Vector<Entity2D>) level.getEntities();
+	entities = (Vector<Entity2D>) level.getEntities().clone();
+	TrebuchetDemolition.LOGGER.info("Loaded level \"" + level.getName() + "\" into Physics Engine");
     }
 
     /**
@@ -211,5 +213,14 @@ public class PhysicsEngine {
 
     public void setWon(boolean b) {
 	won = b;
+    }
+    
+    public void fireProjectile(int power, int angle){
+	double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
+	double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;
+	Vector2D vel = new Vector2D(vecX, vecY);
+
+	Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10, Color.BLACK);
+	this.addEntity(c);
     }
 }

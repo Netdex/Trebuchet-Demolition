@@ -21,10 +21,10 @@ public class MenuItem {
     private Color bgcolor;
     private Rectangle dimensions;
     private boolean isHighlighted;
-
+    private int shadowDist;
     private MenuItemAction action;
 
-    public MenuItem(String text, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action) {
+    public MenuItem(String text, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action, int shadowDist) {
 	this.text = text;
 	this.font = Font.getFont("Calibri");
 	this.color = color;
@@ -32,15 +32,17 @@ public class MenuItem {
 	this.dimensions = dimensions;
 	this.action = action;
 	isHighlighted = false;
+	this.shadowDist = shadowDist;
     }
 
-    public MenuItem(String text, Font font, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action) {
+    public MenuItem(String text, Font font, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action, int shadowDist) {
 	this.text = text;
 	this.font = font;
 	this.color = color;
 	this.bgcolor = bgcolor;
 	this.dimensions = dimensions;
 	this.action = action;
+	this.shadowDist = shadowDist;
     }
 
     public void drawItem(Graphics2D g) {
@@ -48,13 +50,13 @@ public class MenuItem {
 	g.setColor(this.getBackgroundColor().darker().darker());
 	g.fillRect(rectangle.x + 2, rectangle.y + 2, rectangle.width, rectangle.height);
 	if (this.isHighlighted())
-	    g.setColor(GraphicsTools.brighten(this.getBackgroundColor(), 0.75));
+	    g.setColor(GraphicsTools.brighten(this.getBackgroundColor(), 0.3));
 	else
 	    g.setColor(this.getBackgroundColor());
 	g.fill(rectangle);
 	g.setColor(this.getColor());
 	g.setFont(this.getFont());
-	GraphicsTools.drawShadowedText(g, this.getText(), rectangle.x + 10, rectangle.y + g.getFontMetrics().getAscent() + 3, 2);
+	GraphicsTools.drawShadowedText(g, this.getText(), rectangle.x + 10, rectangle.y + g.getFontMetrics().getAscent() + 3, shadowDist);
     }
 
     public void doAction(MenuItem item) {

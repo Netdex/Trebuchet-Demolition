@@ -30,8 +30,6 @@ import javax.swing.Timer;
 
 import physics.PhysicsEngine;
 import physics.entity.Entity2D;
-import physics.entity.Projectile2D;
-import physics.entity.Rectangle2D;
 import physics.util.Vector2D;
 import tasks.GameClockTask;
 
@@ -46,7 +44,9 @@ import tasks.GameClockTask;
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
     public static Image titleImage, backgroundImage, trebuchetImage;
-    public static Image metalTexture;
+    public static Image metalTexture, ingameTexture;
+
+    public static final int TEXTURE_SIZE = 128;
     /***********************************************************************/
     public PhysicsEngine engine;
     private Timer physicsTimer;
@@ -57,7 +57,11 @@ public class GamePanel extends JPanel {
     private int power = 75;
     private int angle = 50;
 
+    private long lastFireTime = 0;
+    private int lastFirePower = 0;
+
     private boolean paused = false;
+    private boolean ctrlIsPressed = false;
     /***********************************************************************/
     private ScreenType displayScreen = ScreenType.MAIN_MENU;
 
@@ -89,35 +93,7 @@ public class GamePanel extends JPanel {
 	MenuItemAction playMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
 		LevelManager.loadLevels();
-		levelSelectMenu.clearMenu();
-		int y = 75;
-		int mheight = 25;
-		int mlength = 600;
-		int sep = 10;
-		for (int levelID = 0; levelID < LevelManager.getLevels().size(); levelID++) {
-		    Level level = LevelManager.getLevels().get(levelID);
-		    MenuItemAction levelSelectAction = new MenuItemAction() {
-			public void doAction(MenuItem item) {
-			    Level level = LevelManager.getLevels().get(levelSelectMenu.getMenuItems().indexOf(item));
-			    loadLevel(level);
-
-			    start();
-			    repaint();
-			}
-		    };
-		    String menuItemText = String.format("%-43s",level.getName()) + String.format("%10s",level.getFile().getName());
-		    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), levelSelectAction);
-		    levelSelectMenu.addMenuItem(menuItem);
-		    y += mheight + sep;
-		}
-		y += mheight + sep;
-		levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight),
-			new MenuItemAction() {
-			    public void doAction(MenuItem item) {
-				displayScreen = ScreenType.MAIN_MENU;
-				repaint();
-			    }
-			}));
+		repopulateLevelSelectMenu();
 		displayScreen = ScreenType.LEVEL_SELECT;
 		repaint();
 	    }
@@ -144,37 +120,42 @@ public class GamePanel extends JPanel {
 		System.exit(0);
 	    }
 	};
-	// Setup all the items in the menus
 
+	// Setup all the items in the menus
 	mainMenu = new Menu();
 	int y = 150;
 	int mheight = 55;
 	int mlength = 600;
 	int sep = 10;
-	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), playMenuItemAction);
-	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), optionsMenuItemAction);
-	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 2 + sep * 2, mlength, mheight), helpMenuItemAction);
+	int shadowDist = 3;
+	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), playMenuItemAction, shadowDist);
+	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), optionsMenuItemAction,
+		shadowDist);
+	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 2 + sep * 2, mlength, mheight), helpMenuItemAction,
+		shadowDist);
 	MenuItem aboutMenuItem = new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 3 + sep * 3, mlength, mheight),
-		aboutMenuItemAction);
-	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 4 + sep * 4, mlength, mheight), exitMenuItemAction);
+		aboutMenuItemAction, shadowDist);
+	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 4 + sep * 4, mlength, mheight), exitMenuItemAction,
+		shadowDist);
 	mainMenu.addMenuItem(playMenuItem);
 	mainMenu.addMenuItem(optionsMenuItem);
 	mainMenu.addMenuItem(helpMenuItem);
 	mainMenu.addMenuItem(aboutMenuItem);
 	mainMenu.addMenuItem(exitMenuItem);
-
 	MenuItemAction musicMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
 		musicMenuItem.toggle();
+		repaint();
 		if (musicMenuItem.getEnabled()) {
 		    musicManager.start();
+		    ConfigurationManager.setProperty("music", "true");
 		} else {
 		    musicManager.stop();
+		    ConfigurationManager.setProperty("music", "false");
 		}
-		repaint();
+
 	    }
 	};
-
 	MenuItemAction returnMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
 		displayScreen = ScreenType.MAIN_MENU;
@@ -182,39 +163,39 @@ public class GamePanel extends JPanel {
 	    }
 	};
 	optionsMenu = new Menu();
-
-	musicMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.WHITE, Color.RED, Color.GREEN, new Rectangle(10, 75, 500, 40), musicMenuItemAction);
-	MenuItem returnMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, 125, 500, 27), returnMenuItemAction);
-
+	musicMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.WHITE, Color.GREEN, Color.RED, new Rectangle(10, 75, 500, 40), musicMenuItemAction, 2);
+	MenuItem returnMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.SMALL_TEXT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, 125, 500, 27), returnMenuItemAction, 1);
 	optionsMenu.addMenuItem(musicMenuItem);
 	optionsMenu.addMenuItem(returnMenuItem);
-
 	levelSelectMenu = new Menu();
-
 	pauseMenu = new Menu();
 	MenuItemAction resumeMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
-		paused = false;
 		start();
 		repaint();
 	    }
 	};
-	MenuItem resumeMenuItem = new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(110, 150, 500, 40), resumeMenuItemAction);
-	MenuItem returnFromPauseMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(110, 190, 500, 40), returnMenuItemAction);
+	MenuItem resumeMenuItem = new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(110, 170, 550, 40), resumeMenuItemAction, 2);
+	MenuItem returnFromPauseMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(110, 230, 550, 40), returnMenuItemAction,
+		2);
 	pauseMenu.addMenuItem(resumeMenuItem);
 	pauseMenu.addMenuItem(returnFromPauseMenuItem);
-
+	TrebuchetDemolition.LOGGER.info("Menu population complete");
 	/* From here ends all menu action and item setup code */
 
-	// Start the music TODO Add configuration support
-
+	// Check if music is enabled, then turn it on if so
 	musicManager = new MusicManager();
-	if (ConfigurationManager.musicEnabled)
+	if (ConfigurationManager.getBooleanProperty("music")) {
 	    musicManager.start();
+	    musicMenuItem.setEnabled(true);
+	} else {
+	    musicMenuItem.setEnabled(false);
+	}
+	TrebuchetDemolition.LOGGER.info("Loaded music");
 
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
-		System.out.println(event.getX() + ", " + event.getY());
+		// System.out.println(event.getX() + ", " + event.getY());
 		if (displayScreen == ScreenType.MAIN_MENU) {
 		    mainMenu.invokeAction(event);
 		} else if (displayScreen == ScreenType.OPTIONS_MENU) {
@@ -224,6 +205,8 @@ public class GamePanel extends JPanel {
 		} else if (displayScreen == ScreenType.IN_GAME) {
 		    if (paused) {
 			pauseMenu.invokeAction(event);
+		    } else {
+			doShot();
 		    }
 		}
 	    }
@@ -232,12 +215,14 @@ public class GamePanel extends JPanel {
 	    public void mouseWheelMoved(MouseWheelEvent event) {
 		int notches = event.getWheelRotation();
 		if (displayScreen == ScreenType.IN_GAME) {
-		    changePower(notches * 5);
+		    if (ctrlIsPressed)
+			changeAngle(notches * 5);
+		    else
+			changePower(notches * 5);
 		}
 	    }
 	});
 	this.addMouseMotionListener(new MouseMotionListener() {
-
 	    @Override
 	    public void mouseDragged(MouseEvent event) {
 
@@ -262,66 +247,113 @@ public class GamePanel extends JPanel {
 		}
 
 	    }
-
 	});
 	this.addKeyListener(new KeyAdapter() {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
+		if (keycode == KeyEvent.VK_CONTROL)
+		    ctrlIsPressed = true;
 		// Respond to ingame events
 		if (displayScreen == ScreenType.IN_GAME) {
 
 		    if (keycode == KeyEvent.VK_RIGHT) {
-			changePower(1);
+			changePower(2);
 		    } else if (keycode == KeyEvent.VK_LEFT) {
-			changePower(-1);
+			changePower(-2);
 		    } else if (keycode == KeyEvent.VK_UP) {
-			changeAngle(1);
+			changeAngle(2);
 		    } else if (keycode == KeyEvent.VK_DOWN) {
-			changeAngle(-1);
+			changeAngle(-2);
 		    } else if (keycode == KeyEvent.VK_SPACE) {
-			engine.removeLastProjectile();
-			double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
-			double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;
-			Vector2D vel = new Vector2D(vecX, vecY);
-
-			Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10, Color.BLACK);
-			engine.addEntity(c);
-
+			doShot();
 		    } else if (keycode == KeyEvent.VK_0) {
 			engine.removeLastProjectile();
 		    } else if (keycode == KeyEvent.VK_ESCAPE) {
-			pause();
+			if (paused)
+			    start();
+			else
+			    pause();
 			repaint();
 		    }
-
 		}
+	    }
 
+	    public void keyReleased(KeyEvent event) {
+		int keycode = event.getKeyCode();
+		if (keycode == KeyEvent.VK_CONTROL) {
+		    ctrlIsPressed = false;
+		}
 	    }
 	});
+	TrebuchetDemolition.LOGGER.info("Loaded listeners");
+    }
 
-	/* DEBUG CODE TODO REMOVE DEBUG CODE FOR HOT-INSERTING ENTITIES */
-	final Rectangle2D rect = new Rectangle2D(new Vector2D(300, 10), new Vector2D(350, 310), Color.BLACK);
-	rect.rotate(30);
-	engine.addEntity(rect);
-	/* END DEBUG CODE */
+    public void doShot() {
+	engine.removeLastProjectile();
+	lastFireTime = System.currentTimeMillis();
+	loadedLevel.setScore(0);
+	engine.fireProjectile(power, angle);
+	lastFirePower = power;
+	TrebuchetDemolition.LOGGER.info("Fired shot");
+    }
+
+    public void repopulateLevelSelectMenu() {
+	levelSelectMenu.clearMenu();
+	int y = 75;
+	int mheight = 25;
+	int mlength = 600;
+	int sep = 10;
+	for (int levelID = 0; levelID < LevelManager.getLevels().size(); levelID++) {
+	    Level level = LevelManager.getLevels().get(levelID);
+	    MenuItemAction levelSelectAction = new MenuItemAction() {
+		public void doAction(MenuItem item) {
+		    Level level = LevelManager.getLevels().get(levelSelectMenu.getMenuItems().indexOf(item));
+		    loadLevel(level);
+
+		    start();
+		    repaint();
+		}
+	    };
+	    String highscore = "Has not been played";
+	    if (level.getMetadata().getProperty("highscore") != null) {
+		highscore = "Highscore: " + level.getMetadata().getProperty("highscore");
+	    }
+	    String menuItemText = String.format("%-25s", level.getName().substring(0, Math.min(level.getName().length(), 40))) + String.format("%-20s", level.getFile().getName())
+		    + String.format("%20s", highscore);
+	    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), levelSelectAction, 1);
+	    levelSelectMenu.addMenuItem(menuItem);
+	    y += mheight + sep;
+	}
+	y += mheight + sep;
+	levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.SMALL_TEXT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight),
+		new MenuItemAction() {
+		    public void doAction(MenuItem item) {
+			displayScreen = ScreenType.MAIN_MENU;
+			repaint();
+		    }
+		}, 1));
+	TrebuchetDemolition.LOGGER.info("Redrew level select menu");
     }
 
     public void loadLevel(Level level) {
 	try {
-	    if (level.getMetadata().getProperty("bgcolor") != null) {
-		String[] colorRGB = level.getMetadata().getProperty("bgcolor").replaceAll(" ", "").split(",");
-		Color color = new Color(Integer.parseInt(colorRGB[0]), Integer.parseInt(colorRGB[1]), Integer.parseInt(colorRGB[2]));
-		this.setBackground(color);
-	    } else {
-		this.setBackground(Color.WHITE);
-	    }
+	    // if (level.getMetadata().getProperty("bgcolor") != null) {
+	    // String[] colorRGB = level.getMetadata().getProperty("bgcolor").replaceAll(" ", "").split(",");
+	    // Color color = new Color(Integer.parseInt(colorRGB[0]), Integer.parseInt(colorRGB[1]), Integer.parseInt(colorRGB[2]));
+	    // this.setBackground(color);
+	    // } else {
+	    // this.setBackground(Color.WHITE);
+	    // }
 	} catch (Exception e) {
 	    JOptionPane.showMessageDialog(null, "An error occured while loading a level: " + e.getMessage(), "Level Loading Error", JOptionPane.ERROR_MESSAGE);
 	    TrebuchetDemolition.LOGGER.warning("Failed to load the level selected: " + e.getMessage());
 	    return;
 	}
 	loadedLevel = level;
+	lastFireTime = -1;
+	TrebuchetDemolition.LOGGER.info("Loaded level \"" + level.getName() + "\" into Game Panel");
 	engine.loadLevel(level);
+
     }
 
     /**
@@ -329,12 +361,33 @@ public class GamePanel extends JPanel {
      */
     public void checkWin() {
 	if (engine.hasWon()) {
-	    JOptionPane.showMessageDialog(null, "You have won!", "Congratulations!", JOptionPane.INFORMATION_MESSAGE);
+	    JOptionPane.showMessageDialog(null, "You have won with a score of " + loadedLevel.getScore() + "!", "Level Clear", JOptionPane.INFORMATION_MESSAGE);
 	    stop();
 	    engine.clearAll();
+	    lastFireTime = -1;
+	    loadedLevel.save();
+	    loadedLevel.setScore(0);
+	    try {
+		loadedLevel.loadEntities();
+	    } catch (Exception e) {
+		TrebuchetDemolition.LOGGER.warning("Failed to load entities: " + e.getMessage());
+	    }
+	    loadedLevel = null;
+	    lastFirePower = 0;
 	    displayScreen = ScreenType.LEVEL_SELECT;
+
+	    repopulateLevelSelectMenu();
 	    repaint();
-	    LevelManager.loadLevels();
+	    TrebuchetDemolition.LOGGER.info("Player has won a level");
+	}
+    }
+
+    public void doScore() {
+	if (loadedLevel != null) {
+	    if (lastFireTime == -1)
+		loadedLevel.setScore(0);
+	    else
+		loadedLevel.setScore((int) (System.currentTimeMillis() - lastFireTime) * lastFirePower / 5);
 	}
     }
 
@@ -352,15 +405,36 @@ public class GamePanel extends JPanel {
 
 	// Playing game
 	if (displayScreen == ScreenType.IN_GAME) {
+	    g.drawImage(ingameTexture, 0, 0, width, height, 0, 0, ingameTexture.getWidth(null), ingameTexture.getHeight(null), null);
 	    // Draw debug info
-	    g.setColor(Color.WHITE);
-	    g.fillRect(0, 0, 110, 100);
+	    // g.setColor(Color.WHITE);
+	    // g.fillRect(0, 0, 110, 100);
+	    // g.setColor(Color.BLACK);
+	    // g.drawString("Entities: " + engine.getEntities().size(), 10, 15);
+	    // g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
+	    // g.drawString("[GAME VARIABLES]: ", 10, 65);
+	    // g.drawString("Power: " + power + "%", 10, 80);
+	    // g.drawString("Angle: " + angle + "°", 10, 95);
+
+	    g.setColor(Color.RED);
+	    g.fillRect(10, 7, (int) (164 * power / 100.0), 15);
 	    g.setColor(Color.BLACK);
-	    g.drawString("Entities: " + engine.getEntities().size(), 10, 15);
-	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
-	    g.drawString("[GAME VARIABLES]: ", 10, 65);
-	    g.drawString("Power: " + power + "%", 10, 80);
-	    g.drawString("Angle: " + angle + "°", 10, 95);
+	    g.drawRect(10, 7, 164, 15);
+	    g.setFont(GraphicsTools.DETAIL_FONT);
+	    g.setColor(Color.WHITE);
+	    g.drawString("Power", 13, 19);
+
+	    g.setFont(GraphicsTools.MAIN_FONT);
+	    g.setColor(Color.WHITE);
+
+	    /* Begin score drawing */
+	    String score = loadedLevel.getScore() + "";
+	    int widthScore = g.getFontMetrics().stringWidth(score);
+	    int scoreX = width - widthScore - 10;
+	    int scoreY = g.getFontMetrics().getAscent();
+	    GraphicsTools.drawShadowedText(g, loadedLevel.getScore() + "", scoreX, scoreY, 2);
+	    GraphicsTools.drawShadowedText(g, loadedLevel.getScore() + "", scoreX, scoreY, -2);
+	    /* End score drawing */
 
 	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0, 0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
 	    double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
@@ -375,9 +449,8 @@ public class GamePanel extends JPanel {
 	    // Draw all the entities on the screen
 	    for (Entity2D entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
-//		if (entity.isHandling())
-//		    g.setColor(Color.RED);
-
+		// if (entity.isHandling())
+		// g.setColor(Color.RED);
 		entity.drawEntity(g);
 
 		/* TODO REMOVE DEBUG CODE FOR VISUALIZING ENTITY VELOCITY */
@@ -386,8 +459,7 @@ public class GamePanel extends JPanel {
 		g.setColor(Color.RED);
 		g.drawLine((int) center.x, (int) center.y, (int) (center.x - velocity.x), (int) (center.y - velocity.y));
 		g.setColor(Color.BLACK);
-		/* TODO END DEBUG */
-
+		/* END DEBUG */
 	    }
 	    // Draw pause menu
 	    if (paused) {
@@ -396,6 +468,8 @@ public class GamePanel extends JPanel {
 		g.drawRect(100, 100, width - 200, height - 200);
 		g.setColor(GraphicsTools.PANEL_COLOR.darker());
 		g.fillRect(100, 100, width - 200, height - 200);
+		g.setColor(GraphicsTools.PANEL_COLOR.brighter());
+		g.fillRect(100, 100, width - 200, g.getFontMetrics().getAscent() + 10);
 		g.setColor(Color.WHITE);
 		int pauseY = 100 + g.getFontMetrics().getAscent();
 		GraphicsTools.drawShadowedText(g, "PAUSED", 105, pauseY, 2);
@@ -406,7 +480,6 @@ public class GamePanel extends JPanel {
 	else if (displayScreen == ScreenType.MAIN_MENU) {
 	    // Draw the background image
 	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
-
 	    // Draw the title, and a slightly transparent box behind it
 	    int titleWidth = titleImage.getWidth(null);
 	    int titleHeight = titleImage.getHeight(null);
@@ -415,7 +488,6 @@ public class GamePanel extends JPanel {
 	    g.setColor(Color.BLACK);
 	    g.drawLine(0, titleHeight + 20, width, titleHeight + 20);
 	    g.drawImage(titleImage, width / 2 - titleWidth / 2, 10, null);
-
 	    // Draw the menu
 	    mainMenu.drawMenu(g);
 	}
@@ -423,9 +495,7 @@ public class GamePanel extends JPanel {
 	else if (displayScreen == ScreenType.OPTIONS_MENU) {
 	    // Draw the background image
 	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
-
 	    g.setColor(GraphicsTools.PANEL_COLOR);
-
 	    final int topBarHeight = 50;
 	    g.fillRect(0, 0, width, topBarHeight);
 	    g.setColor(Color.BLACK);
@@ -433,14 +503,11 @@ public class GamePanel extends JPanel {
 	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Options", 10, 37, 3);
-
 	    optionsMenu.drawMenu(g);
 	} else if (displayScreen == ScreenType.LEVEL_SELECT) {
 	    // Draw the background image
 	    g.drawImage(backgroundImage, 0, 0, backgroundImage.getWidth(null), backgroundImage.getHeight(null), 0, 0, width, height, null);
-
 	    g.setColor(GraphicsTools.PANEL_COLOR);
-
 	    final int topBarHeight = 50;
 	    g.fillRect(0, 0, width, topBarHeight);
 	    g.setColor(Color.BLACK);
@@ -448,7 +515,6 @@ public class GamePanel extends JPanel {
 	    g.setFont(GraphicsTools.MAIN_FONT);
 	    g.setColor(Color.WHITE);
 	    GraphicsTools.drawShadowedText(g, "Level Select", 10, 37, 3);
-
 	    levelSelectMenu.drawMenu(g);
 	}
     }
@@ -462,6 +528,8 @@ public class GamePanel extends JPanel {
 	    backgroundImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/background.jpg"));
 	    trebuchetImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/trebuchet.png"));
 	    metalTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/metal.jpg"));
+	    ingameTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/ingamebg.jpg"));
+	    TrebuchetDemolition.LOGGER.info("Loaded resources");
 	} catch (Exception e) {
 	    TrebuchetDemolition.LOGGER.severe("Failed to load game resources: " + e.getMessage());
 	}
@@ -474,6 +542,7 @@ public class GamePanel extends JPanel {
 	physicsTimer.start();
 	displayScreen = ScreenType.IN_GAME;
 	paused = false;
+	TrebuchetDemolition.LOGGER.info("Game clock has started");
     }
 
     /**
@@ -482,6 +551,7 @@ public class GamePanel extends JPanel {
     public void pause() {
 	physicsTimer.stop();
 	paused = true;
+	TrebuchetDemolition.LOGGER.info("Game clock has paused");
     }
 
     /**
@@ -491,6 +561,7 @@ public class GamePanel extends JPanel {
 	physicsTimer.stop();
 	displayScreen = ScreenType.MAIN_MENU;
 	paused = false;
+	TrebuchetDemolition.LOGGER.info("Game clock has stopped");
     }
 
     /**
@@ -508,9 +579,7 @@ public class GamePanel extends JPanel {
      */
     public void changeAngle(int difference) {
 	int wantedChange = angle + difference;
-	if (wantedChange >= 0 && wantedChange <= 180) {
-	    angle = wantedChange;
-	}
+	angle = Math.min(Math.max(wantedChange, 0), 180);
     }
 
     /**
@@ -520,8 +589,6 @@ public class GamePanel extends JPanel {
      */
     public void changePower(int difference) {
 	int wantedChange = power + difference;
-	if (wantedChange >= 0 && wantedChange <= 100) {
-	    power = wantedChange;
-	}
+	power = Math.min(Math.max(wantedChange, 0), 100);
     }
 }

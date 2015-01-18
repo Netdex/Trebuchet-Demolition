@@ -99,7 +99,7 @@ public class Circle2D extends Entity2D {
 	    double dist4 = MathOperations.pointToLineSegDistance(rect.p3, rect.p1, center);
 	    double min = Math.min(dist1, Math.min(dist2, Math.min(dist3, dist4)));
 
-	    if (min < radius && rect.getShape().contains(center.x, center.y)) {
+	    if (min < radius || rect.getShape().contains(center.x, center.y)) {
 		return CollisionType.CIRCLE_TO_RECT;
 	    }
 	    return CollisionType.NO_COLLISION;

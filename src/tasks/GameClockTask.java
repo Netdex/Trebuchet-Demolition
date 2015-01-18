@@ -15,5 +15,6 @@ public class GameClockTask implements ActionListener {
     public void actionPerformed(ActionEvent event) {
 	panel.tick();
 	panel.checkWin();
+	panel.doScore();
     }
 }

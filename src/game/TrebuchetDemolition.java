@@ -16,16 +16,24 @@ import javax.swing.UIManager;
  */
 public class TrebuchetDemolition extends JFrame {
     
+    // Get rid of the yellow squigglies
     private static final long serialVersionUID = -7601853692438229300L;
+    
+    // Initiate a logger for my own logging purposes
     public static final Logger LOGGER = Logger.getLogger(TrebuchetDemolition.class.getName());
 
     public TrebuchetDemolition() throws Exception {
 	super("Trebuchet Demolition");
 
-	// Don't use the ugly swing theme
-	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	// Load options
+	ConfigurationManager.loadConfiguration();
+	
+	// Change the theme to a more appealing one
+	UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 
 	LOGGER.setLevel(Level.ALL);
+	
+	// Create window
 	final int width = 900;
 	final int height = 600;
 
@@ -37,6 +45,7 @@ public class TrebuchetDemolition extends JFrame {
 
 	this.setIconImage(ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/icon.png")));
 
+	// Create the panel and everything inside
 	GamePanel sp = new GamePanel(panelWidth, panelHeight);
 	sp.setBounds(0, 0, panelWidth, panelHeight);
 	sp.setPreferredSize(new Dimension(panelWidth, panelHeight));
@@ -51,7 +60,7 @@ public class TrebuchetDemolition extends JFrame {
 		    TrebuchetDemolition td = new TrebuchetDemolition();
 		    td.setVisible(true);
 		    td.pack();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 		    LOGGER.severe("Failed to load program : " + e.getMessage());
 		}
 	    }

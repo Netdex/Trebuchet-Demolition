@@ -150,7 +150,7 @@ public class CollisionResolver {
 
 	// Get the normal, which is the line perpendicular to the plane, by flipping y and x, however make y negative since swing uses inverse y coordinates
 	a.vel = a.vel.reflect(new Vector2D(-plane.y,plane.x));
-//	a.vel = a.vel.divide(RESTITUTION);
+//	a.vel.y /= RESTITUTION;
 
     }
 }

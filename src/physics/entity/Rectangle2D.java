@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.TexturePaint;
 
@@ -81,7 +82,7 @@ public class Rectangle2D extends Entity2D {
 	    g.fill(poly);
 	} else {
 	    Paint originalPaint = g.getPaint();
-	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(rectTexture), this.getShape().getBounds2D());
+	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(rectTexture), new Rectangle(0,0,GamePanel.TEXTURE_SIZE,GamePanel.TEXTURE_SIZE));
 	    g.setPaint(texturePaint);
 	    Shape poly = this.getShape();
 	    g.fill(poly);
@@ -120,9 +121,7 @@ public class Rectangle2D extends Entity2D {
 	return p1.distance(p3);
     }
 
-    /**
-     * TODO Add collision code
-     */
+    @Override
     public CollisionType getCollisionState(Entity2D entity) {
 	return CollisionType.NO_COLLISION;
     }

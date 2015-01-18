@@ -67,14 +67,13 @@ public class AABB2D extends Entity2D {
 	return retType;
     }
 
+    @Override
     public double getMass() {
-	// TODO Make getMass() work for AABBs
 	return 0;
     }
 
     /**
-     * Gets the width of the AABB
-     * 
+     * Gets the width of the AABB 
      * @return The width of the AABB
      */
     public double getWidth() {

@@ -1,10 +1,20 @@
 package game.level;
 
+import game.TrebuchetDemolition;
+
+import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
+import physics.entity.AABB2D;
+import physics.entity.Circle2D;
 import physics.entity.Entity2D;
+import physics.entity.Rectangle2D;
+import physics.entity.Target2D;
+import physics.util.Vector2D;
 
 /**
  * Represents a game level
@@ -19,11 +29,93 @@ public class Level {
     private Properties metadata;
     private Vector<Entity2D> levelEntities;
 
+    private int score = 0;
+
     public Level(String name, File file, Properties metadata, Vector<Entity2D> levelEntities) {
 	this.name = name;
 	this.file = file;
 	this.metadata = metadata;
 	this.levelEntities = levelEntities;
+    }
+
+    public void save() {
+	try {
+	    if (metadata.getProperty("highscore") == null || Integer.parseInt(metadata.getProperty("highscore")) > score) {
+		metadata.setProperty("highscore", score + "");
+	    }
+	    metadata.store(new FileOutputStream(file), "This level has been played!");
+	} catch (Exception e) {
+	    TrebuchetDemolition.LOGGER.warning("Failed to save highscore information (file tampering?): " + e.getMessage());
+	}
+	TrebuchetDemolition.LOGGER.info("Saved level data");
+    }
+
+    public void loadEntities() throws Exception {
+	levelEntities.clear();
+	StringTokenizer st = new StringTokenizer(metadata.getProperty("entities"), ":");
+
+	boolean hasTarget = false;
+	while (st.hasMoreTokens()) {
+	    String line = st.nextToken().replaceAll(" ", "");
+	    String[] entityData = line.split(",");
+	    String type = entityData[0];
+	    try {
+		if (type.equals("circ")) {
+		    // Loads a circle with format
+		    // circ,13,14,112,255,255,255
+		    double x = Double.parseDouble(entityData[1]);
+		    double y = Double.parseDouble(entityData[2]);
+		    int radius = Integer.parseInt(entityData[3]);
+		    Color color = new Color(Integer.parseInt(entityData[4]), Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]));
+		    Vector2D loc = new Vector2D(x, y);
+		    Circle2D circle = new Circle2D(loc, Vector2D.ZERO, radius, color);
+		    levelEntities.add(circle);
+		} else if (type.equals("rect")) {
+		    // Loads a rectangle with format rect:
+		    double x1 = Double.parseDouble(entityData[1]);
+		    double y1 = Double.parseDouble(entityData[2]);
+		    double x2 = Double.parseDouble(entityData[3]);
+		    double y2 = Double.parseDouble(entityData[4]);
+		    double rot = Double.parseDouble(entityData[5]);
+		    Color color = new Color(Integer.parseInt(entityData[6]), Integer.parseInt(entityData[7]), Integer.parseInt(entityData[8]));
+		    Vector2D p1 = new Vector2D(x1, y1);
+		    Vector2D p2 = new Vector2D(x2, y2);
+		    Rectangle2D rect = new Rectangle2D(p1, p2, color);
+		    rect.rotate(rot);
+		    levelEntities.add(rect);
+		} else if (type.equals("aabb")) {
+		    double x1 = Double.parseDouble(entityData[1]);
+		    double y1 = Double.parseDouble(entityData[2]);
+		    double x2 = Double.parseDouble(entityData[3]);
+		    double y2 = Double.parseDouble(entityData[4]);
+		    Color color = new Color(Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]), Integer.parseInt(entityData[7]));
+		    boolean physics = Boolean.valueOf(entityData[8]);
+		    Vector2D p1 = new Vector2D(x1, y1);
+		    Vector2D p2 = new Vector2D(x2, y2);
+		    AABB2D aabb = new AABB2D(p1, p2, Vector2D.ZERO, color, physics);
+		    levelEntities.add(aabb);
+		} else if (type.equals("targ")) {
+		    double x1 = Double.parseDouble(entityData[1]);
+		    double y1 = Double.parseDouble(entityData[2]);
+		    double x2 = Double.parseDouble(entityData[3]);
+		    double y2 = Double.parseDouble(entityData[4]);
+		    Color color = new Color(Integer.parseInt(entityData[5]), Integer.parseInt(entityData[6]), Integer.parseInt(entityData[7]));
+		    Vector2D p1 = new Vector2D(x1, y1);
+		    Vector2D p2 = new Vector2D(x2, y2);
+		    Target2D targ = new Target2D(p1, p2, color);
+		    levelEntities.add(targ);
+		    hasTarget = true;
+		}
+	    } catch (Exception e) {
+		TrebuchetDemolition.LOGGER.warning("Failed to load an entity in level: " + e.getMessage());
+	    }
+	}
+
+	if (!hasTarget) {
+	    TrebuchetDemolition.LOGGER.info("Couldn't load level \"" + metadata.getProperty("name") + "\", has no target");
+	    throw new Exception("No target in level");
+	}
+
     }
 
     /**
@@ -87,12 +179,20 @@ public class Level {
     public void setFile(File file) {
 	this.file = file;
     }
-    
-    public Vector<Entity2D> getEntitiesClone(){
+
+    public Vector<Entity2D> getEntitiesClone() {
 	Vector<Entity2D> entities = new Vector<Entity2D>();
-	for(Entity2D entity : levelEntities){
+	for (Entity2D entity : levelEntities) {
 	    entities.add(entity.clone());
 	}
 	return entities;
+    }
+
+    public int getScore() {
+	return score;
+    }
+
+    public void setScore(int score) {
+	this.score = score;
     }
 }

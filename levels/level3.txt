@@ -1,5 +1,7 @@
-#Test Level
-name=Test Level
-gravity=true
+#This level has been played!
+#Sun Jan 18 18:11:15 EST 2015
 bgcolor=100,100,100
-entities=targ,800,500,850,600,0,255,0:aabb,173,138,249,300,255,255,255,true:aabb,173,200,249,250,255,255,255,false:circ,500,400,200,255,255,0
+name=Test Level
+entities=targ,800,500,850,600,0,255,0\:aabb,173,138,249,300,255,255,255,true\:aabb,173,200,249,250,255,255,255,false\:circ,500,400,200,255,255,0
+highscore=44340
+gravity=true

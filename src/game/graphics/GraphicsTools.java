@@ -16,10 +16,12 @@ import java.awt.image.BufferedImage;
 public class GraphicsTools {
 
     public static final Color PANEL_COLOR = new Color(247, 247, 247, 128);
-    public static final Font MAIN_FONT = new Font("Optima", Font.BOLD, 40);
-    public static final Font OPTIONS_FONT = new Font("Optima", Font.BOLD, 27);
-    public static final Font LEVEL_SELECT_FONT = new Font("Consolas", Font.PLAIN, 20);
-    public static final Color BG_COLOR = new Color(150, 150, 150, 150);
+    public static final Font MAIN_FONT = new Font("Century Gothic", Font.BOLD, 40);
+    public static final Font OPTIONS_FONT = new Font("Century Gothic", Font.BOLD, 27);
+    public static final Font SMALL_TEXT_FONT = new Font("Century Gothic", Font.BOLD, 15);
+    public static final Font DETAIL_FONT = new Font("Century Gothic", Font.BOLD, 12);
+    public static final Font LEVEL_SELECT_FONT = new Font("Monospaced", Font.BOLD, 15);
+    public static final Color BG_COLOR = new Color(150, 150, 150, 60);
 
     /**
      * Draws shadowed text at the position
