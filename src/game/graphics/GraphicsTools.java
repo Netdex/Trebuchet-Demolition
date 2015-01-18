@@ -3,6 +3,8 @@ package game.graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
  * Contains many helper methods to help draw fancy things
@@ -17,7 +19,7 @@ public class GraphicsTools {
     public static final Font MAIN_FONT = new Font("Optima", Font.BOLD, 40);
     public static final Font OPTIONS_FONT = new Font("Optima", Font.BOLD, 27);
     public static final Font LEVEL_SELECT_FONT = new Font("Consolas", Font.PLAIN, 20);
-    public static final Color BG_COLOR = new Color(247, 247, 247, 125);
+    public static final Color BG_COLOR = new Color(150, 150, 150, 150);
 
     /**
      * Draws shadowed text at the position
@@ -33,5 +35,34 @@ public class GraphicsTools {
 	g.drawString(text, x + dist, y + dist);
 	g.setColor(originalColor);
 	g.drawString(text, x, y);
+    }
+
+    /**
+     * Makes a color brighter (for selected MenuItems)
+     * 
+     * @param color The color to brighten
+     * @param fraction The percentage to brighten the color by
+     * @return the brightened color
+     */
+    public static Color brighten(Color color, double fraction) {
+
+	int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+	int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+	int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+	int alpha = color.getAlpha();
+
+	return new Color(red, green, blue, alpha);
+
+    }
+
+    public static BufferedImage bufferImage(Image image) {
+	BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+
+	Graphics g = bufferedImage.createGraphics();
+	g.drawImage(image, 0, 0, null);
+	g.dispose();
+
+	return bufferedImage;
     }
 }

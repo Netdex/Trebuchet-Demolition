@@ -5,7 +5,6 @@ import game.graphics.ScreenType;
 import game.graphics.menu.Menu;
 import game.graphics.menu.MenuItem;
 import game.graphics.menu.MenuItemAction;
-import game.graphics.menu.MenuMouseEvent;
 import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
 import game.level.LevelManager;
@@ -14,7 +13,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
@@ -48,7 +46,7 @@ import tasks.GameClockTask;
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
     public static Image titleImage, backgroundImage, trebuchetImage;
-
+    public static Image metalTexture;
     /***********************************************************************/
     public PhysicsEngine engine;
     private Timer physicsTimer;
@@ -87,14 +85,13 @@ public class GamePanel extends JPanel {
 
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
 
-	// Set up all the main menu handlers
-
+	/* From here begins all the menu action and item setup code */
 	MenuItemAction playMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
 		LevelManager.loadLevels();
 		levelSelectMenu.clearMenu();
 		int y = 75;
-		int mheight = 23;
+		int mheight = 25;
 		int mlength = 600;
 		int sep = 10;
 		for (int levelID = 0; levelID < LevelManager.getLevels().size(); levelID++) {
@@ -108,19 +105,19 @@ public class GamePanel extends JPanel {
 			    repaint();
 			}
 		    };
-		    String menuItemText = level.getName() + " - " + level.getFile().getName();
-		    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight),
-			    levelSelectAction);
+		    String menuItemText = String.format("%-43s",level.getName()) + String.format("%10s",level.getFile().getName());
+		    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), levelSelectAction);
 		    levelSelectMenu.addMenuItem(menuItem);
 		    y += mheight + sep;
 		}
 		y += mheight + sep;
-		levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(100, y, 200, y + 50), new MenuItemAction() {
-		    public void doAction(MenuItem item) {
-			displayScreen = ScreenType.MAIN_MENU;
-			repaint();
-		    }
-		}));
+		levelSelectMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight),
+			new MenuItemAction() {
+			    public void doAction(MenuItem item) {
+				displayScreen = ScreenType.MAIN_MENU;
+				repaint();
+			    }
+			}));
 		displayScreen = ScreenType.LEVEL_SELECT;
 		repaint();
 	    }
@@ -152,13 +149,14 @@ public class GamePanel extends JPanel {
 	mainMenu = new Menu();
 	int y = 150;
 	int mheight = 55;
-	int mlength = 200;
+	int mlength = 600;
 	int sep = 10;
-	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y, mlength, mheight), playMenuItemAction);
-	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 	new Rectangle(100, y + mheight + sep, mlength, mheight), optionsMenuItemAction);
-	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y + mheight * 2 + sep * 2, mlength, mheight), helpMenuItemAction);
-	MenuItem aboutMenuItem = new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y + mheight * 3 + sep * 3, mlength, mheight), aboutMenuItemAction);
-	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, 		new Rectangle(100, y + mheight * 4 + sep * 4, mlength, mheight), exitMenuItemAction);
+	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), playMenuItemAction);
+	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), optionsMenuItemAction);
+	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 2 + sep * 2, mlength, mheight), helpMenuItemAction);
+	MenuItem aboutMenuItem = new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 3 + sep * 3, mlength, mheight),
+		aboutMenuItemAction);
+	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 4 + sep * 4, mlength, mheight), exitMenuItemAction);
 	mainMenu.addMenuItem(playMenuItem);
 	mainMenu.addMenuItem(optionsMenuItem);
 	mainMenu.addMenuItem(helpMenuItem);
@@ -185,19 +183,31 @@ public class GamePanel extends JPanel {
 	};
 	optionsMenu = new Menu();
 
-	musicMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.WHITE, Color.GREEN, Color.RED, new Rectangle(100, 100, 100, 100), musicMenuItemAction);
-	MenuItem returnMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(100, 200, 100, 100), returnMenuItemAction);
+	musicMenuItem = new ToggleMenuItem("Music", GraphicsTools.OPTIONS_FONT, Color.WHITE, Color.RED, Color.GREEN, new Rectangle(10, 75, 500, 40), musicMenuItemAction);
+	MenuItem returnMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, 125, 500, 27), returnMenuItemAction);
 
 	optionsMenu.addMenuItem(musicMenuItem);
 	optionsMenu.addMenuItem(returnMenuItem);
 
 	levelSelectMenu = new Menu();
 
-	// pauseMenu = new AlignedMenu(pauseMenuEvent, 1);
-	// pauseMenu.addMenuItem(new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.GRAY));
-	// pauseMenu.addMenuItem(new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.GRAY));
+	pauseMenu = new Menu();
+	MenuItemAction resumeMenuItemAction = new MenuItemAction() {
+	    public void doAction(MenuItem item) {
+		paused = false;
+		start();
+		repaint();
+	    }
+	};
+	MenuItem resumeMenuItem = new MenuItem("Resume", GraphicsTools.OPTIONS_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(110, 150, 500, 40), resumeMenuItemAction);
+	MenuItem returnFromPauseMenuItem = new MenuItem("Return to Main Menu", GraphicsTools.OPTIONS_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(110, 190, 500, 40), returnMenuItemAction);
+	pauseMenu.addMenuItem(resumeMenuItem);
+	pauseMenu.addMenuItem(returnFromPauseMenuItem);
+
+	/* From here ends all menu action and item setup code */
 
 	// Start the music TODO Add configuration support
+
 	musicManager = new MusicManager();
 	if (ConfigurationManager.musicEnabled)
 	    musicManager.start();
@@ -230,15 +240,25 @@ public class GamePanel extends JPanel {
 
 	    @Override
 	    public void mouseDragged(MouseEvent event) {
-		// TODO Auto-generated method stub
 
 	    }
 
 	    @Override
 	    public void mouseMoved(MouseEvent event) {
-		Point point = event.getPoint();
 		if (displayScreen == ScreenType.MAIN_MENU) {
-
+		    mainMenu.handleHighlights(event);
+		    repaint();
+		} else if (displayScreen == ScreenType.OPTIONS_MENU) {
+		    optionsMenu.handleHighlights(event);
+		    repaint();
+		} else if (displayScreen == ScreenType.LEVEL_SELECT) {
+		    levelSelectMenu.handleHighlights(event);
+		    repaint();
+		} else if (displayScreen == ScreenType.IN_GAME) {
+		    if (paused) {
+			pauseMenu.handleHighlights(event);
+			repaint();
+		    }
 		}
 
 	    }
@@ -328,6 +348,7 @@ public class GamePanel extends JPanel {
 	Graphics2D g = (Graphics2D) graphics;
 	RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g.setRenderingHints(rh);
+	g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
 	// Playing game
 	if (displayScreen == ScreenType.IN_GAME) {
@@ -339,7 +360,7 @@ public class GamePanel extends JPanel {
 	    g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
 	    g.drawString("[GAME VARIABLES]: ", 10, 65);
 	    g.drawString("Power: " + power + "%", 10, 80);
-	    g.drawString("Angle: " + angle + "ï¿½", 10, 95);
+	    g.drawString("Angle: " + angle + "°", 10, 95);
 
 	    g.drawImage(trebuchetImage, 20, height - 60, 80, height, 0, 0, trebuchetImage.getWidth(null), trebuchetImage.getHeight(null), null);
 	    double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
@@ -354,8 +375,8 @@ public class GamePanel extends JPanel {
 	    // Draw all the entities on the screen
 	    for (Entity2D entity : engine.getEntities()) {
 		g.setColor(entity.getColor());
-		if (entity.isHandling())
-		    g.setColor(Color.RED);
+//		if (entity.isHandling())
+//		    g.setColor(Color.RED);
 
 		entity.drawEntity(g);
 
@@ -440,6 +461,7 @@ public class GamePanel extends JPanel {
 	    titleImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/title.png"));
 	    backgroundImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/background.jpg"));
 	    trebuchetImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/trebuchet.png"));
+	    metalTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/metal.jpg"));
 	} catch (Exception e) {
 	    TrebuchetDemolition.LOGGER.severe("Failed to load game resources: " + e.getMessage());
 	}

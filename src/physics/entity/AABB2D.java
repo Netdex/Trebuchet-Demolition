@@ -2,6 +2,7 @@ package physics.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
@@ -16,17 +17,19 @@ import physics.util.Vector2D;
  * @version Dec 2014
  */
 public class AABB2D extends Entity2D {
+    private static Image AABBTexture;
+
     public Vector2D p1;
     public Vector2D p2;
 
     public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel, Color c) {
-	super(c, vel);
+	super(c, vel, AABBTexture);
 	this.p1 = p1;
 	this.p2 = p2;
     }
 
     public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel, Color c, boolean physics) {
-	super(c, vel, physics);
+	super(c, vel, physics, AABBTexture);
 	this.p1 = p1;
 	this.p2 = p2;
     }
@@ -96,8 +99,10 @@ public class AABB2D extends Entity2D {
 
     @Override
     public void drawEntity(Graphics2D g) {
-	Shape shape = this.getShape();
-	g.fill(shape);
+	if (this.getTexture() == null) {
+	    Shape shape = this.getShape();
+	    g.fill(shape);
+	}
     }
 
     @Override

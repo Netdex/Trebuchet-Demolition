@@ -1,9 +1,15 @@
 package physics.entity;
 
+import game.GamePanel;
+import game.graphics.GraphicsTools;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Paint;
 import java.awt.Polygon;
 import java.awt.Shape;
+import java.awt.TexturePaint;
 
 import physics.util.CollisionType;
 import physics.util.Vector2D;
@@ -14,9 +20,11 @@ import physics.util.Vector2D;
  * @author Gordon Guan
  * @version Dec 2014
  * 
- *          TODO Fix rectangle collision code
  */
 public class Rectangle2D extends Entity2D {
+
+    private static Image rectTexture = GamePanel.metalTexture;
+
     public Vector2D p1;
     public Vector2D p2;
     public Vector2D p3;
@@ -26,7 +34,7 @@ public class Rectangle2D extends Entity2D {
     public double angularVel;
 
     public Rectangle2D(Vector2D p1, Vector2D p2, Vector2D p3, Vector2D p4, Vector2D vel, double angle, double angularVel, Color c) {
-	super(c, vel, false);
+	super(c, vel, false, rectTexture);
 	this.p1 = p1;
 	this.p2 = p2;
 	this.p3 = p3;
@@ -55,7 +63,7 @@ public class Rectangle2D extends Entity2D {
      * @param c The color
      */
     public Rectangle2D(Vector2D p1, Vector2D p2, Color c) {
-	super(c, Vector2D.ZERO, false);
+	super(c, Vector2D.ZERO, false, rectTexture);
 	this.p1 = p1;
 	this.p4 = p2;
 	this.p2 = new Vector2D(p2.x, p1.y);
@@ -68,8 +76,20 @@ public class Rectangle2D extends Entity2D {
 
     @Override
     public void drawEntity(Graphics2D g) {
-	Shape poly = this.getShape();
-	g.fill(poly);
+	if (this.getTexture() == null) {
+	    Shape poly = this.getShape();
+	    g.fill(poly);
+	} else {
+	    Paint originalPaint = g.getPaint();
+	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(rectTexture), this.getShape().getBounds2D());
+	    g.setPaint(texturePaint);
+	    Shape poly = this.getShape();
+	    g.fill(poly);
+	    g.setPaint(originalPaint);
+	    g.setColor(this.getColor());
+	    g.draw(poly);
+	    
+	}
     }
 
     @Override
@@ -80,11 +100,6 @@ public class Rectangle2D extends Entity2D {
 	Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
 	return poly;
     }
-
-    // public double getMass() {
-    // // TODO Add mass code for rectangle
-    // return 0;
-    // }
 
     /**
      * Gets the width of the Rectangle

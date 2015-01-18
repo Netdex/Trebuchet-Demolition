@@ -1,6 +1,5 @@
 package physics.util;
 
-import physics.PhysicsEngine;
 import physics.entity.AABB2D;
 import physics.entity.Circle2D;
 import physics.entity.Rectangle2D;

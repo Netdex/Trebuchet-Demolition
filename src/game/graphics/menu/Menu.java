@@ -1,11 +1,7 @@
 package game.graphics.menu;
 
-import game.graphics.GraphicsTools;
-
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -36,8 +32,21 @@ public class Menu {
 	    }
 	}
     }
-
-
+    
+    /**
+     * Makes mouseovers on menu items highlight the menu item
+     * @param event The mouse event given from the mouse moved event
+     */
+    public void handleHighlights(MouseEvent event){
+	Point p = event.getPoint();
+	for(MenuItem item : this.getMenuItems()){
+	    if(item.getDimensions().contains(p)){
+		item.setHighlighted(true);
+	    }
+	    else
+		item.setHighlighted(false);
+	}
+    }
 
     /**
      * Draws the menu onto the specified graphics
@@ -46,14 +55,7 @@ public class Menu {
      */
     public void drawMenu(Graphics2D g){
 	for(MenuItem menuItem : this.getMenuItems()){
-	    Rectangle rectangle = menuItem.getDimensions();
-	    g.setColor(menuItem.getBackgroundColor().darker().darker());
-	    g.fillRect(rectangle.x + 2, rectangle.y + 2, rectangle.width, rectangle.height);
-	    g.setColor(menuItem.getBackgroundColor());
-	    g.fill(rectangle);
-	    g.setColor(menuItem.getColor());
-	    g.setFont(menuItem.getFont());
-	    GraphicsTools.drawShadowedText(g, menuItem.getText(), rectangle.x + 10, rectangle.y + g.getFontMetrics().getAscent(), 2);
+	    menuItem.drawItem(g);
 	}
     }
 
@@ -89,26 +91,5 @@ public class Menu {
      */
     public void clearMenu() {
 	menuItems.clear();
-    }
-
-
-
-    /**
-     * Makes a color brighter (for selected MenuItems)
-     * 
-     * @param color The color to brighten
-     * @param fraction The percentage to brighten the color by
-     * @return the brightened color
-     */
-    public static Color brighten(Color color, double fraction) {
-
-	int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
-	int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
-	int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
-
-	int alpha = color.getAlpha();
-
-	return new Color(red, green, blue, alpha);
-
     }
 }

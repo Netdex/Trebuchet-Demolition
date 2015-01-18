@@ -3,7 +3,6 @@ package physics.util;
 import java.awt.geom.Line2D;
 
 import physics.entity.AABB2D;
-import physics.entity.Circle2D;
 
 /**
  * Contains math operations to simplify physics calculations

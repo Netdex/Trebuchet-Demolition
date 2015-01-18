@@ -2,6 +2,7 @@ package physics.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Shape;
 
 import physics.util.CollisionType;
@@ -14,6 +15,7 @@ import physics.util.Vector2D;
  * @version Dec 2014
  */
 public abstract class Entity2D implements Cloneable {
+    private Image texture;
     private static int lastID = 0;
 
     private final int entityID;
@@ -25,22 +27,24 @@ public abstract class Entity2D implements Cloneable {
 
     private boolean hasPhysics;
 
-    public Entity2D(Color c, Vector2D vel) {
+    public Entity2D(Color c, Vector2D vel, Image texture) {
 	this.entityID = lastID;
 	lastID++;
 	this.color = c;
 	this.handlingCollision = false;
 	this.vel = vel;
 	hasPhysics = true;
+	this.texture = texture;
     }
 
-    public Entity2D(Color c, Vector2D vel, boolean hasPhysics) {
+    public Entity2D(Color c, Vector2D vel, boolean hasPhysics, Image texture) {
 	this.entityID = lastID;
 	lastID++;
 	this.color = c;
 	this.handlingCollision = false;
 	this.vel = vel;
 	this.hasPhysics = hasPhysics;
+	this.texture = texture;
     }
 
     /**
@@ -157,5 +161,13 @@ public abstract class Entity2D implements Cloneable {
      * @return whether the collision happened
      */
     public abstract boolean handleWallCollision(int width, int height, final double RESTITUTION);
+
+    public Image getTexture() {
+        return texture;
+    }
+
+    public void setTexture(Image texture) {
+        this.texture = texture;
+    }
     
 }

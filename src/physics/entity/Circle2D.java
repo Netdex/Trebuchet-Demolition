@@ -2,6 +2,7 @@ package physics.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
@@ -16,11 +17,12 @@ import physics.util.Vector2D;
  * @version Dec 2014
  */
 public class Circle2D extends Entity2D {
+    private static Image circleTexture;
     private int radius;
     public Vector2D loc;
 
     public Circle2D(Vector2D loc, Vector2D vel, int radius, Color c) {
-	super(c, vel);
+	super(c, vel, circleTexture);
 	this.loc = loc;
 	this.radius = radius;
     }
@@ -122,8 +124,10 @@ public class Circle2D extends Entity2D {
 
     @Override
     public void drawEntity(Graphics2D g) {
-	Shape shape = this.getShape();
-	g.fill(shape);
+	if (this.getTexture() == null) {
+	    Shape shape = this.getShape();
+	    g.fill(shape);
+	}
     }
 
     @Override
