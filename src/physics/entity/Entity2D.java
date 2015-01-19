@@ -1,6 +1,5 @@
 package physics.entity;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Shape;
@@ -23,24 +22,20 @@ public abstract class Entity2D implements Cloneable {
 
     public Vector2D vel;
 
-    private Color color;
-
     private boolean hasPhysics;
 
-    public Entity2D(Color c, Vector2D vel, Image texture) {
+    public Entity2D(Vector2D vel, Image texture) {
 	this.entityID = lastID;
 	lastID++;
-	this.color = c;
 	this.handlingCollision = false;
 	this.vel = vel;
 	hasPhysics = true;
 	this.texture = texture;
     }
 
-    public Entity2D(Color c, Vector2D vel, boolean hasPhysics, Image texture) {
+    public Entity2D(Vector2D vel, boolean hasPhysics, Image texture) {
 	this.entityID = lastID;
 	lastID++;
-	this.color = c;
 	this.handlingCollision = false;
 	this.vel = vel;
 	this.hasPhysics = hasPhysics;
@@ -101,24 +96,6 @@ public abstract class Entity2D implements Cloneable {
     }
 
     /**
-     * Gets the entity's color
-     * 
-     * @return The entity's color
-     */
-    public Color getColor() {
-	return color;
-    }
-
-    /**
-     * Sets the entity's color
-     * 
-     * @param color The entity's color to set
-     */
-    public void setColor(Color color) {
-	this.color = color;
-    }
-
-    /**
      * Gets the entity ID
      * 
      * @return The entity ID
@@ -136,7 +113,7 @@ public abstract class Entity2D implements Cloneable {
     public abstract CollisionType getCollisionState(Entity2D entity);
 
     public String toString() {
-	return String.format("%s r%dg%db%d id%d v%s a%s", this.getClass().getName(), color.getRed(), color.getGreen(), color.getBlue(), entityID, vel.toString());
+	return String.format("%s r%dg%db%d id%d v%s a%s", this.getClass().getName(), entityID, vel.toString());
     }
 
     /**

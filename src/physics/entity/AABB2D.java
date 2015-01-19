@@ -1,9 +1,15 @@
 package physics.entity;
 
+import game.GamePanel;
+import game.graphics.GraphicsTools;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 
 import physics.util.CollisionType;
@@ -17,19 +23,19 @@ import physics.util.Vector2D;
  * @version Dec 2014
  */
 public class AABB2D extends Entity2D {
-    private static Image AABBTexture;
+    private static Image AABBTexture = GamePanel.metalTexture;
 
     public Vector2D p1;
     public Vector2D p2;
 
-    public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel, Color c) {
-	super(c, vel, AABBTexture);
+    public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel) {
+	super(vel, AABBTexture);
 	this.p1 = p1;
 	this.p2 = p2;
     }
 
-    public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel, Color c, boolean physics) {
-	super(c, vel, physics, AABBTexture);
+    public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel, boolean physics) {
+	super(vel, physics, AABBTexture);
 	this.p1 = p1;
 	this.p2 = p2;
     }
@@ -102,6 +108,16 @@ public class AABB2D extends Entity2D {
 	    Shape shape = this.getShape();
 	    g.fill(shape);
 	}
+	else{
+	    Paint originalPaint = g.getPaint();
+	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(AABBTexture), new Rectangle(0,0,GamePanel.TEXTURE_SIZE,GamePanel.TEXTURE_SIZE));
+	    g.setPaint(texturePaint);
+	    Shape poly = this.getShape();
+	    g.fill(poly);
+	    g.setPaint(originalPaint);
+	    g.setColor(Color.DARK_GRAY);
+	    g.draw(poly);
+	}
     }
 
     @Override
@@ -120,6 +136,6 @@ public class AABB2D extends Entity2D {
     }
 
     public Entity2D clone() {
-	return new AABB2D(p1.copy(), p2.copy(), this.vel.copy(), this.getColor(), this.hasPhysics());
+	return new AABB2D(p1.copy(), p2.copy(), this.vel.copy(), this.hasPhysics());
     }
 }

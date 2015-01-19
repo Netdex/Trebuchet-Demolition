@@ -3,7 +3,6 @@ package physics;
 import game.TrebuchetDemolition;
 import game.level.Level;
 
-import java.awt.Color;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -220,7 +219,7 @@ public class PhysicsEngine {
 	double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;
 	Vector2D vel = new Vector2D(vecX, vecY);
 
-	Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10, Color.BLACK);
+	Projectile2D c = new Projectile2D(new Vector2D(50, height - 50), vel, 10);
 	this.addEntity(c);
     }
 }

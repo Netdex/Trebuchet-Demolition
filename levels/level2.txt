@@ -1,7 +1,6 @@
 #This level has been played!
-#Sun Jan 18 17:26:22 EST 2015
-bgcolor=255,100,100
-name=Moon Gravity
-entities=aabb,200,300,450,350,0,25,0,false\:aabb,451,200,500,600,0,100,0,false\:targ,800,500,850,600,255,0,0
+#Sun Jan 18 22:30:15 EST 2015
+name=Space
+entities=rect,200,300,450,350,0\:rect,451,200,500,600,0\:targ,800,500,850,600
 gravity=false
-highscore=31340
+highscore=84022

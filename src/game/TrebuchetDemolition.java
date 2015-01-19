@@ -29,9 +29,11 @@ public class TrebuchetDemolition extends JFrame {
 	ConfigurationManager.loadConfiguration();
 	
 	// Change the theme to a more appealing one
-	UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+//	UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-	LOGGER.setLevel(Level.ALL);
+	// TODO Set level to Level.OFF before handing it in [in case I didn't, ignore all the log messages]
+	LOGGER.setLevel(Level.WARNING);
 	
 	// Create window
 	final int width = 900;

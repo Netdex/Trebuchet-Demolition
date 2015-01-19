@@ -44,7 +44,7 @@ import tasks.GameClockTask;
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
     public static Image titleImage, backgroundImage, trebuchetImage;
-    public static Image metalTexture, ingameTexture;
+    public static Image metalTexture, brickTexture, rockTexture, debugTexture, ingameTexture;
 
     public static final int TEXTURE_SIZE = 128;
     /***********************************************************************/
@@ -106,13 +106,20 @@ public class GamePanel extends JPanel {
 	};
 	MenuItemAction helpMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
-		JOptionPane.showMessageDialog(null, "Use the up and down arrow keys to traverse the menus.\n" + "Use the enter key to select a menu item.\n\n"
-			+ "Use the scroll wheel to increase power.", "Trebuchet Demolition Help", JOptionPane.INFORMATION_MESSAGE);
+		String help = "<html><h2>Welcome to Trebuchet Demolition!</h2>" + "The goal of this game is to destroy a \"target\" (aka bricks) in a level, in order to complete the level.<br>"
+			+ "The game employs physics, so you can bounce objects off walls and such.<br><br><hr>" + "<b>Controls:</b><br>"
+			+ "<table style=\"width:100%\"><tr><td>UP DOWN</td><td>Fine control angle</td></tr>" + "<tr><td>LEFT RIGHT</td><td>Fine control power</td>" + "<tr><td>ESC</td><td>Open pause menu</td>"
+			+ "<tr><td>SCROLLWHEEL</td><td>Coarse control power</td>" + "<tr><td>CTRL + SCROLLWHEEL</td><td>Coarse control angle</td></table><br><hr>" + "<b>Scoring:</b><br>"
+			+ "The game has a scoring system, based on a \"lower score is better\" policy.<br>" + "Your score is determined by the amount of time it takes for you to reach the goal,<br>"
+			+ "and the amount of power you launch the projectile with. The less power launched with and the less time,<br>"
+			+ "the better your score. The best score will be shown on the level select screen. If your launch fails, then just launch again.</html>";
+		JOptionPane.showMessageDialog(null, help, "Trebuchet Demolition Help", JOptionPane.PLAIN_MESSAGE);
 	    }
 	};
 	MenuItemAction aboutMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
-		JOptionPane.showMessageDialog(null, "Created by Gordon Guan\n(c) 2015 \n", "About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "<html>Created by <b>Gordon Guan</b><br>© 2015<br>Block textures from http://webtreats.mysitemyway.com/<br><a href=http://github.com/Netdex/Trebuchet-Demolition>GitHub Repository</a></html>",
+			"About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
 	    }
 	};
 	MenuItemAction exitMenuItemAction = new MenuItemAction() {
@@ -195,7 +202,7 @@ public class GamePanel extends JPanel {
 
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
-		// System.out.println(event.getX() + ", " + event.getY());
+//		System.out.println(event.getX() + ", " + event.getY());
 		if (displayScreen == ScreenType.MAIN_MENU) {
 		    mainMenu.invokeAction(event);
 		} else if (displayScreen == ScreenType.OPTIONS_MENU) {
@@ -320,7 +327,8 @@ public class GamePanel extends JPanel {
 	    }
 	    String menuItemText = String.format("%-25s", level.getName().substring(0, Math.min(level.getName().length(), 40))) + String.format("%-20s", level.getFile().getName())
 		    + String.format("%20s", highscore);
-	    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), levelSelectAction, 1);
+	    MenuItem menuItem = new MenuItem(menuItemText, GraphicsTools.LEVEL_SELECT_FONT, Color.WHITE, GraphicsTools.BG_COLOR.darker().darker(), new Rectangle(10, y, mlength, mheight),
+		    levelSelectAction, 1);
 	    levelSelectMenu.addMenuItem(menuItem);
 	    y += mheight + sep;
 	}
@@ -361,7 +369,16 @@ public class GamePanel extends JPanel {
      */
     public void checkWin() {
 	if (engine.hasWon()) {
-	    JOptionPane.showMessageDialog(null, "You have won with a score of " + loadedLevel.getScore() + "!", "Level Clear", JOptionPane.INFORMATION_MESSAGE);
+	    String winMessage = "You have won with a score of " + loadedLevel.getScore() + "!";
+	    String highscore = loadedLevel.getMetadata().getProperty("highscore");
+	    if (highscore == null) {
+		winMessage += " You set a new highscore!";
+	    }
+	    else if (Integer.parseInt(highscore) > loadedLevel.getScore()) {
+		int diff = Integer.parseInt(highscore) - loadedLevel.getScore();
+		winMessage += " You beat the highscore of " + highscore + " by " + diff + " points!";
+	    }
+	    JOptionPane.showMessageDialog(null, winMessage, "Level Clear", JOptionPane.INFORMATION_MESSAGE);
 	    stop();
 	    engine.clearAll();
 	    lastFireTime = -1;
@@ -387,7 +404,7 @@ public class GamePanel extends JPanel {
 	    if (lastFireTime == -1)
 		loadedLevel.setScore(0);
 	    else
-		loadedLevel.setScore((int) (System.currentTimeMillis() - lastFireTime) * lastFirePower / 5);
+		loadedLevel.setScore((int) (System.currentTimeMillis() - lastFireTime) * lastFirePower / 2);
 	}
     }
 
@@ -406,15 +423,6 @@ public class GamePanel extends JPanel {
 	// Playing game
 	if (displayScreen == ScreenType.IN_GAME) {
 	    g.drawImage(ingameTexture, 0, 0, width, height, 0, 0, ingameTexture.getWidth(null), ingameTexture.getHeight(null), null);
-	    // Draw debug info
-	    // g.setColor(Color.WHITE);
-	    // g.fillRect(0, 0, 110, 100);
-	    // g.setColor(Color.BLACK);
-	    // g.drawString("Entities: " + engine.getEntities().size(), 10, 15);
-	    // g.drawString("Collisions: " + engine.collisionsInTick, 10, 30);
-	    // g.drawString("[GAME VARIABLES]: ", 10, 65);
-	    // g.drawString("Power: " + power + "%", 10, 80);
-	    // g.drawString("Angle: " + angle + "°", 10, 95);
 
 	    g.setColor(Color.RED);
 	    g.fillRect(10, 7, (int) (164 * power / 100.0), 15);
@@ -448,18 +456,9 @@ public class GamePanel extends JPanel {
 
 	    // Draw all the entities on the screen
 	    for (Entity2D entity : engine.getEntities()) {
-		g.setColor(entity.getColor());
 		// if (entity.isHandling())
 		// g.setColor(Color.RED);
 		entity.drawEntity(g);
-
-		/* TODO REMOVE DEBUG CODE FOR VISUALIZING ENTITY VELOCITY */
-		Vector2D velocity = entity.vel.copy().multiply(5);
-		Vector2D center = entity.getCenter();
-		g.setColor(Color.RED);
-		g.drawLine((int) center.x, (int) center.y, (int) (center.x - velocity.x), (int) (center.y - velocity.y));
-		g.setColor(Color.BLACK);
-		/* END DEBUG */
 	    }
 	    // Draw pause menu
 	    if (paused) {
@@ -529,6 +528,9 @@ public class GamePanel extends JPanel {
 	    trebuchetImage = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/trebuchet.png"));
 	    metalTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/metal.jpg"));
 	    ingameTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/ingamebg.jpg"));
+	    brickTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/brick.jpg"));
+	    rockTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/wood.jpg"));
+	    debugTexture = ImageIO.read(TrebuchetDemolition.class.getResourceAsStream("/resources/debug.jpg"));
 	    TrebuchetDemolition.LOGGER.info("Loaded resources");
 	} catch (Exception e) {
 	    TrebuchetDemolition.LOGGER.severe("Failed to load game resources: " + e.getMessage());

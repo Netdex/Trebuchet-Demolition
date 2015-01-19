@@ -9,7 +9,7 @@ import java.util.Properties;
  * Manages the game configuration
  * 
  * @author Gordon Guan
- * @version Jan 2015 TODO Add functionality to the config manager
+ * @version Jan 2015
  */
 
 public class ConfigurationManager {

@@ -1,9 +1,15 @@
 package physics.entity;
 
+import game.GamePanel;
+import game.graphics.GraphicsTools;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.TexturePaint;
 import java.awt.geom.Ellipse2D;
 
 import physics.util.CollisionType;
@@ -17,18 +23,18 @@ import physics.util.Vector2D;
  * @version Dec 2014
  */
 public class Circle2D extends Entity2D {
-    private static Image circleTexture;
+    private static Image circleTexture = GamePanel.metalTexture;
     private int radius;
     public Vector2D loc;
 
-    public Circle2D(Vector2D loc, Vector2D vel, int radius, Color c) {
-	super(c, vel, circleTexture);
+    public Circle2D(Vector2D loc, Vector2D vel, int radius) {
+	super(vel, circleTexture);
 	this.loc = loc;
 	this.radius = radius;
     }
 
     public Entity2D clone() {
-	return new Circle2D(loc.copy(), this.vel.copy(), radius, this.getColor());
+	return new Circle2D(loc.copy(), this.vel.copy(), radius);
     }
 
     /**
@@ -127,6 +133,15 @@ public class Circle2D extends Entity2D {
 	if (this.getTexture() == null) {
 	    Shape shape = this.getShape();
 	    g.fill(shape);
+	} else {
+	    Paint originalPaint = g.getPaint();
+	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(circleTexture), new Rectangle(0, 0, GamePanel.TEXTURE_SIZE, GamePanel.TEXTURE_SIZE));
+	    g.setPaint(texturePaint);
+	    Shape poly = this.getShape();
+	    g.fill(poly);
+	    g.setPaint(originalPaint);
+	    g.setColor(Color.DARK_GRAY);
+	    g.draw(poly);
 	}
     }
 
@@ -151,6 +166,6 @@ public class Circle2D extends Entity2D {
      * @return the bounds around this circle
      */
     public AABB2D getBoundingBox() {
-	return new AABB2D(new Vector2D(loc.x - radius, loc.y - radius), new Vector2D(loc.x + radius, loc.y + radius), Vector2D.ZERO, Color.BLACK);
+	return new AABB2D(new Vector2D(loc.x - radius, loc.y - radius), new Vector2D(loc.x + radius, loc.y + radius), Vector2D.ZERO);
     }
 }

@@ -24,7 +24,7 @@ import physics.util.Vector2D;
  */
 public class Rectangle2D extends Entity2D {
 
-    private static Image rectTexture = GamePanel.metalTexture;
+    private static Image rectTexture = GamePanel.rockTexture;
 
     public Vector2D p1;
     public Vector2D p2;
@@ -34,8 +34,8 @@ public class Rectangle2D extends Entity2D {
     public double angle;
     public double angularVel;
 
-    public Rectangle2D(Vector2D p1, Vector2D p2, Vector2D p3, Vector2D p4, Vector2D vel, double angle, double angularVel, Color c) {
-	super(c, vel, false, rectTexture);
+    public Rectangle2D(Vector2D p1, Vector2D p2, Vector2D p3, Vector2D p4, Vector2D vel, double angle, double angularVel) {
+	super(vel, false, rectTexture);
 	this.p1 = p1;
 	this.p2 = p2;
 	this.p3 = p3;
@@ -46,16 +46,6 @@ public class Rectangle2D extends Entity2D {
 	this.angularVel = angularVel;
     }
 
-    @Override
-    public boolean handleWallCollision(int width, int height, final double RESTITUTION) {
-	return false;
-    }
-
-    @Override
-    public Entity2D clone() {
-	return new Rectangle2D(p1.copy(), p2.copy(), p3.copy(), p4.copy(), this.vel.copy(), this.angle, angularVel, this.getColor());
-    }
-
     /**
      * Creates a rectangle with the least possible arguments
      * 
@@ -63,8 +53,8 @@ public class Rectangle2D extends Entity2D {
      * @param p2 The bottom right point
      * @param c The color
      */
-    public Rectangle2D(Vector2D p1, Vector2D p2, Color c) {
-	super(c, Vector2D.ZERO, false, rectTexture);
+    public Rectangle2D(Vector2D p1, Vector2D p2) {
+	super(Vector2D.ZERO, false, rectTexture);
 	this.p1 = p1;
 	this.p4 = p2;
 	this.p2 = new Vector2D(p2.x, p1.y);
@@ -74,6 +64,18 @@ public class Rectangle2D extends Entity2D {
 	this.angularVel = 0;
 	this.angularVel = 0;
     }
+    
+    @Override
+    public boolean handleWallCollision(int width, int height, final double RESTITUTION) {
+	return false;
+    }
+
+    @Override
+    public Entity2D clone() {
+	return new Rectangle2D(p1.copy(), p2.copy(), p3.copy(), p4.copy(), this.vel.copy(), this.angle, angularVel);
+    }
+
+    
 
     @Override
     public void drawEntity(Graphics2D g) {
@@ -87,7 +89,7 @@ public class Rectangle2D extends Entity2D {
 	    Shape poly = this.getShape();
 	    g.fill(poly);
 	    g.setPaint(originalPaint);
-	    g.setColor(this.getColor());
+	    g.setColor(Color.DARK_GRAY);
 	    g.draw(poly);
 	    
 	}
@@ -141,8 +143,7 @@ public class Rectangle2D extends Entity2D {
      */
     public AABB2D getBoundingBox() {
 	return new AABB2D(new Vector2D(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))),
-		new Vector2D(Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector2D.ZERO,
-		Color.BLACK);
+		new Vector2D(Math.max(this.p1.x, Math.max(this.p2.x, Math.max(this.p3.x, this.p4.x))), Math.max(this.p1.y, Math.max(this.p2.y, Math.max(this.p3.y, this.p4.y)))), Vector2D.ZERO);
     }
 
     @Override
