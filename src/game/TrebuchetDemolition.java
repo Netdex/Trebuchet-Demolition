@@ -33,7 +33,7 @@ public class TrebuchetDemolition extends JFrame {
 	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 	// TODO Set level to Level.OFF before handing it in [in case I didn't, ignore all the log messages]
-	LOGGER.setLevel(Level.WARNING);
+	LOGGER.setLevel(Level.ALL);
 	
 	// Create window
 	final int width = 900;

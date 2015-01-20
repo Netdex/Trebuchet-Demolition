@@ -58,9 +58,9 @@ public class CollisionResolver {
      * @return the angle relative to the positive x-axis
      */
     public static double computeBeta(double velX, double velY) {
+	// Return a different angle depending on the quadrant of the point
 	if (velX < 0) {
 	    return Math.PI + Math.atan(velY / velX);
-
 	} else {
 	    return Math.atan(velY / velX);
 	}
@@ -83,6 +83,7 @@ public class CollisionResolver {
 	double heightb = b.getHeight();
 	double heightOverlap = heighta + heightb - Math.abs(b.p1.y - a.p2.y);
 
+	// If the width overlaps, then reverse both their x velocities, and if the height overlaps, then reverse both their y velocities
 	if (widthOverlap > 0) {
 	    a.vel.x = -a.vel.x / RESTITUTION;
 	    b.vel.x = -b.vel.x / RESTITUTION;
@@ -101,14 +102,16 @@ public class CollisionResolver {
      * @param RESTITUTION The restitution to use in the calculation
      */
     public static void resolveAABBCircleCollision(Circle2D a, AABB2D b, final double RESTITUTION) {
-	double vertDist = MathOperations.pointToLineDistance(b.p1, new Vector2D(b.p1.x, b.p2.y), a.loc);
-	double vertDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p2.x, b.p1.y), b.p2, a.loc);
-	double horizDist = MathOperations.pointToLineDistance(b.p1, new Vector2D(b.p2.x, b.p1.y), a.loc);
-	double horizDist2 = MathOperations.pointToLineDistance(new Vector2D(b.p1.x, b.p2.y), b.p2, a.loc);
+	double vertDist = MathOperations.pointToLineSegDistance(b.p1, new Vector2D(b.p1.x, b.p2.y), a.loc);
+	double vertDist2 = MathOperations.pointToLineSegDistance(new Vector2D(b.p2.x, b.p1.y), b.p2, a.loc);
+	double horizDist = MathOperations.pointToLineSegDistance(b.p1, new Vector2D(b.p2.x, b.p1.y), a.loc);
+	double horizDist2 = MathOperations.pointToLineSegDistance(new Vector2D(b.p1.x, b.p2.y), b.p2, a.loc);
 
 	// Teleport the circle outside of the AABB first
 	a.loc.subtract(a.vel);
 	double radius = a.getRadius();
+	
+	// Check if any distances of the circle to any of the AABB's edges are less than the radius
 	if (vertDist <= radius || vertDist2 <= radius) {
 	    a.vel.x = -a.vel.x / RESTITUTION;
 	    b.vel.x = -b.vel.x / RESTITUTION;

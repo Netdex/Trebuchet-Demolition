@@ -30,6 +30,13 @@ public class Level {
 
     private int score = 0;
 
+    /**
+     * Constructs a level
+     * @param name The name of the level
+     * @param file The file which represents the level
+     * @param metadata The metadata (properties) of the level
+     * @param levelEntities The entities in this level
+     */
     public Level(String name, File file, Properties metadata, Vector<Entity2D> levelEntities) {
 	this.name = name;
 	this.file = file;
@@ -37,6 +44,9 @@ public class Level {
 	this.levelEntities = levelEntities;
     }
 
+    /**
+     * Saves the highscore and other properties into the properties
+     */
     public void save() {
 	try {
 	    if (metadata.getProperty("highscore") == null || Integer.parseInt(metadata.getProperty("highscore")) > score) {
@@ -49,6 +59,10 @@ public class Level {
 	TrebuchetDemolition.LOGGER.info("Saved level data");
     }
 
+    /**
+     * Loads the entities from the properties
+     * @throws Exception when there is no target
+     */
     public void loadEntities() throws Exception {
 	levelEntities.clear();
 	StringTokenizer st = new StringTokenizer(metadata.getProperty("entities"), ":");
@@ -60,8 +74,6 @@ public class Level {
 	    String type = entityData[0];
 	    try {
 		if (type.equals("circ")) {
-		    // Loads a circle with format
-		    // circ,13,14,112,255,255,255
 		    double x = Double.parseDouble(entityData[1]);
 		    double y = Double.parseDouble(entityData[2]);
 		    int radius = Integer.parseInt(entityData[3]);
@@ -69,7 +81,6 @@ public class Level {
 		    Circle2D circle = new Circle2D(loc, Vector2D.ZERO, radius);
 		    levelEntities.add(circle);
 		} else if (type.equals("rect")) {
-		    // Loads a rectangle with format rect:
 		    double x1 = Double.parseDouble(entityData[1]);
 		    double y1 = Double.parseDouble(entityData[2]);
 		    double x2 = Double.parseDouble(entityData[3]);

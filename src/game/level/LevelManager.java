@@ -19,7 +19,10 @@ import physics.entity.Entity2D;
  */
 public class LevelManager {
     public static ArrayList<Level> levels = new ArrayList<Level>();
-
+    
+    /**
+     * Loads all valid levels in the "levels" directory
+     */
     public static void loadLevels() {
 	levels.clear();
 
@@ -27,6 +30,7 @@ public class LevelManager {
 	if (!levelFolder.exists()) {
 	    levelFolder.mkdir();
 	}
+	// Loop through every text file
 	for (File levelFile : levelFolder.listFiles(new FilenameFilter() {
 	    public boolean accept(File dir, String name) {
 		return name.toLowerCase().endsWith(".txt");

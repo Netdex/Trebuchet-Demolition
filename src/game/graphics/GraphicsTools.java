@@ -7,7 +7,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 /**
- * Contains many helper methods to help draw fancy things
+ * Contains many helper methods to help draw fancy graphics
  * 
  * @author Gordon Guan
  * @version Dec 2014
@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
  */
 public class GraphicsTools {
 
+    // Define all constants for drawing
     public static final Color PANEL_COLOR = new Color(247, 247, 247, 128);
     public static final Font MAIN_FONT = new Font("Century Gothic", Font.BOLD, 40);
     public static final Font OPTIONS_FONT = new Font("Century Gothic", Font.BOLD, 27);
@@ -58,9 +59,15 @@ public class GraphicsTools {
 
     }
 
+    /**
+     * Turns an Image into a BufferedImage
+     * @param image The image to buffer
+     * @return the BufferedImage
+     */
     public static BufferedImage bufferImage(Image image) {
 	BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
 
+	// Draw the image onto the graphics
 	Graphics g = bufferedImage.createGraphics();
 	g.drawImage(image, 0, 0, null);
 	g.dispose();

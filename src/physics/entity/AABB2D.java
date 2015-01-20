@@ -28,18 +28,42 @@ public class AABB2D extends Entity2D {
     public Vector2D p1;
     public Vector2D p2;
 
+    /**
+     * Constructs an AABB
+     * @param p1 The first point
+     * @param p2 The second point
+     * @param vel The velocity
+     */
     public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel) {
 	super(vel, AABBTexture);
 	this.p1 = p1;
 	this.p2 = p2;
     }
 
+    /**
+     * Constructs an AABB
+     * @param p1 The first point
+     * @param p2 The second point
+     * @param vel The velocity
+     * @param physics Whether this entity has physics
+     */
     public AABB2D(Vector2D p1, Vector2D p2, Vector2D vel, boolean physics) {
 	super(vel, physics, AABBTexture);
 	this.p1 = p1;
 	this.p2 = p2;
     }
 
+    @Override
+    public void translate(double x, double y){
+	for(Vector2D vector : this.getPointArray()){
+	    vector.x += x;
+	    vector.y += y;
+	}
+    }
+    
+    /**
+     * Handles this AABB's collisions with walls
+     */
     public boolean handleWallCollision(int width, int height, final double RESTITUTION) {
 	boolean retType = false;
 	if (this.p1.x < 0) {
@@ -95,6 +119,7 @@ public class AABB2D extends Entity2D {
 	return Math.abs(p1.y - p2.y);
     }
 
+    @Override
     public CollisionType getCollisionState(Entity2D entity) {
 	if (entity instanceof AABB2D) {
 	    return MathOperations.hasAABBCollision(this, (AABB2D) entity);
@@ -135,6 +160,7 @@ public class AABB2D extends Entity2D {
 	return new Vector2D(p1.x + getWidth() / 2, p1.y + getHeight() / 2);
     }
 
+    @Override
     public Entity2D clone() {
 	return new AABB2D(p1.copy(), p2.copy(), this.vel.copy(), this.hasPhysics());
     }

@@ -36,7 +36,12 @@ public class PhysicsEngine {
     private Vector<Entity2D> entities;
 
     private boolean won = false;
-
+    
+    /**
+     * Constructs a PhysicsEngine
+     * @param width the width in pixels
+     * @param height the length in pixels
+     */
     public PhysicsEngine(int width, int height) {
 	this.width = width;
 	this.height = height;
@@ -67,7 +72,7 @@ public class PhysicsEngine {
 	    TrebuchetDemolition.LOGGER.warning("Error while loading level properties: " + e.getMessage());
 	}
 
-	// Clone it, since it will be cleared!
+	// Clone it, since it will be cleared on load
 	entities = (Vector<Entity2D>) level.getEntities().clone();
 	TrebuchetDemolition.LOGGER.info("Loaded level \"" + level.getName() + "\" into Physics Engine");
     }
@@ -78,6 +83,7 @@ public class PhysicsEngine {
     public void update() {
 	collisionsInTick = 0;
 	this.dehandleAll();
+	// Loop through every entities and do physics on them
 	for (Entity2D e : entities) {
 	    boolean entityCollided = handleEntityCollisions(e);
 	    boolean wallCollided = false;
@@ -214,6 +220,11 @@ public class PhysicsEngine {
 	won = b;
     }
     
+    /**
+     * Fires a projectile
+     * @param power The power to fire at
+     * @param angle The angle
+     */
     public void fireProjectile(int power, int angle){
 	double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
 	double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;

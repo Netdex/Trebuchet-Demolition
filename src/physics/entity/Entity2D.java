@@ -24,6 +24,11 @@ public abstract class Entity2D implements Cloneable {
 
     private boolean hasPhysics;
 
+    /**
+     * Constructs an entity
+     * @param vel The velocity
+     * @param texture The texture image
+     */
     public Entity2D(Vector2D vel, Image texture) {
 	this.entityID = lastID;
 	lastID++;
@@ -33,6 +38,12 @@ public abstract class Entity2D implements Cloneable {
 	this.texture = texture;
     }
 
+    /**
+     * Constructs an entity
+     * @param vel The velocity
+     * @param hasPhysics Whether it has physics
+     * @param texture The texture image
+     */
     public Entity2D(Vector2D vel, boolean hasPhysics, Image texture) {
 	this.entityID = lastID;
 	lastID++;
@@ -146,5 +157,12 @@ public abstract class Entity2D implements Cloneable {
     public void setTexture(Image texture) {
         this.texture = texture;
     }
+    
+    /**
+     * Moves the entity over by x and y
+     * @param x The x to move it
+     * @param y The y to move it
+     */
+    public abstract void translate(double x, double y);
     
 }

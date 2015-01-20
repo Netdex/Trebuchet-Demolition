@@ -22,6 +22,11 @@ import physics.util.Vector2D;
 public class Target2D extends AABB2D {
     private static Image targetTexture = GamePanel.brickTexture;
 
+    /**
+     * Constructs a target
+     * @param p1 The first point
+     * @param p2 The second point
+     */
     public Target2D(Vector2D p1, Vector2D p2) {
 	super(p1, p2, Vector2D.ZERO, false);
     }

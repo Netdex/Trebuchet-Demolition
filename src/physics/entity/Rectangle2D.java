@@ -34,6 +34,17 @@ public class Rectangle2D extends Entity2D {
     public double angle;
     public double angularVel;
 
+    /**
+     * Constructs a rectangle
+     * 
+     * @param p1 The first point
+     * @param p2 The second point
+     * @param p3 The third point
+     * @param p4 The fourth point
+     * @param vel The velocity
+     * @param angle The angle
+     * @param angularVel The angular velocity
+     */
     public Rectangle2D(Vector2D p1, Vector2D p2, Vector2D p3, Vector2D p4, Vector2D vel, double angle, double angularVel) {
 	super(vel, false, rectTexture);
 	this.p1 = p1;
@@ -51,7 +62,6 @@ public class Rectangle2D extends Entity2D {
      * 
      * @param p1 The top left point
      * @param p2 The bottom right point
-     * @param c The color
      */
     public Rectangle2D(Vector2D p1, Vector2D p2) {
 	super(Vector2D.ZERO, false, rectTexture);
@@ -64,7 +74,7 @@ public class Rectangle2D extends Entity2D {
 	this.angularVel = 0;
 	this.angularVel = 0;
     }
-    
+
     @Override
     public boolean handleWallCollision(int width, int height, final double RESTITUTION) {
 	return false;
@@ -75,8 +85,6 @@ public class Rectangle2D extends Entity2D {
 	return new Rectangle2D(p1.copy(), p2.copy(), p3.copy(), p4.copy(), this.vel.copy(), this.angle, angularVel);
     }
 
-    
-
     @Override
     public void drawEntity(Graphics2D g) {
 	if (this.getTexture() == null) {
@@ -84,14 +92,14 @@ public class Rectangle2D extends Entity2D {
 	    g.fill(poly);
 	} else {
 	    Paint originalPaint = g.getPaint();
-	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(rectTexture), new Rectangle(0,0,GamePanel.TEXTURE_SIZE,GamePanel.TEXTURE_SIZE));
+	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(rectTexture), new Rectangle(0, 0, GamePanel.TEXTURE_SIZE, GamePanel.TEXTURE_SIZE));
 	    g.setPaint(texturePaint);
 	    Shape poly = this.getShape();
 	    g.fill(poly);
 	    g.setPaint(originalPaint);
 	    g.setColor(Color.DARK_GRAY);
 	    g.draw(poly);
-	    
+
 	}
     }
 
@@ -148,7 +156,7 @@ public class Rectangle2D extends Entity2D {
 
     @Override
     public Vector2D getCenter() {
-	return this.p1.midpoint(this.p4);
+	return this.p1.getMidpoint(this.p4);
     }
 
     /**
@@ -205,12 +213,7 @@ public class Rectangle2D extends Entity2D {
 	return new Vector2D(tempX + center.x, tempY + center.y);
     }
 
-    /**
-     * Translates the entire rectangle
-     * 
-     * @param x How much x to translate
-     * @param y How much y to translate
-     */
+    @Override
     public void translate(double x, double y) {
 	this.p1.x += x;
 	this.p2.x += x;

@@ -7,6 +7,7 @@ import game.graphics.menu.MenuItem;
 import game.graphics.menu.MenuItemAction;
 import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
+import game.level.LevelEditor;
 import game.level.LevelManager;
 
 import java.awt.Color;
@@ -43,6 +44,8 @@ import tasks.GameClockTask;
 
 public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
+    
+    // Define the resources and textures
     public static Image titleImage, backgroundImage, trebuchetImage;
     public static Image metalTexture, brickTexture, rockTexture, debugTexture, ingameTexture;
 
@@ -82,14 +85,18 @@ public class GamePanel extends JPanel {
 
 	this.width = width;
 	this.height = height;
+	
+	// Create a new Physics Engine
 	engine = new PhysicsEngine(width, height);
 
-	// Load all the images
+	// Load all the images into their containers
 	loadResources();
 
+	// Create the game clock
 	physicsTimer = new Timer(TICK_RATE, new GameClockTask(this));
 
 	/* From here begins all the menu action and item setup code */
+	// Setup actions for each menu action
 	MenuItemAction playMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
 		LevelManager.loadLevels();
@@ -108,8 +115,9 @@ public class GamePanel extends JPanel {
 	    public void doAction(MenuItem item) {
 		String help = "<html><h2>Welcome to Trebuchet Demolition!</h2>" + "The goal of this game is to destroy a \"target\" (aka bricks) in a level, in order to complete the level.<br>"
 			+ "The game employs physics, so you can bounce objects off walls and such.<br><br><hr>" + "<b>Controls:</b><br>"
-			+ "<table style=\"width:100%\"><tr><td>UP DOWN</td><td>Fine control angle</td></tr>" + "<tr><td>LEFT RIGHT</td><td>Fine control power</td>" + "<tr><td>ESC</td><td>Open pause menu</td>"
-			+ "<tr><td>SCROLLWHEEL</td><td>Coarse control power</td>" + "<tr><td>CTRL + SCROLLWHEEL</td><td>Coarse control angle</td></table><br><hr>" + "<b>Scoring:</b><br>"
+			+ "<table style=\"width:100%\"><tr><td>UP DOWN</td><td>Fine control angle</td></tr>" + "<tr><td>LEFT RIGHT</td><td>Fine control power</td>"
+			+ "<tr><td>ESC</td><td>Open pause menu</td>" + "<tr><td>SCROLLWHEEL</td><td>Coarse control power</td>"
+			+ "<tr><td>CTRL + SCROLLWHEEL</td><td>Coarse control angle</td></table><br><hr>" + "<b>Scoring:</b><br>"
 			+ "The game has a scoring system, based on a \"lower score is better\" policy.<br>" + "Your score is determined by the amount of time it takes for you to reach the goal,<br>"
 			+ "and the amount of power you launch the projectile with. The less power launched with and the less time,<br>"
 			+ "the better your score. The best score will be shown on the level select screen. If your launch fails, then just launch again.</html>";
@@ -118,8 +126,11 @@ public class GamePanel extends JPanel {
 	};
 	MenuItemAction aboutMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
-		JOptionPane.showMessageDialog(null, "<html>Created by <b>Gordon Guan</b><br>© 2015<br>Block textures from http://webtreats.mysitemyway.com/<br><a href=http://github.com/Netdex/Trebuchet-Demolition>GitHub Repository</a></html>",
-			"About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane
+			.showMessageDialog(
+				null,
+				"<html>Created by <b>Gordon Guan</b><br>ï¿½ 2015<br>Block textures from http://webtreats.mysitemyway.com/<br>Music is The Blue Danube Waltz by Johann Strauss II<br><a href=http://github.com/Netdex/Trebuchet-Demolition>GitHub Repository</a></html>",
+				"About Trebuchet Demolition", JOptionPane.INFORMATION_MESSAGE);
 	    }
 	};
 	MenuItemAction exitMenuItemAction = new MenuItemAction() {
@@ -127,8 +138,13 @@ public class GamePanel extends JPanel {
 		System.exit(0);
 	    }
 	};
+	MenuItemAction levelEditMenuItemAction = new MenuItemAction(){
+	    public void doAction(MenuItem item){
+		new LevelEditor().setVisible(true);
+	    }
+	};
 
-	// Setup all the items in the menus
+	// Setup all the items in the main menu
 	mainMenu = new Menu();
 	int y = 150;
 	int mheight = 55;
@@ -136,19 +152,23 @@ public class GamePanel extends JPanel {
 	int sep = 10;
 	int shadowDist = 3;
 	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), playMenuItemAction, shadowDist);
-	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), optionsMenuItemAction,
+	MenuItem levelEditMenuItem = new MenuItem("LEVEL EDITOR", GraphicsTools.MAIN_FONT, Color.RED, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), levelEditMenuItemAction, shadowDist);
+	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 2 + sep * 2, mlength, mheight), optionsMenuItemAction,
 		shadowDist);
-	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 2 + sep * 2, mlength, mheight), helpMenuItemAction,
+	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 3 + sep * 3, mlength, mheight), helpMenuItemAction,
 		shadowDist);
-	MenuItem aboutMenuItem = new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 3 + sep * 3, mlength, mheight),
+	MenuItem aboutMenuItem = new MenuItem("ABOUT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 4 + sep * 4, mlength, mheight),
 		aboutMenuItemAction, shadowDist);
-	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 4 + sep * 4, mlength, mheight), exitMenuItemAction,
+	MenuItem exitMenuItem = new MenuItem("EXIT", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 5 + sep * 5, mlength, mheight), exitMenuItemAction,
 		shadowDist);
 	mainMenu.addMenuItem(playMenuItem);
+	mainMenu.addMenuItem(levelEditMenuItem);
 	mainMenu.addMenuItem(optionsMenuItem);
 	mainMenu.addMenuItem(helpMenuItem);
 	mainMenu.addMenuItem(aboutMenuItem);
 	mainMenu.addMenuItem(exitMenuItem);
+	
+	// Setup the music toggle button
 	MenuItemAction musicMenuItemAction = new MenuItemAction() {
 	    public void doAction(MenuItem item) {
 		musicMenuItem.toggle();
@@ -202,7 +222,7 @@ public class GamePanel extends JPanel {
 
 	this.addMouseListener(new MouseAdapter() {
 	    public void mousePressed(MouseEvent event) {
-//		System.out.println(event.getX() + ", " + event.getY());
+		// System.out.println(event.getX() + ", " + event.getY());
 		if (displayScreen == ScreenType.MAIN_MENU) {
 		    mainMenu.invokeAction(event);
 		} else if (displayScreen == ScreenType.OPTIONS_MENU) {
@@ -221,6 +241,7 @@ public class GamePanel extends JPanel {
 	this.addMouseWheelListener(new MouseWheelListener() {
 	    public void mouseWheelMoved(MouseWheelEvent event) {
 		int notches = event.getWheelRotation();
+		// Control angle and power with mouse wheel
 		if (displayScreen == ScreenType.IN_GAME) {
 		    if (ctrlIsPressed)
 			changeAngle(notches * 5);
@@ -237,6 +258,7 @@ public class GamePanel extends JPanel {
 
 	    @Override
 	    public void mouseMoved(MouseEvent event) {
+		// Tell the menus to highlight certain menu items if they are mouse overed
 		if (displayScreen == ScreenType.MAIN_MENU) {
 		    mainMenu.handleHighlights(event);
 		    repaint();
@@ -258,11 +280,11 @@ public class GamePanel extends JPanel {
 	this.addKeyListener(new KeyAdapter() {
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
+		// Define all the keyboard controls
 		if (keycode == KeyEvent.VK_CONTROL)
 		    ctrlIsPressed = true;
 		// Respond to ingame events
 		if (displayScreen == ScreenType.IN_GAME) {
-
 		    if (keycode == KeyEvent.VK_RIGHT) {
 			changePower(2);
 		    } else if (keycode == KeyEvent.VK_LEFT) {
@@ -295,6 +317,9 @@ public class GamePanel extends JPanel {
 	TrebuchetDemolition.LOGGER.info("Loaded listeners");
     }
 
+    /**
+     * Fires a projectile from the trebuchet
+     */
     public void doShot() {
 	engine.removeLastProjectile();
 	lastFireTime = System.currentTimeMillis();
@@ -304,12 +329,16 @@ public class GamePanel extends JPanel {
 	TrebuchetDemolition.LOGGER.info("Fired shot");
     }
 
+    /**
+     * Deletes all the items in the level select menu and loads them all from LevelManager
+     */
     public void repopulateLevelSelectMenu() {
 	levelSelectMenu.clearMenu();
 	int y = 75;
 	int mheight = 25;
 	int mlength = 600;
 	int sep = 10;
+	// Loop through every level
 	for (int levelID = 0; levelID < LevelManager.getLevels().size(); levelID++) {
 	    Level level = LevelManager.getLevels().get(levelID);
 	    MenuItemAction levelSelectAction = new MenuItemAction() {
@@ -321,6 +350,7 @@ public class GamePanel extends JPanel {
 		    repaint();
 		}
 	    };
+	    // Load highscores
 	    String highscore = "Has not been played";
 	    if (level.getMetadata().getProperty("highscore") != null) {
 		highscore = "Highscore: " + level.getMetadata().getProperty("highscore");
@@ -343,6 +373,10 @@ public class GamePanel extends JPanel {
 	TrebuchetDemolition.LOGGER.info("Redrew level select menu");
     }
 
+    /**
+     * Load a level into the GamePanel, then into the PhysicsEngine
+     * @param level The level to load
+     */
     public void loadLevel(Level level) {
 	try {
 	    // if (level.getMetadata().getProperty("bgcolor") != null) {
@@ -373,14 +407,14 @@ public class GamePanel extends JPanel {
 	    String highscore = loadedLevel.getMetadata().getProperty("highscore");
 	    if (highscore == null) {
 		winMessage += " You set a new highscore!";
-	    }
-	    else if (Integer.parseInt(highscore) > loadedLevel.getScore()) {
+	    } else if (Integer.parseInt(highscore) > loadedLevel.getScore()) {
 		int diff = Integer.parseInt(highscore) - loadedLevel.getScore();
 		winMessage += " You beat the highscore of " + highscore + " by " + diff + " points!";
 	    }
 	    JOptionPane.showMessageDialog(null, winMessage, "Level Clear", JOptionPane.INFORMATION_MESSAGE);
 	    stop();
 	    engine.clearAll();
+	    // Reset the level and scores
 	    lastFireTime = -1;
 	    loadedLevel.save();
 	    loadedLevel.setScore(0);
@@ -399,29 +433,34 @@ public class GamePanel extends JPanel {
 	}
     }
 
+    /**
+     * Calculates and sets the score based on a predetermined algorithm based on time and power
+     */
     public void doScore() {
 	if (loadedLevel != null) {
-	    if (lastFireTime == -1)
+	    if (lastFireTime == -1) // Projectile never fired
 		loadedLevel.setScore(0);
 	    else
-		loadedLevel.setScore((int) (System.currentTimeMillis() - lastFireTime) * lastFirePower / 2);
+		loadedLevel.setScore((int) ((System.currentTimeMillis() - lastFireTime) * lastFirePower * lastFirePower)/100000);
 	}
     }
 
     /**
-     * Draws the game
+     * Draws the menus, game, basically everything
      */
     @Override
     public void paintComponent(Graphics graphics) {
 	super.paintComponent(graphics);
 
 	Graphics2D g = (Graphics2D) graphics;
+	// Make drawing less jagged
 	RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	g.setRenderingHints(rh);
 	g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 
-	// Playing game
+	// Draw the ingame graphics
 	if (displayScreen == ScreenType.IN_GAME) {
+	    // Draw background textures
 	    g.drawImage(ingameTexture, 0, 0, width, height, 0, 0, ingameTexture.getWidth(null), ingameTexture.getHeight(null), null);
 
 	    g.setColor(Color.RED);
@@ -456,8 +495,6 @@ public class GamePanel extends JPanel {
 
 	    // Draw all the entities on the screen
 	    for (Entity2D entity : engine.getEntities()) {
-		// if (entity.isHandling())
-		// g.setColor(Color.RED);
 		entity.drawEntity(g);
 	    }
 	    // Draw pause menu

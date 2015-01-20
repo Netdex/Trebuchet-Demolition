@@ -1,6 +1,6 @@
 #This level has been played!
-#Sun Jan 18 22:28:47 EST 2015
+#Mon Jan 19 13:59:31 EST 2015
 name=Law of Reflection
 entities=targ,800,500,850,600\:rect,100,100,125,300,50\:rect,252,284,349,570,0\:rect,350,311,733,363,10\:rect,257,0,338,212,0
+highscore=134200
 gravity=true
-highscore=103147

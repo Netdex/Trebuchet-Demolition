@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
- * Represents a menu
+ * Represents a game menu
  * 
  * @author Gordon Guan
  * @version Jan 2015
@@ -16,14 +16,16 @@ public class Menu {
 
     private ArrayList<MenuItem> menuItems;
     
+    /**
+     * Constructs a menu
+     */
     public Menu() {
 	menuItems = new ArrayList<MenuItem>();
     }
 
     /**
-     * Makes the menu respond to the given key code to do menu actions, based on the actions defined in MenuKeyEvent
-     * 
-     * @param keycode The keycode to input
+     * Makes the menu respond to the given MouseEvent to do actions defined in the given MenuItemAciton
+     * @param event The MouseEvent to trigger events
      */
     public void invokeAction(MouseEvent event) {
 	Point p = event.getPoint();

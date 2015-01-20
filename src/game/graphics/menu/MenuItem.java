@@ -24,6 +24,15 @@ public class MenuItem {
     private int shadowDist;
     private MenuItemAction action;
 
+    /**
+     * Constructs a menu with Calibri font
+     * @param text The text on the MenuItem
+     * @param color The color of the text
+     * @param bgcolor The background color
+     * @param dimensions The dimensions as a Rectangle
+     * @param action The MenuItemAction to do when clicked
+     * @param shadowDist The distance of the shadow for the text
+     */
     public MenuItem(String text, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action, int shadowDist) {
 	this.text = text;
 	this.font = Font.getFont("Calibri");
@@ -35,6 +44,16 @@ public class MenuItem {
 	this.shadowDist = shadowDist;
     }
 
+    /**
+     * Constructs a menu with given font
+     * @param text The text on the MenuItem
+     * @param font The font of the text
+     * @param color The color of the text
+     * @param bgcolor The background color
+     * @param dimensions The dimenisons as a Rectangle
+     * @param action The MenuItemAction to do when clicked
+     * @param shadowDist The distance of the shadow for the text
+     */
     public MenuItem(String text, Font font, Color color, Color bgcolor, Rectangle dimensions, MenuItemAction action, int shadowDist) {
 	this.text = text;
 	this.font = font;
@@ -45,6 +64,10 @@ public class MenuItem {
 	this.shadowDist = shadowDist;
     }
 
+    /**
+     * Draws the menu onto the given graphics
+     * @param g The graphics to draw it on
+     */
     public void drawItem(Graphics2D g) {
 	Rectangle rectangle = this.getDimensions();
 	g.setColor(this.getBackgroundColor().darker().darker());
@@ -59,6 +82,10 @@ public class MenuItem {
 	GraphicsTools.drawShadowedText(g, this.getText(), rectangle.x + 10, rectangle.y + g.getFontMetrics().getAscent() + 3, shadowDist);
     }
 
+    /**
+     * Executes this MenuItem's MenuItemAction
+     * @param item The MenuItem whose action this is
+     */
     public void doAction(MenuItem item) {
 	action.doAction(item);
     }

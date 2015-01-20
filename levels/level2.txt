@@ -1,6 +1,6 @@
 #This level has been played!
-#Sun Jan 18 22:30:15 EST 2015
+#Mon Jan 19 14:06:42 EST 2015
 name=Space
 entities=rect,200,300,450,350,0\:rect,451,200,500,600,0\:targ,800,500,850,600
+highscore=205
 gravity=false
-highscore=84022

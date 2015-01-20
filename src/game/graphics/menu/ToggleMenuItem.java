@@ -14,6 +14,17 @@ public class ToggleMenuItem extends MenuItem {
     private Color toggleColor;
     private boolean isEnabled;
 
+    /**
+     * Creates a toggleable MenuItem
+     * @param text The text on the MenuItem
+     * @param font The font of the text
+     * @param color The color of the text
+     * @param bgcolor The background color of the MenuItem
+     * @param toggleColor The background color when toggled
+     * @param dimensions The dimensions as a Rectangle
+     * @param action The MenuItemAction to take on click
+     * @param shadowDist The distance of the text's shadow
+     */
     public ToggleMenuItem(String text, Font font, Color color, Color bgcolor, Color toggleColor, Rectangle dimensions, MenuItemAction action, int shadowDist) {
 	super(text, font, color, bgcolor, dimensions, action, shadowDist);
 	this.toggleColor = toggleColor;

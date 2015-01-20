@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.util.Properties;
 
 /**
- * Manages the game configuration
+ * Manages the game configuration, and loads any configuration that any other classes my access
  * 
  * @author Gordon Guan
  * @version Jan 2015
@@ -16,6 +16,9 @@ public class ConfigurationManager {
     private static File configFile = new File("config.prop");
     private static Properties prop;
 
+    /**
+     * Loads the configuration from a properties file
+     */
     public static void loadConfiguration() {
 	try {
 	    prop = new Properties();
@@ -28,6 +31,9 @@ public class ConfigurationManager {
 	}
     }
 
+    /**
+     * Saves the configuration to a properties file
+     */
     public static void saveConfiguration() {
 	try {
 	    if(!configFile.exists()){
@@ -40,14 +46,29 @@ public class ConfigurationManager {
 	}
     }
     
+    /**
+     * Gets the properties object with all the settings
+     * @return the properties object with all the settings
+     */
     public static Properties getProperties(){
 	return prop;
     }
     
+    /**
+     * Gets a specific string property
+     * @param key The name of the property
+     * @param value The value of the property
+     */
     public static void setProperty(String key, String value){
 	prop.setProperty(key, value);
 	saveConfiguration();
     }
+    
+    /**
+     * Gets a boolean property
+     * @param property The name of the property
+     * @return the boolean property
+     */
     public static boolean getBooleanProperty(String property){
 	try{
 	    return Boolean.valueOf(prop.getProperty(property));

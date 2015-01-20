@@ -12,7 +12,7 @@ public class Vector2D {
     public double y;
 
     /**
-     * Construct the vector with all components as 0.
+     * Construct the vector with all components as 0
      */
     public Vector2D() {
 	this.x = 0;
@@ -20,7 +20,7 @@ public class Vector2D {
     }
 
     /**
-     * Construct the vector with provided double components.
+     * Construct the vector with provided double components
      * 
      * @param x X component
      * @param y Y component
@@ -33,128 +33,119 @@ public class Vector2D {
     /**
      * Adds a vector to this one
      * 
-     * @param vec The other vector
-     * @return the same vector
+     * @param vector The other vector
+     * @return the sum of the vectors
      */
-    public Vector2D add(Vector2D vec) {
-	return new Vector2D(x + vec.x, y + vec.y);
+    public Vector2D add(Vector2D vector) {
+	return new Vector2D(x + vector.x, y + vector.y);
     }
 
     /**
-     * Subtracts a vector from this one.
+     * Subtracts a vector from this one
      * 
-     * @param vec The other vector
-     * @return the same vector
+     * @param vector The other vector
+     * @return the difference of the vectors
      */
-    public Vector2D subtract(Vector2D vec) {
-	return new Vector2D(x - vec.x, y - vec.y);
+    public Vector2D subtract(Vector2D vector) {
+	return new Vector2D(x - vector.x, y - vector.y);
     }
 
     /**
-     * Multiplies the vector by another.
+     * Multiplies the vector by another
      * 
-     * @param vec The other vector
-     * @return the same vector
+     * @param vector The other vector
+     * @return the product of the vectors
      */
-    public Vector2D multiply(Vector2D vec) {
-	return new Vector2D(x * vec.x, y * vec.y);
+    public Vector2D multiply(Vector2D vector) {
+	return new Vector2D(x * vector.x, y * vector.y);
     }
 
     /**
      * Divides the vector by another.
      * 
-     * @param vec The other vector
-     * @return the same vector
+     * @param vector The other vector
+     * @return the dividend of the vectors
      */
-    public Vector2D divide(Vector2D vec) {
-	return new Vector2D(x / vec.x, y / vec.y);
+    public Vector2D divide(Vector2D vector) {
+	return new Vector2D(x / vector.x, y / vector.y);
     }
 
     /**
-     * Gets the magnitude of the vector, defined as sqrt(x^2+y^2). NaN will be returned if the inner result of the sqrt() function overflows, which will be caused if the length is too long.
+     * Gets the magnitude of the vector, defined as sqrt(x^2+y^2)
      * 
-     * @return the magnitude
+     * @return the magnitude of the vector
      */
     public double length() {
 	return Math.sqrt(x * x + y * y);
     }
 
     /**
-     * Get the distance between this vector and another. NaN will be returned if the inner result of the sqrt() function overflows, which will be caused if the distance is too long.
+     * Get the distance between this vector and another
      * 
-     * @param o The other vector
-     * @return the distance
+     * @param otherVector The other vector
+     * @return the distance between the vectors
      */
-    public double distance(Vector2D o) {
-	return Math.sqrt(MathOperations.square(x - o.x) + MathOperations.square(y - o.y));
+    public double distance(Vector2D otherVector) {
+	return Math.sqrt(MathOperations.square(x - otherVector.x) + MathOperations.square(y - otherVector.y));
     }
 
     /**
-     * Gets the angle between this vector and another in radians.
+     * Gets the angle between this vector and another in radians
      * 
-     * @param other The other vector
+     * @param otherVector The other vector
      * @return angle in radians
      */
-    public double angle(Vector2D other) {
-	double dot = dotProduct(other) / (length() * other.length());
+    public double angle(Vector2D otherVector) {
+	double dot = dotProduct(otherVector) / (length() * otherVector.length());
 	return (double) Math.acos(dot);
     }
 
     /**
-     * Sets this vector to the midpoint between this vector and another.
+     * Gets a new midpoint vector between this vector and another
      * 
-     * @param other The other vector
-     * @return this same vector (now a midpoint)
-     */
-    public Vector2D midpoint(Vector2D other) {
-	return new Vector2D((x + other.x) / 2, (y + other.y) / 2);
-    }
-
-    /**
-     * Gets a new midpoint vector between this vector and another.
-     * 
-     * @param other The other vector
+     * @param otherVector The other vector
      * @return a new midpoint vector
      */
-    public Vector2D getMidpoint(Vector2D other) {
-	double x = (this.x + other.x) / 2;
-	double y = (this.y + other.y) / 2;
+    public Vector2D getMidpoint(Vector2D otherVector) {
+	double x = (this.x + otherVector.x) / 2;
+	double y = (this.y + otherVector.y) / 2;
 	return new Vector2D(x, y);
     }
 
     /**
-     * Performs scalar multiplication, multiplying all components with a scalar.
+     * Performs scalar multiplication, multiplying all components with a scalar
      * 
-     * @param m The factor
-     * @return the same vector
+     * @param scalar The factor
+     * @return the new multiplied vetor
      */
-    public Vector2D multiply(double m) {
-	return new Vector2D(x * m, y * m);
+    public Vector2D multiply(double scalar) {
+	return new Vector2D(x * scalar, y * scalar);
     }
 
     /**
-     * Calculates the dot product of this vector with another. The dot product is defined as x1*x2+y1*y2. The returned value is a scalar.
+     * Calculates the dot product of this vector with another
+     * The dot product is defined as x1*x2+y1*y2
+     * The returned value is a scalar
      * 
-     * @param other The other vector
+     * @param otherVector The other vector
      * @return dot product
      */
-    public double dotProduct(Vector2D other) {
-	return x * other.x + y * other.y;
+    public double dotProduct(Vector2D otherVector) {
+	return x * otherVector.x + y * otherVector.y;
     }
 
     /**
      * Calculates the cross product of this vector with another.
      * 
-     * @param o The other vector
-     * @return the same vector
+     * @param otherVector The other vector
+     * @return the cross product of the vectors
      */
-    public Vector2D crossProduct(Vector2D o) {
-	return new Vector2D(y * o.x - o.y * x, y * o.x - o.y * x);
+    public Vector2D crossProduct(Vector2D otherVector) {
+	return new Vector2D(y * otherVector.x - otherVector.y * x, y * otherVector.x - otherVector.y * x);
     }
 
     /**
-     * Converts this vector to a unit vector (a vector with length of 1).
-     * 
+     * Converts this vector to a unit vector (a vector with length of 1)
      */
     public void normalize() {
 	double length = length();
@@ -164,7 +155,7 @@ public class Vector2D {
     }
     
     /**
-     * Gets the unit vector of this vector (a vector with length of 1).
+     * Gets the unit vector of this vector (a vector with length of 1)
      * 
      * @return the normalized vector
      */
@@ -175,7 +166,7 @@ public class Vector2D {
     }
 
     /**
-     * Zero this vector's components.
+     * Zero this vector's components
      * 
      */
     public void zero() {
@@ -184,7 +175,8 @@ public class Vector2D {
     }
 
     /**
-     * Returns whether this vector is in an axis-aligned bounding box. The minimum and maximum vectors given must be truly the minimum and maximum X and Y components.
+     * Returns whether this vector is in an axis-aligned bounding box
+     * The minimum and maximum vectors given must be truly the minimum and maximum X and Y components
      * 
      * @param min Minimum vector
      * @param max Maximum vector
@@ -197,8 +189,8 @@ public class Vector2D {
     /**
      * Gets the minimum components of two vectors.
      * 
-     * @param v1 The first vector.
-     * @param v2 The second vector.
+     * @param v1 The first vector
+     * @param v2 The second vector
      * @return minimum
      */
     public static Vector2D getMinimum(Vector2D v1, Vector2D v2) {

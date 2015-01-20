@@ -6,6 +6,12 @@ import physics.util.Vector2D;
 
 public class Projectile2D extends Circle2D {
 
+    /**
+     * Constructs a projectile
+     * @param loc The location of the center
+     * @param vel The velocity
+     * @param radius The radius
+     */
     public Projectile2D(Vector2D loc, Vector2D vel, int radius) {
 	super(loc, vel, radius);
     }

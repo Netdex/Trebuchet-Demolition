@@ -11,6 +11,11 @@ import physics.entity.AABB2D;
  * @version Dec 2014
  */
 public class MathOperations {
+    /**
+     * Squares a number
+     * @param number The number to square
+     * @return the squared number
+     */
     public static double square(double number) {
 	return number * number;
     }
@@ -43,8 +48,14 @@ public class MathOperations {
 	return Math.abs((p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)) / normalLength;
     }
     
+    /**
+     * Gets the shortest distance between a point and a line segment
+     * @param a Point A of the line
+     * @param b Point B of the line
+     * @param p The point to measure the distance from
+     * @return The shortest distance between the points
+     */
     public static double pointToLineSegDistance(Vector2D a, Vector2D b, Vector2D p){
 	return Line2D.ptSegDist(a.x, a.y, b.x, b.y, p.x, p.y);
-
     }
 }

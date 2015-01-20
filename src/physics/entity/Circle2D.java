@@ -27,16 +27,30 @@ public class Circle2D extends Entity2D {
     private int radius;
     public Vector2D loc;
 
+    /**
+     * Creates a circle
+     * @param loc The center of the circle
+     * @param vel The velocity of the circle
+     * @param radius The radius of the circle
+     */
     public Circle2D(Vector2D loc, Vector2D vel, int radius) {
 	super(vel, circleTexture);
 	this.loc = loc;
 	this.radius = radius;
     }
 
+    @Override
     public Entity2D clone() {
 	return new Circle2D(loc.copy(), this.vel.copy(), radius);
     }
 
+    @Override
+    public void translate(double x, double y){
+	for(Vector2D vector : this.getPointArray()){
+	    vector.x += x;
+	    vector.y += y;
+	}
+    }
     /**
      * Gets the radius of the circle
      * 
@@ -124,6 +138,7 @@ public class Circle2D extends Entity2D {
 	return CollisionType.NO_COLLISION;
     }
 
+    @Override
     public double getMass() {
 	return radius;
     }
@@ -163,7 +178,7 @@ public class Circle2D extends Entity2D {
     /**
      * Gets the bounds around this circle
      * 
-     * @return the bounds around this circle
+     * @return the bounds around this circle as an AABB
      */
     public AABB2D getBoundingBox() {
 	return new AABB2D(new Vector2D(loc.x - radius, loc.y - radius), new Vector2D(loc.x + radius, loc.y + radius), Vector2D.ZERO);
