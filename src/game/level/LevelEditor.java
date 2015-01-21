@@ -1,6 +1,11 @@
 package game.level;
 
 import game.TrebuchetDemolition;
+import game.physics.PhysicsEngine;
+import game.physics.entity.Entity2D;
+import game.physics.entity.Rectangle2D;
+import game.physics.entity.Target2D;
+import game.physics.util.Vector2D;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -38,12 +43,6 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
-
-import physics.PhysicsEngine;
-import physics.entity.Entity2D;
-import physics.entity.Rectangle2D;
-import physics.entity.Target2D;
-import physics.util.Vector2D;
 
 /**
  * A level editor for Trebuchet Demolition

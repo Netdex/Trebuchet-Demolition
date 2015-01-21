@@ -1,6 +1,7 @@
 package game.level;
 
 import game.TrebuchetDemolition;
+import game.physics.entity.Entity2D;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +9,6 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Vector;
-
-import physics.entity.Entity2D;
 
 /**
  * Manages loaded levels, and loads them

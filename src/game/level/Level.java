@@ -1,19 +1,18 @@
 package game.level;
 
 import game.TrebuchetDemolition;
+import game.physics.entity.AABB2D;
+import game.physics.entity.Circle2D;
+import game.physics.entity.Entity2D;
+import game.physics.entity.Rectangle2D;
+import game.physics.entity.Target2D;
+import game.physics.util.Vector2D;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
-
-import physics.entity.AABB2D;
-import physics.entity.Circle2D;
-import physics.entity.Entity2D;
-import physics.entity.Rectangle2D;
-import physics.entity.Target2D;
-import physics.util.Vector2D;
 
 /**
  * Represents a game level

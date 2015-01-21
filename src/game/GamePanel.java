@@ -9,6 +9,10 @@ import game.graphics.menu.ToggleMenuItem;
 import game.level.Level;
 import game.level.LevelEditor;
 import game.level.LevelManager;
+import game.physics.PhysicsEngine;
+import game.physics.entity.Entity2D;
+import game.physics.tasks.GameClockTask;
+import game.physics.util.Vector2D;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -28,11 +32,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import physics.PhysicsEngine;
-import physics.entity.Entity2D;
-import physics.util.Vector2D;
-import tasks.GameClockTask;
 
 /**
  * A panel which draws all the shapes and contains a physics engine, and basically contains the entire game
