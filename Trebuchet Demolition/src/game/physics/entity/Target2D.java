@@ -18,33 +18,43 @@ import java.awt.TexturePaint;
  * @author Gordon Guan
  * @version Jan 2015
  */
-public class Target2D extends AABB2D {
-    private static Image targetTexture = GamePanel.brickTexture;
+public class Target2D extends AABB2D
+{
+	private static Image targetTexture = GamePanel.brickTexture;
 
-    /**
-     * Constructs a target
-     * @param p1 The first point
-     * @param p2 The second point
-     */
-    public Target2D(Vector2D p1, Vector2D p2) {
-	super(p1, p2, Vector2D.ZERO, false);
-    }
-
-    @Override
-    public void drawEntity(Graphics2D g) {
-	if (this.getTexture() == null) {
-	    Shape shape = this.getShape();
-	    g.fill(shape);
-	} else {
-	    Paint originalPaint = g.getPaint();
-	    TexturePaint texturePaint = new TexturePaint(GraphicsTools.bufferImage(targetTexture), new Rectangle(0, 0, GamePanel.TEXTURE_SIZE, GamePanel.TEXTURE_SIZE));
-	    g.setPaint(texturePaint);
-	    Shape poly = this.getShape();
-	    g.fill(poly);
-	    g.setPaint(originalPaint);
-	    g.setColor(Color.DARK_GRAY);
-	    g.draw(poly);
+	/**
+	 * Constructs a target
+	 * 
+	 * @param p1 The first point
+	 * @param p2 The second point
+	 */
+	public Target2D(Vector2D p1, Vector2D p2)
+	{
+		super(p1, p2, Vector2D.ZERO, false);
 	}
-    }
+
+	@Override
+	public void drawEntity(Graphics2D g)
+	{
+		if (this.getTexture() == null)
+		{
+			Shape shape = this.getShape();
+			g.fill(shape);
+		}
+		else
+		{
+			// Draw shape and texture
+			Paint originalPaint = g.getPaint();
+			TexturePaint texturePaint = new TexturePaint(
+					GraphicsTools.bufferImage(targetTexture), new Rectangle(0,
+							0, GamePanel.TEXTURE_SIZE, GamePanel.TEXTURE_SIZE));
+			g.setPaint(texturePaint);
+			Shape poly = this.getShape();
+			g.fill(poly);
+			g.setPaint(originalPaint);
+			g.setColor(Color.DARK_GRAY);
+			g.draw(poly);
+		}
+	}
 
 }
