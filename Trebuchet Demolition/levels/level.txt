@@ -1,0 +1,6 @@
+#This level has been played!
+#Wed Jan 21 10:04:52 EST 2015
+name=Mind the Gap
+entities=rect,400,300,410,600,0\:rect,400,0,410,150,0\:targ,800,500,850,600
+gravity=true
+highscore=133

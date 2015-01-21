@@ -1,6 +1,0 @@
-#This level has been played!
-#Tue Jan 20 13:59:48 EST 2015
-name=Space
-entities=rect,200,300,450,350,0\:rect,451,200,500,600,0\:targ,800,500,850,600
-gravity=false
-highscore=42
