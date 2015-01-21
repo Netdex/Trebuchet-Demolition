@@ -57,8 +57,10 @@ public class ToggleMenuItem extends MenuItem {
 	    toggle();
     }
 
+    
     @Override
     public Color getBackgroundColor() {
+	// Return the background color based on whether its toggled or not
 	if (isEnabled)
 	    return super.getBackgroundColor();
 	return toggleColor;

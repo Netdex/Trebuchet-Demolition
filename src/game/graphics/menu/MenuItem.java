@@ -108,10 +108,18 @@ public class MenuItem {
 	this.color = color;
     }
 
+    /**
+     * Get the background color
+     * @return the background color
+     */
     public Color getBackgroundColor() {
 	return bgcolor;
     }
 
+    /**
+     * Set the background color
+     * @param bgcolor The new background color
+     */
     public void setBackgroundColor(Color bgcolor) {
 	this.bgcolor = bgcolor;
     }
@@ -152,18 +160,34 @@ public class MenuItem {
 	this.font = font;
     }
 
+    /**
+     * Gets the rectangle dimensions
+     * @return The rectangle dimensions
+     */
     public Rectangle getDimensions() {
 	return dimensions;
     }
 
+    /**
+     * Sets the rectangle dimensions
+     * @param dimensions The new rectangle dimensions
+     */
     public void setDimensions(Rectangle dimensions) {
 	this.dimensions = dimensions;
     }
 
+    /**
+     * Gets whether this item is highlighted
+     * @return whether this item is highlighted
+     */
     public boolean isHighlighted() {
 	return isHighlighted;
     }
 
+    /**
+     * Set whether this item was highlighted
+     * @param isHighlighted Whether this item should be highlighted
+     */
     public void setHighlighted(boolean isHighlighted) {
 	this.isHighlighted = isHighlighted;
     }

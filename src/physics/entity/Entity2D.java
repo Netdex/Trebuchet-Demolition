@@ -94,6 +94,7 @@ public abstract class Entity2D implements Cloneable {
 
     /**
      * Gets the "mass" of the entity
+     * @return the mass of the entity
      */
     public abstract double getMass();
 
@@ -122,7 +123,7 @@ public abstract class Entity2D implements Cloneable {
      * @return Whether this entity has collided with the given one
      */
     public abstract CollisionType getCollisionState(Entity2D entity);
-
+    
     public String toString() {
 	return String.format("%s r%dg%db%d id%d v%s a%s", this.getClass().getName(), entityID, vel.toString());
     }
@@ -146,14 +147,25 @@ public abstract class Entity2D implements Cloneable {
     
     /**
      * Checks for a wall collision, and recovers from it
+     * @param width The width in pixels
+     * @param height The height in pixels
+     * @param RESTITUTION The bounciness of the objects
      * @return whether the collision happened
      */
     public abstract boolean handleWallCollision(int width, int height, final double RESTITUTION);
 
+    /**
+     * Gets this entity's textures
+     * @return this entity's textures
+     */
     public Image getTexture() {
         return texture;
     }
 
+    /**
+     * Sets this entity's textures
+     * @param texture The new texture of this entity
+     */
     public void setTexture(Image texture) {
         this.texture = texture;
     }

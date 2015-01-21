@@ -229,7 +229,6 @@ public class Vector2D {
     /**
      * Finds the vector of the reflected ray
      * 
-     * @param incident the incident vector
      * @param normal the normal vector
      * @return the incident vector reflected over the normal
      */

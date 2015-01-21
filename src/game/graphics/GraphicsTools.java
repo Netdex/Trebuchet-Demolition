@@ -31,6 +31,7 @@ public class GraphicsTools {
      * @param text The text to draw
      * @param x The x coordinate
      * @param y The y coordinate
+     * @param dist The distance of the shadow
      */
     public static void drawShadowedText(Graphics g, String text, int x, int y, int dist) {
 	Color originalColor = g.getColor();

@@ -13,6 +13,9 @@ import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -31,25 +34,22 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import physics.PhysicsEngine;
-import physics.entity.Circle2D;
 import physics.entity.Entity2D;
 import physics.entity.Rectangle2D;
 import physics.entity.Target2D;
 import physics.util.Vector2D;
 
-import javax.swing.JSeparator;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
-import java.awt.event.InputEvent;
-
+/**
+ * A level editor for Trebuchet Demolition
+ * @author Gordon Guan
+ * @version Jan 2015
+ */
 public class LevelEditor extends JFrame {
     private static final Cursor MOVING_CURSOR = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
     private static final Cursor NORMAL_CURSOR = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
@@ -123,12 +123,16 @@ public class LevelEditor extends JFrame {
 
 	final JPanel drawPanel = new JPanel() {
 	    @Override
+	    /**
+	     * Draw the level editor
+	     */
 	    public void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
 		Graphics2D g = (Graphics2D) graphics;
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setRenderingHints(rh);
 		g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+		// Draw every entity from the virtual physics engine
 		for (Entity2D e : virtualEngine.getEntities()) {
 		    e.drawEntity(g);
 		    if (e.equals(selectedEntity)) {
@@ -137,8 +141,9 @@ public class LevelEditor extends JFrame {
 			g.setColor(Color.BLACK);
 		    }
 		}
+		// If an entity is being created, then draw the traced box
 		if (creating != -1) {
-		    g.setColor(Color.GRAY);
+		    g.setColor(Color.LIGHT_GRAY);
 		    int width = lastDragClick.x - lastClick.x;
 		    int height = lastDragClick.y - lastClick.y;
 
@@ -208,6 +213,9 @@ public class LevelEditor extends JFrame {
 
 	addKeyListener(new KeyAdapter() {
 	    @Override
+	    /**
+	     * Listen for key presses for shortcuts
+	     */
 	    public void keyPressed(KeyEvent event) {
 		int keycode = event.getKeyCode();
 		if (keycode == KeyEvent.VK_DELETE) {
@@ -230,6 +238,7 @@ public class LevelEditor extends JFrame {
 	    public void mousePressed(MouseEvent event) {
 		Point point = event.getPoint();
 		Entity2D entity = null;
+		// Check if any entities are inside the click, if there are then start dragging them
 		for (Entity2D e : virtualEngine.getEntities()) {
 		    Shape shape = e.getShape();
 		    if (shape.contains(point)) {
@@ -237,6 +246,7 @@ public class LevelEditor extends JFrame {
 		    }
 		}
 
+		// Set the buttons to enabled or disabled based on if an entity is selected
 		if (entity != null) {
 		    btnDelete.setEnabled(true);
 		    btnCcw.setEnabled(true);
@@ -254,6 +264,7 @@ public class LevelEditor extends JFrame {
 
 	    @Override
 	    public void mouseReleased(MouseEvent event) {
+		// Find the position of the click
 		Point point = event.getPoint();
 		int width = point.x - lastClick.x;
 		int height = point.y - lastClick.y;
@@ -269,6 +280,7 @@ public class LevelEditor extends JFrame {
 		}
 		Vector2D p1 = new Vector2D(x, y);
 		Vector2D p2 = new Vector2D(x + Math.abs(width), y + Math.abs(height));
+		// If an object is being created, then create it
 		if (creating == 0) {
 		    Rectangle2D rect = new Rectangle2D(p1, p2);
 		    virtualEngine.addEntity(rect);
@@ -287,6 +299,7 @@ public class LevelEditor extends JFrame {
 	drawPanel.addMouseMotionListener(new MouseMotionAdapter() {
 	    @Override
 	    public void mouseDragged(MouseEvent event) {
+		// Update the drawing outline
 		Point current = event.getPoint();
 		if (selectedEntity != null) {
 		    Point diff = new Point(current.x - lastDragClick.x, current.y - lastDragClick.y);
@@ -301,6 +314,7 @@ public class LevelEditor extends JFrame {
 
 	    @Override
 	    public void mouseMoved(MouseEvent event) {
+		// Change the cursor to a hand if it mouses over an entity
 		if (creating == -1) {
 		    Point point = event.getPoint();
 		    Entity2D entity = null;
@@ -341,6 +355,7 @@ public class LevelEditor extends JFrame {
 	});
 	btnCw.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
+		// Rotate clockwise
 		if (selectedEntity != null) {
 		    Rectangle2D rect = (Rectangle2D) selectedEntity;
 		    rect.rotate(5);
@@ -372,9 +387,11 @@ public class LevelEditor extends JFrame {
 	mntmSave.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent e) {
 		try {
+		    // Select the file
 		    JFileChooser chooser = new JFileChooser();
 		    chooser.setDialogTitle("Save Level");
 		    chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+		    chooser.setCurrentDirectory(new File("levels"));
 
 		    int returnVal = chooser.showSaveDialog(null);
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -382,6 +399,7 @@ public class LevelEditor extends JFrame {
 
 			String levelName = JOptionPane.showInputDialog(null, "Enter level name: ", "Trebuchet Demolition Level Editor", JOptionPane.PLAIN_MESSAGE);
 			String entities = "";
+			// Loop through all entities and generate a message to save for the level editor to load
 			for (int entity = 0; entity < virtualEngine.getEntities().size(); entity++) {
 			    Entity2D currentEntity = virtualEngine.getEntities().get(entity);
 			    String entityDesc = "";
@@ -400,6 +418,7 @@ public class LevelEditor extends JFrame {
 				entities += ":";
 			    }
 			}
+			// Save using Java Properties
 			Properties prop = new Properties();
 			prop.setProperty("entities", entities);
 			prop.setProperty("name", levelName);
@@ -415,11 +434,13 @@ public class LevelEditor extends JFrame {
 	mntmLoad.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent event) {
 		try {
+		    // Select file to load
 		    JFileChooser chooser = new JFileChooser();
 		    chooser.setDialogTitle("Load Level");
 		    chooser.setDialogType(JFileChooser.OPEN_DIALOG);
-
+		    chooser.setCurrentDirectory(new File("levels"));
 		    int returnVal = chooser.showSaveDialog(null);
+		    // Import with properties then create a new level, then get entities in that level and import into virtual engine
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File chosen = chooser.getSelectedFile();
 

@@ -148,6 +148,7 @@ public class Rectangle2D extends Entity2D {
 
     /**
      * Gets a bounding box around the rectangle
+     * @return the bounding box around the rectangle
      */
     public AABB2D getBoundingBox() {
 	return new AABB2D(new Vector2D(Math.min(this.p1.x, Math.min(this.p2.x, Math.min(this.p3.x, this.p4.x))), Math.min(this.p1.y, Math.min(this.p2.y, Math.min(this.p3.y, this.p4.y)))),

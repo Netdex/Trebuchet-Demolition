@@ -61,9 +61,7 @@ public class AABB2D extends Entity2D {
 	}
     }
     
-    /**
-     * Handles this AABB's collisions with walls
-     */
+    @Override
     public boolean handleWallCollision(int width, int height, final double RESTITUTION) {
 	boolean retType = false;
 	if (this.p1.x < 0) {

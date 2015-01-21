@@ -35,7 +35,7 @@ import physics.util.Vector2D;
 import tasks.GameClockTask;
 
 /**
- * A panel which draws all the shapes and contains a physics engine
+ * A panel which draws all the shapes and contains a physics engine, and basically contains the entire game
  * 
  * @author Gordon Guan
  * @version Dec 2014
@@ -78,6 +78,11 @@ public class GamePanel extends JPanel {
 
     /***********************************************************************/
 
+    /**
+     * Creates a new game panel
+     * @param width The width in pixels
+     * @param height The height in pixels
+     */
     public GamePanel(final int width, final int height) {
 	super();
 	this.setBackground(Color.WHITE);
@@ -98,6 +103,7 @@ public class GamePanel extends JPanel {
 	/* From here begins all the menu action and item setup code */
 	// Setup actions for each menu action
 	MenuItemAction playMenuItemAction = new MenuItemAction() {
+	    @Override
 	    public void doAction(MenuItem item) {
 		LevelManager.loadLevels();
 		repopulateLevelSelectMenu();
@@ -152,7 +158,7 @@ public class GamePanel extends JPanel {
 	int sep = 10;
 	int shadowDist = 3;
 	MenuItem playMenuItem = new MenuItem("PLAY", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y, mlength, mheight), playMenuItemAction, shadowDist);
-	MenuItem levelEditMenuItem = new MenuItem("LEVEL EDITOR", GraphicsTools.MAIN_FONT, Color.RED, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), levelEditMenuItemAction, shadowDist);
+	MenuItem levelEditMenuItem = new MenuItem("LEVEL EDITOR", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight + sep, mlength, mheight), levelEditMenuItemAction, shadowDist);
 	MenuItem optionsMenuItem = new MenuItem("OPTIONS", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 2 + sep * 2, mlength, mheight), optionsMenuItemAction,
 		shadowDist);
 	MenuItem helpMenuItem = new MenuItem("HELP", GraphicsTools.MAIN_FONT, Color.WHITE, GraphicsTools.BG_COLOR, new Rectangle(10, y + mheight * 3 + sep * 3, mlength, mheight), helpMenuItemAction,

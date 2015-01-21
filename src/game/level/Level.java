@@ -178,14 +178,26 @@ public class Level {
 	this.levelEntities = levelEntities;
     }
 
+    /**
+     * Gets the file this level is based on
+     * @return the file this level is based on
+     */
     public File getFile() {
 	return file;
     }
 
+    /**
+     * Sets the file this level is based on
+     * @param file The new file this level should be based on
+     */
     public void setFile(File file) {
 	this.file = file;
     }
 
+    /**
+     * Gets a Vector of all the cloned entities
+     * @return all the cloned entities in a Vector
+     */
     public Vector<Entity2D> getEntitiesClone() {
 	Vector<Entity2D> entities = new Vector<Entity2D>();
 	for (Entity2D entity : levelEntities) {
@@ -194,10 +206,18 @@ public class Level {
 	return entities;
     }
 
+    /**
+     * Gets the score of this level
+     * @return the score of this level
+     */
     public int getScore() {
 	return score;
     }
 
+    /**
+     * Sets the score of this level
+     * @param score The new score of this level
+     */
     public void setScore(int score) {
 	this.score = score;
     }

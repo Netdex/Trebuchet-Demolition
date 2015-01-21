@@ -1,6 +1,6 @@
 #This level has been played!
-#Mon Jan 19 14:07:02 EST 2015
+#Tue Jan 20 14:01:11 EST 2015
 name=Bouncy Mirrors
 entities=targ,800,500,850,600\:rect,83,168,184,179,-20\:rect,333,452,340,569,60\:rect,507,100,631,113,0\:rect,530,197,604,570,0
-gravity=true
 highscore=208
+gravity=true

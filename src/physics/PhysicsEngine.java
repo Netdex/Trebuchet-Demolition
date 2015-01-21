@@ -36,9 +36,10 @@ public class PhysicsEngine {
     private Vector<Entity2D> entities;
 
     private boolean won = false;
-    
+
     /**
      * Constructs a PhysicsEngine
+     * 
      * @param width the width in pixels
      * @param height the length in pixels
      */
@@ -123,14 +124,14 @@ public class PhysicsEngine {
 			hasCollided = true;
 			if (colType == CollisionType.CIRCLE_TO_CIRCLE) {
 			    CollisionResolver.resolveCircleCollision((Circle2D) entity, (Circle2D) e, RESTITUTION);
-			} else if (colType == CollisionType.AABB_TO_AABB){
-			    
+			} else if (colType == CollisionType.AABB_TO_AABB) {
+
 			} else if (colType == CollisionType.CIRCLE_TO_AABB) {
 			    CollisionResolver.resolveAABBCircleCollision((Circle2D) entity, (AABB2D) e, RESTITUTION);
 
 			} else if (colType == CollisionType.CIRCLE_TO_RECT) {
 			    CollisionResolver.resolveRectCircleCollision((Circle2D) entity, (Rectangle2D) e, RESTITUTION);
-			    
+
 			} else if (colType == CollisionType.WINNING_COLLISION) {
 			    won = true;
 			}
@@ -212,20 +213,30 @@ public class PhysicsEngine {
 	entities.clear();
     }
 
+    /**
+     * Check if the player has won
+     * 
+     * @return whether the player has won
+     */
     public boolean hasWon() {
 	return won;
     }
 
+    /**
+     * Sets if the player has won
+     * @param b Whether the player has won
+     */
     public void setWon(boolean b) {
 	won = b;
     }
-    
+
     /**
      * Fires a projectile
+     * 
      * @param power The power to fire at
      * @param angle The angle
      */
-    public void fireProjectile(int power, int angle){
+    public void fireProjectile(int power, int angle) {
 	double vecX = Math.cos(Math.toRadians(180 - angle)) * power / 9;
 	double vecY = Math.sin(Math.toRadians(180 - angle)) * power / 9;
 	Vector2D vel = new Vector2D(vecX, vecY);
